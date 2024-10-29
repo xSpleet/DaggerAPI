@@ -1,0 +1,64 @@
+{
+    "name":"test_artifact",
+    "rarity":"rare",
+    "active":true,
+    "cooldown":5000,
+    "attribute_modifiers": [
+        {
+            "conditions":[
+                {
+                    "condition": "ifWeather",
+                    "arguments": {
+                        "weather": "rain"
+                    }
+                }
+            ],
+            "modifiers":[
+                {
+                    "attribute":"movement_speed",
+                    "modification_type":"multiply_total",
+                    "modification_value":0.2
+                }
+            ]
+        }
+    ],
+    "events":[
+        {
+            "trigger":"afterHit",
+            "weight": 1,
+            "actions":[
+                {
+                    "action": "heal",
+                    "data": {
+                        "amount": 2
+                    }
+                }
+            ]
+        },
+        {
+            "trigger":"afterHit",
+            "weight": 1,
+            "actions":[
+                "makeHungry"
+            ]
+        }
+    ],
+    "modifies_combat":true,
+    "combat_modifiers":[
+        {
+            "direction":"in",
+            "conditions":[
+                "ifWeather rain"
+            ],
+            "modifiers":[
+                {
+                    "attack_type_modifications":[
+                        "changeTo cactus"
+                    ],
+                    "attack_damage_modification_type":"add",
+                    "attack_damage_modification_value":2
+                }
+            ]
+        }
+    ]
+}
