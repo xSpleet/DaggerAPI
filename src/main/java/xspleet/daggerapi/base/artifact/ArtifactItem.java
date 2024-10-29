@@ -13,9 +13,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xspleet.jdagapi.base.*;
-import xspleet.jdagapi.base.actions.ConditionalAction;
-import xspleet.jdagapi.base.actions.WeightedConditionalAction;
+import xspleet.daggerapi.base.*;
+import xspleet.daggerapi.base.actions.ConditionalAction;
+import xspleet.daggerapi.base.actions.WeightedConditionalAction;
 
 
 public class ArtifactItem extends TrinketItem

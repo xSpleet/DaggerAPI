@@ -8,15 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import xspleet.jdagapi.Jdagapi;
-import xspleet.jdagapi.base.actions.ConditionalAction;
-import xspleet.jdagapi.base.actions.WeightedConditionalAction;
-import xspleet.jdagapi.base.artifact.BuildableArtifactItem;
-import xspleet.jdagapi.collections.ConditionProviders;
-import xspleet.jdagapi.collections.Triggers;
-import xspleet.jdagapi.models.*;
-import xspleet.jdagapi.providers.ActionProvider;
-import xspleet.jdagapi.providers.ConditionProvider;
+import xspleet.daggerapi.base.artifact.BuildableArtifactItem;
+import xspleet.daggerapi.models.ItemModel;
 
 import java.util.HashMap;
 import java.util.List;

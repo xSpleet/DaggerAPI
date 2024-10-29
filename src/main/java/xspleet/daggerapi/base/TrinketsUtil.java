@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
-import xspleet.jdagapi.base.artifact.ActiveArtifactItem;
+import xspleet.daggerapi.base.artifact.ActiveArtifactItem;
 
 public class TrinketsUtil 
 {

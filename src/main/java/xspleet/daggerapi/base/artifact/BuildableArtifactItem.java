@@ -1,8 +1,8 @@
 package xspleet.daggerapi.base.artifact;
-
-import xspleet.jdagapi.base.*;
-import xspleet.jdagapi.base.actions.ConditionalAction;
-import xspleet.jdagapi.base.actions.WeightedConditionalAction;
+import xspleet.daggerapi.base.ArtifactAttributeModifier;
+import xspleet.daggerapi.base.Trigger;
+import xspleet.daggerapi.base.actions.ConditionalAction;
+import xspleet.daggerapi.base.actions.WeightedConditionalAction;
 
 import java.util.ArrayList;
 

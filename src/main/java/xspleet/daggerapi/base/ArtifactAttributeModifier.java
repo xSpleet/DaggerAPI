@@ -3,7 +3,6 @@ package xspleet.daggerapi.base;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
-import xspleet.jdagapi.providers.ConditionProvider;
 
 import java.util.function.Predicate;
 

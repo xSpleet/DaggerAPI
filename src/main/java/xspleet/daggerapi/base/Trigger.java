@@ -1,7 +1,7 @@
 package xspleet.daggerapi.base;
 
 import net.minecraft.entity.player.PlayerEntity;
-import xspleet.jdagapi.base.artifact.ArtifactItem;
+import xspleet.daggerapi.base.artifact.ArtifactItem;
 
 import java.util.ArrayList;
 import java.util.List;
