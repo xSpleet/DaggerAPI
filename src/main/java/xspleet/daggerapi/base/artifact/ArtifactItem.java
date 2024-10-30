@@ -34,9 +34,9 @@ public class ArtifactItem extends TrinketItem
         weightedEvents = new HashMap<>();
     }
 
-    public void receiveTrigger(Trigger trigger, PlayerEntity player)
+    public void receiveTrigger(Trigger trigger, DaggerData data)
     {
-        events.getOrDefault(trigger, new ArrayList<>()).forEach(a -> a.actOn(player));
+        events.getOrDefault(trigger, new ArrayList<>()).forEach(a -> a.actOn(data));
 
         List<WeightedConditionalAction> actions = weightedEvents.get(trigger);
         if(actions.isEmpty())
@@ -55,7 +55,7 @@ public class ArtifactItem extends TrinketItem
             currentWeight += action.getWeight();
             if(currentWeight > random)
             {
-                action.actOn(player);
+                action.actOn(data);
                 return;
             }
         }
