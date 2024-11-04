@@ -1,7 +1,10 @@
 package xspleet.daggerapi.base.actions;
 
 import net.minecraft.entity.player.PlayerEntity;
+import xspleet.daggerapi.base.Action;
+import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.base.DaggerData;
+import xspleet.daggerapi.collections.ConditionProviders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +13,8 @@ import java.util.function.Predicate;
 
 public class ConditionalAction
 {
-    private Predicate<DaggerData> condition;
-    private final List<Consumer<DaggerData>> actions;
+    private Condition condition;
+    private final List<Action> actions;
 
     public ConditionalAction()
     {
@@ -19,12 +22,17 @@ public class ConditionalAction
         actions = new ArrayList<>();
     }
 
-    public void addCondition(Predicate<DaggerData> condition)
+    public Condition getCondition()
+    {
+        return condition;
+    }
+
+    public void addCondition(Condition condition)
     {
         this.condition = this.condition.and(condition);
     }
 
-    public void addAction(Consumer<DaggerData> action)
+    public void addAction(Action action)
     {
         actions.add(action);
     }
@@ -32,7 +40,7 @@ public class ConditionalAction
     public void actOn(DaggerData data)
     {
         if(condition.test(data))
-            for(Consumer<DaggerData> action: actions)
+            for(Action action: actions)
                 action.accept(data);
     }
 }

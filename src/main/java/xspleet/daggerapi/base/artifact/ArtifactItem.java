@@ -39,6 +39,10 @@ public class ArtifactItem extends TrinketItem
         events.getOrDefault(trigger, new ArrayList<>()).forEach(a -> a.actOn(data));
 
         List<WeightedConditionalAction> actions = weightedEvents.get(trigger);
+        actions = actions.stream()
+                .filter(action -> action.getCondition().test(data))
+                .toList();
+
         if(actions.isEmpty())
             return;
 
@@ -63,37 +67,37 @@ public class ArtifactItem extends TrinketItem
 
     public void registerAttributeModifiers(){}
 
-    public void updatePlayer(PlayerEntity player)
+    private void updatePlayer(DaggerData data)
     {
         for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
-            attributeModifier.updatePlayer(player);
+            attributeModifier.updatePlayer(data);
     }
 
-    public void cleansePlayer(PlayerEntity player)
+    private void cleansePlayer(DaggerData data)
     {
         for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
-            attributeModifier.cleansePlayer(player);
+            attributeModifier.cleansePlayer(data);
     }
 
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onEquip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            updatePlayer(player);
+            updatePlayer(new DaggerData().setPlayer(player));
     }
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            updatePlayer(player);
+            updatePlayer(new DaggerData().setPlayer(player));
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onUnequip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            cleansePlayer(player);
+            cleansePlayer(new DaggerData().setPlayer(player));
     }
 
     public ArtifactItem rarity(ArtifactRarity artifactRarity)

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class EventModel
 {
     public String trigger;
-    public int weight;
-    public ArrayList<ConditionModel> conditions;
-    public ArrayList<ActionModel> actions;
+    public Integer weight;
+    public ArrayList<ConditionModel> conditions = new ArrayList<>();
+    public ArrayList<ActionModel> actions = new ArrayList<>();
 }

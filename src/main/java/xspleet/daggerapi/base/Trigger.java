@@ -27,9 +27,9 @@ public class Trigger
         listeners.add(listener);
     }
 
-    public void trigger(PlayerEntity player)
+    public void trigger(DaggerData data)
     {
         for(ArtifactItem listener: listeners)
-            listener.receiveTrigger(this, player);
+            listener.receiveTrigger(this, data);
     }
 }

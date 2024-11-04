@@ -3,99 +3,103 @@ package xspleet.daggerapi.base;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.base.actions.ConditionalAction;
+import xspleet.daggerapi.base.actions.WeightedConditionalAction;
 import xspleet.daggerapi.base.artifact.BuildableArtifactItem;
-import xspleet.daggerapi.models.ItemModel;
+import xspleet.daggerapi.models.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ItemBuilder
 {
-    private ItemModel itemModel;
-    private BuildableArtifactItem item;
-    private Item ITEM;
-
-    public ItemBuilder(ItemModel itemModel)
+    public static Item build(ItemModel itemModel)
     {
-        this.itemModel = itemModel;
-        item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
+        String name = itemModel.name;
+        String rarity = itemModel.rarity;
+        boolean active = itemModel.active;
+        int cooldown = itemModel.cooldown;
+
+        BuildableArtifactItem item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
+
+        if(active)
+            item.cooldown(cooldown);
+        item.rarity(ArtifactRarity.getRarity(rarity));
+
+        buildArtifactAttributes(item, itemModel.attributeModifiers);
+        buildEvents(item, itemModel.events);
+
+        return Registry.register(Registries.ITEM, Identifier.of(DaggerAPI.MOD_ID, name), item);
     }
 
-    public Item build()
-    {
-        buildAttributeModifiers();
-        buildEvents();
-        ITEM = registerItem(ArtifactRarity.getRarity(itemModel.rarity), itemModel.cooldown);
-        return ITEM;
-    }
-
-    public Item registerItem(ArtifactRarity rarity, int cooldown)
-    {
-        return registerItem(itemModel.name,
-                item.rarity(rarity).cooldown(cooldown));
-    }
-
-    private static Item registerItem(String name, Item item)
-    {
-        return Registry.register(Registries.ITEM, new Identifier(Jdagapi.MOD_ID, name), item);
-    }
-
-    private void buildAttributeModifiers()
+    private static void buildArtifactAttributes(BuildableArtifactItem item, List<ArtifactAttributeModifierModel> modifierModels)
     {
         int i = 0;
-        for(ArtifactAttributeModifierModel artifactAttributeModifierModel: itemModel.attributeModifiers) {
-            Predicate<PlayerEntity> condition = ConditionProviders.ALWAYS.provide(new HashMap<>());
-            for (ConditionModel conditionModel : artifactAttributeModifierModel.conditions)
-                condition = condition.and(ConditionProvider.getConditionFromString(stringCondition));
-
-            int j = 0;
-            for(AttributeModifierModel attributeModifierModel: artifactAttributeModifierModel.modifiers)
+        for(ArtifactAttributeModifierModel modifierModel: modifierModels)
+        {
+            ArtifactAttributeModifier artifactAttributeModifier = new ArtifactAttributeModifier();
+            for(ConditionModel conditionModel: modifierModel.conditions)
             {
+                Condition condition = Mapper
+                        .getConditionProvider(conditionModel.condition)
+                        .provide(conditionModel.arguments);
+
+                artifactAttributeModifier.addCondition(condition);
+            }
+            for(AttributeModifierModel attributeModifierModel: modifierModel.modifiers)
+            {
+                int j = 0;
                 EntityAttribute attribute = Mapper.getEntityAttribute(attributeModifierModel.attribute);
-                EntityAttributeModifier.Operation operation = Mapper.getOperation(attributeModifierModel.modificationType);
-                double value = attributeModifierModel.modificationValue;
-                EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(
-                        itemModel.name + "/" + i + "/" + j + "/" + attributeModifierModel.attribute,
-                        value,
-                        operation
+                EntityAttributeModifier modifier = new EntityAttributeModifier(
+                        i + "/" + j + "/" + attributeModifierModel.attribute + "/" + attributeModifierModel.modificationType + "/" + attributeModifierModel.modificationValue,
+                        attributeModifierModel.modificationValue,
+                        Mapper.getOperation(attributeModifierModel.modificationType)
                 );
 
-                ArtifactAttributeModifier artifactAttributeModifier = new ArtifactAttributeModifier()
-                        .setModifier(entityAttributeModifier)
-                        .setAttribute(attribute)
-                        .setCondition(condition);
-
-                item.addAttributeModifier(artifactAttributeModifier);
-                j++;
+                artifactAttributeModifier.addAttributeModifier(
+                        new DaggerAttributeModifier(
+                                attribute,
+                                modifier
+                        )
+                );
             }
-            i++;
+            item.addAttributeModifier(artifactAttributeModifier);
         }
     }
 
-    private void buildEvents()
+    private static void buildEvents(BuildableArtifactItem item, List<EventModel> eventModels)
     {
-        List<EventModel> eventModels = itemModel.events;
         for(EventModel eventModel: eventModels)
         {
-            Trigger trigger = Triggers.getByName(eventModel.trigger);
+            Trigger trigger = Mapper.getTrigger(eventModel.trigger);
 
             ConditionalAction action;
-            if(eventModel.weight != 0)
+            if(eventModel.weight != null)
                 action = new WeightedConditionalAction(eventModel.weight);
             else
                 action = new ConditionalAction();
 
-            if(eventModel.conditions != null)
-                for(String condition: eventModel.conditions)
-                    action.addCondition(ConditionProvider.getConditionFromString(condition));
-            for(String actionString: eventModel.actions)
-                action.addAction(ActionProvider.getActionFromString(actionString));
+            for(ConditionModel conditionModel: eventModel.conditions)
+            {
+                var condition = Mapper
+                        .getConditionProvider(conditionModel.condition)
+                        .provide(conditionModel.arguments);
+
+                action.addCondition(condition);
+            }
+
+            for(ActionModel actionModel: eventModel.actions)
+            {
+                var unitAction = Mapper
+                        .getActionProvider(actionModel.action)
+                        .provide(actionModel.arguments);
+
+                action.addAction(unitAction);
+            }
 
             item.addEvent(trigger, action);
         }

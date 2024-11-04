@@ -3,58 +3,73 @@ package xspleet.daggerapi.base;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
+import xspleet.daggerapi.collections.ConditionProviders;
+import xspleet.daggerapi.providers.ConditionProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class ArtifactAttributeModifier
 {
-    private Predicate<PlayerEntity> condition;
-    private EntityAttribute attribute;
-    private EntityAttributeModifier modifier;
+    private Condition condition;
+    private List<DaggerAttributeModifier> modifiers;
 
     public ArtifactAttributeModifier()
     {
-        condition = ConditionProvider.alwaysTrue();
+        condition = ConditionProviders.alwaysTrue();
+        modifiers = new ArrayList<>();
     }
 
-    public ArtifactAttributeModifier setAttribute(EntityAttribute attribute)
+    public ArtifactAttributeModifier addAttributeModifier(DaggerAttributeModifier modifier)
     {
-        this.attribute = attribute;
+        modifiers.add(modifier);
         return this;
     }
 
-    public ArtifactAttributeModifier setModifier(EntityAttributeModifier modifier)
+    public ArtifactAttributeModifier addCondition(Condition condition)
     {
-        this.modifier = modifier;
+        this.condition = this.condition.and(condition);
         return this;
     }
 
-    public ArtifactAttributeModifier setCondition(Predicate<PlayerEntity> condition)
+    public void updatePlayer(DaggerData data)
     {
-        this.condition = condition;
-        return this;
-    }
-
-    public void updatePlayer(PlayerEntity player)
-    {
-        if(player.getAttributeInstance(attribute) == null)
-           return;
-
-        if(!condition.test(player))
-            cleansePlayer(player);
+        if(!condition.test(data))
+            cleansePlayer(data);
         else
-            modifyPlayer(player);
+            modifyPlayer(data);
     }
 
-    public void modifyPlayer(PlayerEntity player)
+    public void modifyPlayer(DaggerData data)
     {
-        if(!player.getAttributeInstance(attribute).hasModifier(modifier))
-            player.getAttributeInstance(attribute).addTemporaryModifier(modifier);
+        PlayerEntity player = data.getPlayer();
+        for(DaggerAttributeModifier attributeModifier: modifiers) {
+
+            var attribute = attributeModifier.getAttribute();
+            var modifier = attributeModifier.getModifier();
+
+            if(player.getAttributeInstance(attribute) == null)
+                return;
+
+            if(!player.getAttributeInstance(attribute).hasModifier(modifier))
+                player.getAttributeInstance(attribute).addTemporaryModifier(modifier);
+        }
     }
 
-    public void cleansePlayer(PlayerEntity player)
+    public void cleansePlayer(DaggerData data)
     {
-        if(player.getAttributeInstance(attribute).hasModifier(modifier))
-            player.getAttributeInstance(attribute).removeModifier(modifier);
+        PlayerEntity player = data.getPlayer();
+        for(DaggerAttributeModifier attributeModifier: modifiers) {
+
+            var attribute = attributeModifier.getAttribute();
+            var modifier = attributeModifier.getModifier();
+
+            if(player.getAttributeInstance(attribute) == null)
+                return;
+
+            if (player.getAttributeInstance(attribute).hasModifier(modifier))
+                player.getAttributeInstance(attribute).removeModifier(modifier);
+        }
     }
 }

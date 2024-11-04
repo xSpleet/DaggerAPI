@@ -5,14 +5,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xspleet.jdagapi.collections.Triggers;
+import xspleet.daggerapi.base.DaggerData;
+import xspleet.daggerapi.collections.Triggers;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityTriggersMixin {
 	@Inject(at = @At("HEAD"), method = "damage")
 	private void beforeHitTrigger(CallbackInfoReturnable<Boolean> cir) {
 		PlayerEntity player = ((PlayerEntity)(Object)this);
-		Triggers.BEFORE_HIT.trigger(player);
+		Triggers.BEFORE_HIT.trigger(new DaggerData().setPlayer(player));
 	}
 
 	@Inject(at = @At("RETURN"), method = "damage")
@@ -21,7 +22,7 @@ public class PlayerEntityTriggersMixin {
 		if(cir.getReturnValue())
 		{
 			PlayerEntity player = ((PlayerEntity)(Object)this);
-			Triggers.AFTER_HIT.trigger(player);
+			Triggers.AFTER_HIT.trigger(new DaggerData().setPlayer(player));
 		}
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class CombatModifierModel
 {
-    public ArrayList<String> attackTypeModifications;
+    public ArrayList<String> attackTypeModifications = new ArrayList<>();
     public String attackDamageModificationType;
     public int attackDamageModificationValue;
 }
