@@ -30,15 +30,20 @@ public class DaggerAPI implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final int SYMBOLS_PER_LINE = 40;
 
+	public static final Gson JSON_PARSER = new GsonBuilder()
+			.setFieldNamingPolicy(
+					FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+			.setPrettyPrinting()
+			.create();
+
 	private static final String RESOURCES = "../src/main/resources/";
 
 	@Override
 	public void onInitialize() {
 		Mapper.registerMapper();
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).setPrettyPrinting().create();
-		File file = new File(RESOURCES + "data/test_item/item.json");
+		Path file = Path.of(RESOURCES, "data/test_item/item.json");
 		try {
-			ItemModel itemModel = gson.fromJson(new FileReader(file), ItemModel.class);
+			ItemModel itemModel = JSON_PARSER.fromJson(Files.newBufferedReader(file), ItemModel.class);
 			String modelFileName = RESOURCES + "assets/daggerapi/models/item/" + itemModel.name + ".json";
 			String modelFolderName = RESOURCES + "assets/daggerapi/models/item";
 			String texturesFolderName = RESOURCES + "assets/daggerapi/textures/item";
@@ -48,9 +53,8 @@ public class DaggerAPI implements ModInitializer {
 			FileUtils.cleanDirectory(new File(modelFolderName));
 			FileUtils.cleanDirectory(new File(texturesFolderName));
 
-			LOGGER.info(gson.toJson(itemModel));
+            LOGGER.info("\n{}", JSON_PARSER.toJson(itemModel));
 			ItemBuilder.build(itemModel);
-			ErrorLogger.validateItems();
 			/*File model = new File(modelFileName);
 			FileUtils.touch(model);
 			FileWriter fileWriter = new FileWriter(modelFileName);
@@ -68,9 +72,10 @@ public class DaggerAPI implements ModInitializer {
 			Path copied = Paths.get(textureCopyFileName);
 			Path originalPath = Paths.get(textureFileName);
 			Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);*/
+			ErrorLogger.validateItems();
 		} catch (FileNotFoundException e) {
 			LOGGER.info("File not found!");
-			LOGGER.info("Searching in: " + file.getAbsolutePath());
+			LOGGER.info("Searching in: " + file);
 		} catch (IOException e) {
             throw new RuntimeException(e);
         }

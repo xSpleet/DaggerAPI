@@ -1,8 +1,8 @@
 package xspleet.daggerapi.exceptions;
 
-public class NoSuchNameException extends RuntimeException
+public class NoSuchNameException extends DaggerAPIException
 {
-    private String name;
+    private final String name;
 
     public String getName()
     {

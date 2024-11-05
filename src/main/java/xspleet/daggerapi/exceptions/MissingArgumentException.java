@@ -1,8 +1,8 @@
 package xspleet.daggerapi.exceptions;
 
-public class MissingArgumentException extends RuntimeException
+public class MissingArgumentException extends DaggerAPIException
 {
-    private String argument;
+    private final String argument;
 
     public String getArgumentName()
     {

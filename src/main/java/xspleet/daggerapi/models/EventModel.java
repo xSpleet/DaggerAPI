@@ -2,7 +2,7 @@ package xspleet.daggerapi.models;
 
 import java.util.ArrayList;
 
-public class EventModel
+public class EventModel extends JSONModel
 {
     public String trigger;
     public Integer weight;

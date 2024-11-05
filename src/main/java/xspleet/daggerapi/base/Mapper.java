@@ -5,6 +5,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.collections.*;
+import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.providers.ActionProvider;
 import xspleet.daggerapi.providers.ConditionProvider;
 
@@ -43,11 +44,13 @@ public class Mapper
         return trigger;
     }
 
-    public static Trigger getTrigger(String name)
-    {
+    public static Trigger getTrigger(String name) {
         DaggerAPI.LOGGER.info(triggers.values().stream().map(Trigger::getName).collect(Collectors.joining()));
         if(!triggers.containsKey(name))
-            DaggerAPI.LOGGER.error("Trigger with the name '" + name + "' not found!");
+        {
+            DaggerAPI.LOGGER.error("Trigger with the name '{}' not found!", name);
+            throw new NoSuchTriggerException(name);
+        }
 
         return triggers.get(name);
     }
@@ -58,11 +61,11 @@ public class Mapper
         return operation;
     }
 
-    public static EntityAttributeModifier.Operation getOperation(String name)
-    {
-        if(!operations.containsKey(name))
-            DaggerAPI.LOGGER.error("Operation with the name '" + name + "' not found!");
-
+    public static EntityAttributeModifier.Operation getOperation(String name) {
+        if(!operations.containsKey(name)) {
+            DaggerAPI.LOGGER.error("Operation with the name '{}' not found!", name);
+            throw new NoSuchOperationException(name);
+        }
         return operations.get(name);
     }
 
@@ -72,11 +75,11 @@ public class Mapper
         return attribute;
     }
 
-    public static EntityAttribute getEntityAttribute(String name)
-    {
-        if(!entityAttributes.containsKey(name))
-            DaggerAPI.LOGGER.error("Attribute with the name '" + name + "' not found!");
-
+    public static EntityAttribute getEntityAttribute(String name) {
+        if(!entityAttributes.containsKey(name)) {
+            DaggerAPI.LOGGER.error("Attribute with the name '{}' not found!", name);
+            throw new NoSuchAttributeException(name);
+        }
         return entityAttributes.get(name);
     }
 
@@ -91,11 +94,11 @@ public class Mapper
         return conditionProvider;
     }
 
-    public static ConditionProvider getConditionProvider(String name)
-    {
-        if(!conditionProviders.containsKey(name))
-            DaggerAPI.LOGGER.error("Condition provider with the name '" + name + "' not found!");
-
+    public static ConditionProvider getConditionProvider(String name) {
+        if(!conditionProviders.containsKey(name)) {
+            DaggerAPI.LOGGER.error("Condition provider with the name '{}' not found!", name);
+            throw new NoSuchConditionException(name);
+        }
         return conditionProviders.get(name);
     }
 
@@ -110,11 +113,11 @@ public class Mapper
         return actionProvider;
     }
 
-    public static ActionProvider getActionProvider(String name)
-    {
-        if(!actionProviders.containsKey(name))
-            DaggerAPI.LOGGER.error("Action provider with the name '" + name + "' not found!");
-
+    public static ActionProvider getActionProvider(String name) {
+        if(!actionProviders.containsKey(name)) {
+            DaggerAPI.LOGGER.error("Action provider with the name '{}' not found!", name);
+            throw new NoSuchActionException(name);
+        }
         return actionProviders.get(name);
     }
 }

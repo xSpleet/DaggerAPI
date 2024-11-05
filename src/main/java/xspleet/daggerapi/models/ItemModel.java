@@ -2,7 +2,7 @@ package xspleet.daggerapi.models;
 
 import java.util.ArrayList;
 
-public class ItemModel
+public class ItemModel extends JSONModel
 {
     public String name;
     public String rarity;
