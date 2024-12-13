@@ -12,7 +12,6 @@ public class DaggerData
 {
     private @Nullable PlayerEntity player;
     private @Nullable World world;
-
     private Map<String, String> data;
 
     public DaggerData()
@@ -33,13 +32,20 @@ public class DaggerData
         return player;
     }
 
+    public DaggerData setWorld(World world)
+    {
+        this.world = world;
+        return this;
+    }
+
     public @Nullable World getWorld()
     {
         return world;
     }
-    public DaggerData setWorld(World world)
+
+    public DaggerData setTrigger(Trigger trigger)
     {
-        this.world = world;
+        addData("trigger", trigger.getName());
         return this;
     }
 

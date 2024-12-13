@@ -2,18 +2,13 @@ package xspleet.daggerapi.base;
 
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.collections.*;
 import xspleet.daggerapi.exceptions.*;
-import xspleet.daggerapi.providers.ActionProvider;
-import xspleet.daggerapi.providers.ConditionProvider;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Mapper
@@ -29,8 +24,8 @@ public class Mapper
     }
     private static final Map<String, EntityAttribute> entityAttributes = new HashMap<>();
     private static final Map<String, EntityAttributeModifier.Operation> operations = new HashMap<>();
-    private static final Map<String, ConditionProvider> conditionProviders = new HashMap<>();
-    private static final Map<String, ActionProvider> actionProviders = new HashMap<>();
+    private static final Map<String, Provider<Condition>> conditionProviders = new HashMap<>();
+    private static final Map<String, Provider<Action>> actionProviders = new HashMap<>();
     private static final Map<String, Trigger> triggers = new HashMap<>();
 
     public static Trigger registerTrigger(String name)
@@ -83,18 +78,18 @@ public class Mapper
         return entityAttributes.get(name);
     }
 
-    public static ConditionProvider registerConditionProvider(String name, Function<Map<String, String>, Condition> provider)
+    public static Provider<Condition> registerConditionProvider(String name, Function<Map<String, String>, Condition> provider)
     {
-        ConditionProvider conditionProvider = conditionProviders.get(name);
+        Provider<Condition> conditionProvider = conditionProviders.get(name);
         if(conditionProvider != null)
             return conditionProvider;
 
-        conditionProvider = new ConditionProvider(name, provider);
+        conditionProvider = new Provider<>(name, provider);
         conditionProviders.put(name, conditionProvider);
         return conditionProvider;
     }
 
-    public static ConditionProvider getConditionProvider(String name) {
+    public static Provider<Condition> getConditionProvider(String name) {
         if(!conditionProviders.containsKey(name)) {
             DaggerAPI.LOGGER.error("Condition provider with the name '{}' not found!", name);
             throw new NoSuchConditionException(name);
@@ -102,18 +97,18 @@ public class Mapper
         return conditionProviders.get(name);
     }
 
-    public static ActionProvider registerActionProvider(String name, Function<Map<String, String>, Action> provider)
+    public static Provider<Action> registerActionProvider(String name, Function<Map<String, String>, Action> provider)
     {
-        ActionProvider actionProvider = actionProviders.get(name);
+        Provider<Action> actionProvider = actionProviders.get(name);
         if(actionProvider != null)
             return actionProvider;
 
-        actionProvider = new ActionProvider(name, provider);
+        actionProvider = new Provider<>(name, provider);
         actionProviders.put(name, actionProvider);
         return actionProvider;
     }
 
-    public static ActionProvider getActionProvider(String name) {
+    public static Provider<Action> getActionProvider(String name) {
         if(!actionProviders.containsKey(name)) {
             DaggerAPI.LOGGER.error("Action provider with the name '{}' not found!", name);
             throw new NoSuchActionException(name);

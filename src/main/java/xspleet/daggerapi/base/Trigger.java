@@ -29,6 +29,7 @@ public class Trigger
 
     public void trigger(DaggerData data)
     {
+        data.setTrigger(this);
         for(ArtifactItem listener: listeners)
             listener.receiveTrigger(this, data);
     }

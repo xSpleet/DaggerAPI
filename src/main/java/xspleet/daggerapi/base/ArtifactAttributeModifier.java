@@ -1,14 +1,10 @@
 package xspleet.daggerapi.base;
 
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.collections.ConditionProviders;
-import xspleet.daggerapi.providers.ConditionProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ArtifactAttributeModifier
 {

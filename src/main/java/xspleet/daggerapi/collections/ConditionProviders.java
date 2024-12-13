@@ -1,17 +1,13 @@
 package xspleet.daggerapi.collections;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.base.Mapper;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
-import xspleet.daggerapi.providers.ConditionProvider;
+import xspleet.daggerapi.base.Provider;
 
 import java.util.HashMap;
-import java.util.function.Predicate;
 
 public class ConditionProviders
 {
@@ -19,22 +15,22 @@ public class ConditionProviders
     {
         DaggerAPI.LOGGER.info("> Registering condition providers...");
     }
-    public static ConditionProvider ALWAYS = Mapper
+
+    public static Provider<Condition> ALWAYS = Mapper
             .registerConditionProvider("always", (map) -> {
                 return data -> true;
                     });
 
-    public static Condition alwaysTrue()
-    {
+    public static Condition alwaysTrue() {
         return ALWAYS.provide(new HashMap<>());
     }
 
-    public static ConditionProvider NEVER = Mapper
+    public static Provider<Condition> NEVER = Mapper
             .registerConditionProvider("never", (map) -> {
                 return data -> false;
                     });
 
-    public static ConditionProvider IF_WEATHER = Mapper
+    public static Provider<Condition> IF_WEATHER = Mapper
             .registerConditionProvider("ifWeather", (map) ->
             {
                 String weather = map.get("weather");
@@ -54,7 +50,7 @@ public class ConditionProviders
             })
             .addArgument("weather");
 
-    public static ConditionProvider IF_DIMENSION = Mapper
+    public static Provider<Condition> IF_DIMENSION = Mapper
             .registerConditionProvider("ifDimension", (map) ->
             {
                 String dimension = map.get("dimension");

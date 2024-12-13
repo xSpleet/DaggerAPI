@@ -1,9 +1,10 @@
 package xspleet.daggerapi.collections;
 
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.base.Action;
 import xspleet.daggerapi.base.Mapper;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
-import xspleet.daggerapi.providers.ActionProvider;
+import xspleet.daggerapi.base.Provider;
 
 public class ActionProviders
 {
@@ -12,11 +13,11 @@ public class ActionProviders
         DaggerAPI.LOGGER.info("> Registering action providers...");
     }
 
-    public static ActionProvider DO_NOTHING = Mapper.registerActionProvider("doNothing", (map) -> {
+    public static Provider<Action> DO_NOTHING = Mapper.registerActionProvider("doNothing", (map) -> {
         return data -> {};
     });
 
-    public static ActionProvider HEAL = Mapper.registerActionProvider("heal", (map) -> {
+    public static Provider<Action> HEAL = Mapper.registerActionProvider("heal", (map) -> {
         if(!map.get("amount").matches("\\d+"))
             throw new WrongArgumentException("amount", map.get("amount"));
 

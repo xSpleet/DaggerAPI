@@ -1,4 +1,4 @@
-package xspleet.daggerapi.providers;
+package xspleet.daggerapi.base;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.function.Function;
 public class Provider<T>
 {
     protected String name;
-
     protected List<String> arguments = new ArrayList<>();
-
     protected List<String> associatedTriggers = new ArrayList<>();
-
     protected Function<Map<String, String>, T> provider;
+
+    protected boolean isPlayerDependant = false;
+    protected boolean isWorldDependant  = false;
 
     public Provider(String name, Function<Map<String, String>, T> provider)
     {
@@ -52,6 +52,12 @@ public class Provider<T>
                 return false;
             }
         }
+
+        if(associatedTriggers.isEmpty())
+            return true;
+
         return args.containsKey("trigger") && associatedTriggers.contains(args.get("trigger"));
     }
+
+
 }
