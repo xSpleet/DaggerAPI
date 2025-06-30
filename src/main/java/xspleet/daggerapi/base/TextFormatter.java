@@ -4,7 +4,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import xspleet.daggerapi.DaggerAPI;
 
 import java.util.ArrayList;
 import java.util.List;

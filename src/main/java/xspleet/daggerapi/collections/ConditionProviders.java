@@ -2,12 +2,11 @@ package xspleet.daggerapi.collections;
 
 import net.minecraft.world.World;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.collections.registration.Provider;
+import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.base.Condition;
-import xspleet.daggerapi.base.Mapper;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
-import xspleet.daggerapi.base.Provider;
-
-import java.util.HashMap;
 
 public class ConditionProviders
 {
@@ -17,31 +16,31 @@ public class ConditionProviders
     }
 
     public static Provider<Condition> ALWAYS = Mapper
-            .registerConditionProvider("always", (map) -> {
+            .registerConditionProvider("always", (args) -> {
                 return data -> true;
                     });
 
     public static Condition alwaysTrue() {
-        return ALWAYS.provide(new HashMap<>());
+        return ALWAYS.provide(new ProviderData());
     }
 
     public static Provider<Condition> NEVER = Mapper
-            .registerConditionProvider("never", (map) -> {
+            .registerConditionProvider("never", (args) -> {
                 return data -> false;
                     });
 
     public static Provider<Condition> IF_WEATHER = Mapper
-            .registerConditionProvider("ifWeather", (map) ->
+            .registerConditionProvider("ifWeather", (args) ->
             {
-                String weather = map.get("weather");
+                String weather = args.getData("weather");
                 boolean isRaining = weather.equalsIgnoreCase("rain");
                 boolean isThundering = weather.equalsIgnoreCase("thunder");
                 boolean isClear = weather.equalsIgnoreCase("clear");
                 if(!isRaining && !isThundering && !isClear)
-                    throw new WrongArgumentException("weather", map.get(weather));
+                    throw new WrongArgumentException("weather", weather);
 
                 return data -> {
-                    World world = data.getPlayer().getWorld();
+                    World world = data.getTestEntity(args.getOn()).getWorld();
 
                     return isRaining && world.isRaining()
                             || isThundering && world.isThundering()
@@ -51,15 +50,20 @@ public class ConditionProviders
             .addArgument("weather");
 
     public static Provider<Condition> IF_DIMENSION = Mapper
-            .registerConditionProvider("ifDimension", (map) ->
+            .registerConditionProvider("ifDimension", (args) ->
             {
-                String dimension = map.get("dimension");
+                String dimension = args.getData("dimension");
 
                 return data -> {
-                    World world = data.getPlayer().getWorld();
+                    World world = data.getTestEntity(args.getOn()).getWorld();
 
-                    return world.getRegistryKey().getValue().toString().equalsIgnoreCase(dimension);
+                    return world.getRegistryKey()
+                            .getValue()
+                            .toString()
+                            .equalsIgnoreCase(dimension);
                 };
             })
             .addArgument("dimension");
+
+
 }

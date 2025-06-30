@@ -1,8 +1,8 @@
 package xspleet.daggerapi.collections;
 
 import xspleet.daggerapi.DaggerAPI;
-import xspleet.daggerapi.base.Mapper;
-import xspleet.daggerapi.base.Trigger;
+import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.trigger.Trigger;
 
 public class Triggers
 {
@@ -10,6 +10,6 @@ public class Triggers
     {
         DaggerAPI.LOGGER.info("> Registering triggers...");
     }
-    public static final Trigger AFTER_HIT = Mapper.registerTrigger("afterHit");
-    public static final Trigger BEFORE_HIT = Mapper.registerTrigger("beforeHit");
+    public static final Trigger AFTER_HIT = Mapper.registerTrigger("afterHit").setHasTriggerer().setWorldful();
+    public static final Trigger BEFORE_HIT = Mapper.registerTrigger("beforeHit").setHasTriggerer().setWorldful();
 }

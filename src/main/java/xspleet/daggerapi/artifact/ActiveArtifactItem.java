@@ -1,7 +1,7 @@
-package xspleet.daggerapi.base.artifact;
+package xspleet.daggerapi.artifact;
 
 import net.minecraft.entity.player.PlayerEntity;
-import xspleet.daggerapi.base.ArtifactRarity;
+import xspleet.daggerapi.artifact.build.ArtifactRarity;
 
 public class ActiveArtifactItem extends ArtifactItem
 {

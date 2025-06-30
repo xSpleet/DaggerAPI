@@ -1,4 +1,4 @@
-package xspleet.daggerapi.base.artifact;
+package xspleet.daggerapi.artifact;
 
 import java.util.*;
 
@@ -13,9 +13,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import xspleet.daggerapi.artifact.build.ArtifactAttributeModifier;
+import xspleet.daggerapi.artifact.build.ArtifactRarity;
 import xspleet.daggerapi.base.*;
-import xspleet.daggerapi.base.actions.ConditionalAction;
-import xspleet.daggerapi.base.actions.WeightedConditionalAction;
+import xspleet.daggerapi.data.ConditionData;
+import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.trigger.actions.ConditionalAction;
+import xspleet.daggerapi.trigger.Trigger;
+import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 
 public class ArtifactItem extends TrinketItem
@@ -25,6 +30,7 @@ public class ArtifactItem extends TrinketItem
 
     protected Map<Trigger, List<ConditionalAction>> events;
     protected Map<Trigger, List<WeightedConditionalAction>> weightedEvents;
+    protected Set<Trigger> triggers = new HashSet<>();
 
     public ArtifactItem(Settings settings) {
         super(settings);
@@ -34,46 +40,59 @@ public class ArtifactItem extends TrinketItem
         weightedEvents = new HashMap<>();
     }
 
-    public void receiveTrigger(Trigger trigger, DaggerData data)
+    private void actOnWeightedActions(TriggerData data)
     {
-        events.getOrDefault(trigger, new ArrayList<>()).forEach(a -> a.actOn(data));
-
-        List<WeightedConditionalAction> actions = weightedEvents.get(trigger);
-        actions = actions.stream()
-                .filter(action -> action.getCondition().test(data))
-                .toList();
-
-        if(actions.isEmpty())
-            return;
-
-        int totalWeight = actions
-                .stream()
-                .mapToInt(WeightedConditionalAction::getWeight)
-                .reduce(0, Integer::sum);
-
-        int currentWeight = 0;
-        int random = (new Random()).nextInt(totalWeight);
-
-        for(WeightedConditionalAction action: actions)
+        for(PlayerEntity listener: data.getListeners())
         {
-            currentWeight += action.getWeight();
-            if(currentWeight > random)
-            {
-                action.actOn(data);
+            ConditionData conditionData = new ConditionData(data)
+                    .setTriggered(listener)
+                    .setTriggerer(data.getTriggerer())
+                    .setWorld(data.getTriggeredWorld());
+
+            List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getTrigger(), new ArrayList<>());
+            actions = actions.stream()
+                    .filter(action -> action.getCondition().test(conditionData))
+                    .toList();
+
+            if(actions.isEmpty())
                 return;
+
+            int totalWeight = actions
+                    .stream()
+                    .mapToInt(WeightedConditionalAction::getWeight)
+                    .reduce(0, Integer::sum);
+
+            int currentWeight = 0;
+            int random = (new Random()).nextInt(totalWeight);
+
+            for(WeightedConditionalAction action: actions)
+            {
+                currentWeight += action.getWeight();
+                if(currentWeight > random)
+                {
+                    action.actOn(data);
+                    return;
+                }
             }
         }
     }
 
+    public void receiveTrigger(TriggerData data)
+    {
+        events.getOrDefault(data.getTrigger(), new ArrayList<>()).forEach(a -> a.actOn(data));
+
+        actOnWeightedActions(data);
+    }
+
     public void registerAttributeModifiers(){}
 
-    private void updatePlayer(DaggerData data)
+    private void updatePlayer(ConditionData data)
     {
         for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
             attributeModifier.updatePlayer(data);
     }
 
-    private void cleansePlayer(DaggerData data)
+    private void cleansePlayer(ConditionData data)
     {
         for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
             attributeModifier.cleansePlayer(data);
@@ -83,21 +102,29 @@ public class ArtifactItem extends TrinketItem
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onEquip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            updatePlayer(new DaggerData().setPlayer(player));
+        {
+            updatePlayer(new ConditionData().setPlayer(player));
+            for(Trigger trigger: triggers)
+                trigger.addListener(this, player);
+        }
     }
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            updatePlayer(new DaggerData().setPlayer(player));
+            updatePlayer(new ConditionData().setPlayer(player));
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onUnequip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            cleansePlayer(new DaggerData().setPlayer(player));
+        {
+            cleansePlayer(new ConditionData().setPlayer(player));
+            for(Trigger trigger: triggers)
+                trigger.removeListener(this, player);
+        }
     }
 
     public ArtifactItem rarity(ArtifactRarity artifactRarity)
@@ -105,6 +132,7 @@ public class ArtifactItem extends TrinketItem
         this.artifactRarity = artifactRarity;
         return this;
     }
+
     private void addArtifactRarity(List<Text> tooltip)
     {
         switch (artifactRarity)

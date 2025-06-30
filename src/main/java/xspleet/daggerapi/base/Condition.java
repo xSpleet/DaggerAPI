@@ -1,13 +1,14 @@
 package xspleet.daggerapi.base;
 
 import org.jetbrains.annotations.NotNull;
+import xspleet.daggerapi.data.ConditionData;
 
 import java.util.function.Predicate;
 
-public interface Condition extends Predicate<DaggerData> {
+public interface Condition extends Predicate<ConditionData> {
     @NotNull
     @Override
-    default Condition and(@NotNull Predicate<? super DaggerData> other) {
+    default Condition and(@NotNull Predicate<? super ConditionData> other) {
         return data -> other.test(data) && test(data);
     }
 
@@ -19,7 +20,7 @@ public interface Condition extends Predicate<DaggerData> {
 
     @NotNull
     @Override
-    default Condition or(@NotNull Predicate<? super DaggerData> other) {
+    default Condition or(@NotNull Predicate<? super ConditionData> other) {
         return data -> other.test(data) || test(data);
     }
 }

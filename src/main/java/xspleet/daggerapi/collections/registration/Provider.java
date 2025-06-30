@@ -1,8 +1,9 @@
-package xspleet.daggerapi.base;
+package xspleet.daggerapi.collections.registration;
+
+import xspleet.daggerapi.data.ProviderData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public class Provider<T>
@@ -10,12 +11,12 @@ public class Provider<T>
     protected String name;
     protected List<String> arguments = new ArrayList<>();
     protected List<String> associatedTriggers = new ArrayList<>();
-    protected Function<Map<String, String>, T> provider;
+    protected Function<ProviderData, T> provider;
 
     protected boolean isPlayerDependant = false;
     protected boolean isWorldDependant  = false;
 
-    public Provider(String name, Function<Map<String, String>, T> provider)
+    public Provider(String name, Function<ProviderData, T> provider)
     {
         this.provider = provider;
         this.name = name;
@@ -38,16 +39,16 @@ public class Provider<T>
         return name;
     }
 
-    public T provide(Map<String, String> args)
+    public T provide(ProviderData data)
     {
-        return provider.apply(args);
+        return provider.apply(data);
     }
 
-    private boolean checkArgs(Map<String, String> args)
+    private boolean checkArgs(ProviderData data)
     {
         for(String argument: arguments)
         {
-            if(!args.containsKey(argument))
+            if(data.getData(argument) == null)
             {
                 return false;
             }
@@ -56,7 +57,7 @@ public class Provider<T>
         if(associatedTriggers.isEmpty())
             return true;
 
-        return args.containsKey("trigger") && associatedTriggers.contains(args.get("trigger"));
+        return data.getData("trigger") != null && associatedTriggers.contains(data.getData("trigger"));
     }
 
 

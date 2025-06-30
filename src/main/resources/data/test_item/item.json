@@ -7,7 +7,7 @@
         {
             "conditions":[
                 {
-                    "condition": "ifDimensin",
+                    "condition": "ifDimension",
                     "arguments": {
                         "dimension": "minecraft:overworld"
                     }
@@ -15,8 +15,8 @@
             ],
             "modifiers":[
                 {
-                    "attribute":"movement_sped",
-                    "modification_type":"multiply_totl",
+                    "attribute":"movement_speed",
+                    "modification_type":"multiply_total",
                     "modification_value":0.5
                 }
             ]
@@ -24,25 +24,37 @@
     ],
     "events":[
         {
-            "trigger":"afterHi",
-            "weight": 1,
+            "trigger":"afterHit",
+            "triggerer": "any",
+            "weight": 5,
             "actions":[
                 {
-                    "action": "hea",
+                    "action": "kill",
+                    "on": "triggerer"
+                },
+                {
+                    "action": "sendMessage",
+                    "on": "triggered",
                     "arguments": {
-                        "amount": "2"
+                        "message": "The triggerer has been killed"
                     }
                 }
             ]
         },
         {
-            "trigger":"afterHitt",
+            "trigger":"afterHit",
+            "triggerer": "any",
             "weight": 1,
             "actions":[
                 {
-                    "action": "heal",
+                    "action": "kill",
+                    "on": "triggered"
+                },
+                {
+                    "action": "sendMessage",
+                    "on": "triggered",
                     "arguments": {
-                        "amount": "2"
+                        "message": "The triggered has been killed"
                     }
                 }
             ]

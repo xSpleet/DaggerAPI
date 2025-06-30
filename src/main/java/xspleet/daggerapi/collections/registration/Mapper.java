@@ -1,9 +1,13 @@
-package xspleet.daggerapi.base;
+package xspleet.daggerapi.collections.registration;
 
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.collections.*;
+import xspleet.daggerapi.base.Condition;
+import xspleet.daggerapi.data.ProviderData;
+import xspleet.daggerapi.trigger.Trigger;
+import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.exceptions.*;
 
 import java.util.HashMap;
@@ -22,6 +26,7 @@ public class Mapper
         Triggers.registerTriggers();
         EntityAttributes.registerEntityAttributes();
     }
+
     private static final Map<String, EntityAttribute> entityAttributes = new HashMap<>();
     private static final Map<String, EntityAttributeModifier.Operation> operations = new HashMap<>();
     private static final Map<String, Provider<Condition>> conditionProviders = new HashMap<>();
@@ -78,7 +83,7 @@ public class Mapper
         return entityAttributes.get(name);
     }
 
-    public static Provider<Condition> registerConditionProvider(String name, Function<Map<String, String>, Condition> provider)
+    public static Provider<Condition> registerConditionProvider(String name, Function<ProviderData, Condition> provider)
     {
         Provider<Condition> conditionProvider = conditionProviders.get(name);
         if(conditionProvider != null)
@@ -97,7 +102,7 @@ public class Mapper
         return conditionProviders.get(name);
     }
 
-    public static Provider<Action> registerActionProvider(String name, Function<Map<String, String>, Action> provider)
+    public static Provider<Action> registerActionProvider(String name, Function<ProviderData, Action> provider)
     {
         Provider<Action> actionProvider = actionProviders.get(name);
         if(actionProvider != null)

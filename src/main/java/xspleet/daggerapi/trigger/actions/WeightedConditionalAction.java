@@ -1,12 +1,7 @@
-package xspleet.daggerapi.base.actions;
+package xspleet.daggerapi.trigger.actions;
 
-import net.minecraft.entity.player.PlayerEntity;
-import xspleet.daggerapi.base.Action;
 import xspleet.daggerapi.base.Condition;
-import xspleet.daggerapi.base.DaggerData;
-
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import xspleet.daggerapi.data.TriggerData;
 
 public class WeightedConditionalAction extends ConditionalAction
 {
@@ -36,7 +31,7 @@ public class WeightedConditionalAction extends ConditionalAction
     }
 
     @Override
-    public void actOn(DaggerData data) {
+    public void actOn(TriggerData data) {
         conditionalAction.actOn(data);
     }
 }

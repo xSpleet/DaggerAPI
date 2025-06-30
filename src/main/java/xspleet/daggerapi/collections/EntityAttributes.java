@@ -2,7 +2,7 @@ package xspleet.daggerapi.collections;
 
 import net.minecraft.entity.attribute.EntityAttribute;
 import xspleet.daggerapi.DaggerAPI;
-import xspleet.daggerapi.base.Mapper;
+import xspleet.daggerapi.collections.registration.Mapper;
 
 public class EntityAttributes
 {

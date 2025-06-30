@@ -12,11 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
-import xspleet.daggerapi.base.artifact.ActiveArtifactItem;
+import xspleet.daggerapi.artifact.ActiveArtifactItem;
 
 public class TrinketsUtil 
 {
-	
 	static public List<Pair<SlotReference, ItemStack>> getActiveArtifacts(LivingEntity livingEntity)
 	{
 		List<Pair<SlotReference, ItemStack>> activeArtifacts = new ArrayList<>(0);

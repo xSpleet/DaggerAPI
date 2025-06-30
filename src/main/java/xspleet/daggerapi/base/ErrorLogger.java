@@ -1,12 +1,10 @@
 package xspleet.daggerapi.base;
 
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.FileUtils;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.models.JSONModel;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
