@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.base.ErrorLogger;
-import xspleet.daggerapi.artifact.build.ArtifactItemBuilder;
+import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
