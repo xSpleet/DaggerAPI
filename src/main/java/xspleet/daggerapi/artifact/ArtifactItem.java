@@ -18,6 +18,7 @@ import xspleet.daggerapi.artifact.builder.ArtifactRarity;
 import xspleet.daggerapi.base.*;
 import xspleet.daggerapi.data.ConditionData;
 import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
@@ -32,6 +33,9 @@ public class ArtifactItem extends TrinketItem
     protected Map<Trigger, List<WeightedConditionalAction>> weightedEvents;
     protected Set<Trigger> triggers = new HashSet<>();
 
+    private int cooldown = -1;
+    private boolean active = false;
+
     public ArtifactItem(Settings settings) {
         super(settings);
         attributeModifiers = new ArrayList<>();
@@ -40,16 +44,20 @@ public class ArtifactItem extends TrinketItem
         weightedEvents = new HashMap<>();
     }
 
+    public ArtifactItem cooldown(int cooldown)
+    {
+        this.cooldown = cooldown;
+        return this;
+    }
+
     private void actOnWeightedActions(TriggerData data)
     {
         for(PlayerEntity listener: data.getListeners())
         {
             ConditionData conditionData = new ConditionData(data)
-                    .setTriggered(listener)
-                    .setTriggerer(data.getTriggerer())
-                    .setWorld(data.getTriggeredWorld());
+                    .addData(DaggerKeys.TRIGGERED, listener);
 
-            List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getTrigger(), new ArrayList<>());
+            List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>());
             actions = actions.stream()
                     .filter(action -> action.getCondition().test(conditionData))
                     .toList();
@@ -79,7 +87,7 @@ public class ArtifactItem extends TrinketItem
 
     public void receiveTrigger(TriggerData data)
     {
-        events.getOrDefault(data.getTrigger(), new ArrayList<>()).forEach(a -> a.actOn(data));
+        events.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>()).forEach(a -> a.actOn(data));
 
         actOnWeightedActions(data);
     }
@@ -103,7 +111,7 @@ public class ArtifactItem extends TrinketItem
         super.onEquip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
         {
-            updatePlayer(new ConditionData().setPlayer(player));
+            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for(Trigger trigger: triggers)
                 trigger.addListener(this, player);
         }
@@ -113,7 +121,7 @@ public class ArtifactItem extends TrinketItem
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
-            updatePlayer(new ConditionData().setPlayer(player));
+            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
     }
 
     @Override
@@ -121,7 +129,7 @@ public class ArtifactItem extends TrinketItem
         super.onUnequip(stack, slot, entity);
         if(entity instanceof PlayerEntity player)
         {
-            cleansePlayer(new ConditionData().setPlayer(player));
+            cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for(Trigger trigger: triggers)
                 trigger.removeListener(this, player);
         }
@@ -172,18 +180,31 @@ public class ArtifactItem extends TrinketItem
         addArtifactRarity(tooltip);
         if(Screen.hasShiftDown())
         {
-            if(stack.getItem() instanceof ActiveArtifactItem activeArtifact)
+            if(stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
             {
-                tooltip.add(Text.translatable("item.magpie.tooltip.recharge", activeArtifact.getCooldown()/20 + " "));
+                tooltip.add(Text.translatable("item.magpie.tooltip.recharge", artifact.getCooldown()/20 + " "));
             }
             TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip." + stack.getItem()),tooltip);
         }
         else
         {
-            if(stack.getItem() instanceof ActiveArtifactItem)
+            if(stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
                 TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip.active"), tooltip);
             TextFormatter.addTooltips(Text.translatable("item.magpie.description." + stack.getItem()), tooltip);
             tooltip.add(Text.translatable("item.magpie.tooltip.shiftmoreinfo"));
         }
+    }
+
+    public int getCooldown() {
+        return cooldown;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public ArtifactItem active(boolean active) {
+        this.active = active;
+        return this;
     }
 }

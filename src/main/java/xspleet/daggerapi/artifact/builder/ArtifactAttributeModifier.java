@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.ConditionData;
 import xspleet.daggerapi.collections.ConditionProviders;
+import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ArtifactAttributeModifier
 
     public void modifyPlayer(ConditionData data)
     {
-        PlayerEntity player = data.getPlayer();
+        PlayerEntity player = data.getData(DaggerKeys.PLAYER);
         for(AttributeModifier attributeModifier: modifiers) {
 
             var attribute = attributeModifier.getAttribute();
@@ -57,7 +58,7 @@ public class ArtifactAttributeModifier
 
     public void cleansePlayer(ConditionData data)
     {
-        PlayerEntity player = data.getPlayer();
+        PlayerEntity player = data.getData(DaggerKeys.PLAYER);
         for(AttributeModifier attributeModifier: modifiers) {
 
             var attribute = attributeModifier.getAttribute();

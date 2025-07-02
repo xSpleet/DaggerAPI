@@ -1,6 +1,8 @@
 package xspleet.daggerapi.data;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.models.On;
 
 import java.util.HashMap;
@@ -11,23 +13,11 @@ public class ProviderData implements DaggerContext
     private Map<String, String> arguments = new HashMap<>();
     private On on = On.WORLD;
 
-
     public ProviderData(Map<String, String> arguments) {
         this.arguments = arguments;
     }
 
     public ProviderData() {
-    }
-
-    @Override
-    public ProviderData addData(String key, String value) {
-        arguments.put(key, value);
-        return this;
-    }
-
-    @Override
-    public String getData(String key) {
-        return arguments.get(key);
     }
 
     public On getOn() {
@@ -37,5 +27,24 @@ public class ProviderData implements DaggerContext
     public ProviderData setOn(On on) {
         this.on = on;
         return this;
+    }
+
+    @Override
+    public <T> DaggerContext addData(DaggerKey<T> key, T value) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public <T> T getData(DaggerKey<T> key) {
+        throw new NotImplementedException();
+    }
+
+    public ProviderData addData(String key, String value) {
+        arguments.put(key, value);
+        return this;
+    }
+
+    public String getData(String key) {
+        return arguments.get(key);
     }
 }

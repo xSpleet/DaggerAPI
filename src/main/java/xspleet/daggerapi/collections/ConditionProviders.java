@@ -6,6 +6,7 @@ import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
 import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.base.Condition;
+import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 
 public class ConditionProviders
@@ -93,7 +94,7 @@ public class ConditionProviders
                     throw new WrongArgumentException("artifact", artifact);
 
                 return data -> {
-                    return choose == data.getData("artifact").equalsIgnoreCase(artifactName);
+                    return choose == data.getData(DaggerKeys.ARTIFACT_ID).toString().equalsIgnoreCase(artifactName);
                 };
             })
             .addArgument("artifact")
@@ -105,7 +106,7 @@ public class ConditionProviders
                 String successful = args.getData("successful");
 
                 return data -> {
-                    return data.getData("successful").equalsIgnoreCase("true");
+                    return data.getData(DaggerKeys.SUCCESSFUL) == Boolean.parseBoolean(successful);
                 };
             })
             .addArgument("successful")

@@ -3,6 +3,7 @@ package xspleet.daggerapi.trigger;
 import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.*;
 
@@ -61,9 +62,7 @@ public class Trigger
     {
         for(Map.Entry<ArtifactItem, Set<PlayerEntity>> entry: listeners.entrySet()) {
             TriggerData triggerData = new TriggerData(data, entry.getValue())
-                    .setTrigger(this)
-                    .setTriggerer(data.getTriggerer())
-                    .setTriggeredWorld(data.getTriggeredWorld());
+                    .addData(DaggerKeys.TRIGGER, this);
 
             entry.getKey().receiveTrigger(triggerData);
         }

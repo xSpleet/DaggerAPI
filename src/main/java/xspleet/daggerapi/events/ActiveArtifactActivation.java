@@ -16,15 +16,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.lwjgl.glfw.GLFW;
-import xspleet.daggerapi.artifact.ActiveArtifactItem;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.base.TrinketsUtil;
 import xspleet.daggerapi.collections.Triggers;
-import xspleet.daggerapi.data.DaggerData;
 import xspleet.daggerapi.data.TriggerData;
-
-import java.rmi.registry.Registry;
-import java.util.List;
+import xspleet.daggerapi.data.key.DaggerKey;
+import xspleet.daggerapi.data.key.DaggerKeys;
 
 public class ActiveArtifactActivation
 {
@@ -40,28 +36,29 @@ public class ActiveArtifactActivation
             ItemCooldownManager cooldownManager = player.getItemCooldownManager();
             if(TrinketsApi.getTrinketComponent(player).isPresent())
             {
-                for(Pair<SlotReference, ItemStack> pair: TrinketsApi.getTrinketComponent(player).get().getEquipped(stack -> (stack.getItem() instanceof ActiveArtifactItem)))
+                for(Pair<SlotReference, ItemStack> pair: TrinketsApi.getTrinketComponent(player).get().getEquipped(stack -> (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())))
                 {
                     Item item = pair.getRight().getItem();
 
+                    if(item instanceof ArtifactItem artifactItem && !artifactItem.isActive())
+                        continue;
+
                     if(!cooldownManager.isCoolingDown(item)) {
-                        ((ActiveArtifactItem)item).activate(player);
-
                         Triggers.ACTIVATE.trigger(new TriggerData()
-                                .setTriggerer(player)
-                                .setTriggeredWorld(player.getWorld())
-                                .addData("artifact", String.valueOf(Registries.ITEM.getId(item)))
-                                .addData("successful", "true"));
+                                .addData(DaggerKeys.TRIGGERED, player)
+                                .addData(DaggerKeys.WORLD, player.getWorld())
+                                .addData(DaggerKeys.ARTIFACT_ID, Registries.ITEM.getId(item))
+                                .addData(DaggerKeys.SUCCESSFUL, true));
 
-                        cooldownManager.set(item, ((ActiveArtifactItem) item).getCooldown());
+                        cooldownManager.set(item, ((ArtifactItem) item).getCooldown());
                     }
                     else
                     {
                         Triggers.ACTIVATE.trigger(new TriggerData()
-                                .setTriggerer(player)
-                                .setTriggeredWorld(player.getWorld())
-                                .addData("artifact", String.valueOf(Registries.ITEM.getId(item)))
-                                .addData("successful", "false"));
+                                .addData(DaggerKeys.TRIGGERED, player)
+                                .addData(DaggerKeys.WORLD, player.getWorld())
+                                .addData(DaggerKeys.ARTIFACT_ID, Registries.ITEM.getId(item))
+                                .addData(DaggerKeys.SUCCESSFUL, false));
                     }
                 }
             }

@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.key.DaggerKeys;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityTriggersRegistration {
@@ -14,8 +15,8 @@ public class LivingEntityTriggersRegistration {
 	private void beforeHitTrigger(CallbackInfoReturnable<Boolean> cir) {
 		LivingEntity entity = ((LivingEntity)(Object)this);
 		Triggers.BEFORE_HIT.trigger(new TriggerData()
-				.setTriggerer(entity)
-				.setTriggeredWorld(entity.getWorld()));
+				.addData(DaggerKeys.TRIGGERER, entity)
+				.addData(DaggerKeys.WORLD, entity.getWorld()));
 	}
 
 	@Inject(at = @At("RETURN"), method = "damage")
@@ -25,8 +26,8 @@ public class LivingEntityTriggersRegistration {
 		{
 			LivingEntity entity = ((LivingEntity)(Object)this);
 			Triggers.AFTER_HIT.trigger(new TriggerData()
-					.setTriggerer(entity)
-					.setTriggeredWorld(entity.getWorld()));
+					.addData(DaggerKeys.TRIGGERER, entity)
+					.addData(DaggerKeys.WORLD, entity.getWorld()));
 		}
 	}
 }

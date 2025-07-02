@@ -32,7 +32,11 @@ public class ArtifactItemBuilder
         BuildableArtifactItem item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
 
         if(active)
-            item.cooldown(cooldown);
+        {
+            item.cooldown(cooldown)
+                    .active(true);
+        }
+
         item.rarity(ArtifactRarity.getRarity(rarity));
 
         buildArtifactAttributes(itemModel, item);

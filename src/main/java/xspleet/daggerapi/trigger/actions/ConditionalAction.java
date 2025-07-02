@@ -6,6 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.collections.ConditionProviders;
 import xspleet.daggerapi.data.ActionData;
+import xspleet.daggerapi.data.ConditionData;
+import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.models.TriggeredBy;
 import xspleet.daggerapi.models.TriggeredIn;
 import xspleet.daggerapi.data.TriggerData;
@@ -58,9 +60,8 @@ public class ConditionalAction
         for(PlayerEntity player: getTriggeredPlayers(data))
         {
             ActionData actionData = new ActionData(data)
-                    .setTriggered(player)
-                    .setTriggerer(data.getTriggerer());
-            if (condition.test(actionData.toConditionData()))
+                    .addData(DaggerKeys.TRIGGERED, player);
+            if (condition.test(new ConditionData(actionData)))
                 for (Action action : actions)
                     action.accept(actionData);
         }
@@ -72,7 +73,7 @@ public class ConditionalAction
 
         if(triggeredIn != null)
         {
-            var world = data.getTriggerer().getWorld();
+            var world = data.getData(DaggerKeys.WORLD);
 
             listeners = switch (triggeredIn)
             {
@@ -88,7 +89,7 @@ public class ConditionalAction
 
         if(triggeredBy != null)
         {
-            var triggerer = data.getTriggerer();
+            var triggerer = data.getData(DaggerKeys.TRIGGERER);
 
             listeners = switch (triggeredBy)
             {

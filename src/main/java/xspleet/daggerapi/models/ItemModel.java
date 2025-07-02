@@ -6,8 +6,8 @@ public class ItemModel extends JSONModel
 {
     private String name;
     private String rarity;
-    private boolean active;
-    private int cooldown;
+    private boolean active = false;
+    private int cooldown = -1;
     private EventModel onActivation;
     private ArrayList<ArtifactAttributeModifierModel> attributeModifiers = new ArrayList<>();
     private ArrayList<EventModel> events = new ArrayList<>();

@@ -1,6 +1,7 @@
-package xspleet.daggerapi.data;
+package xspleet.daggerapi.data.key;
 
 import java.lang.reflect.Type;
+import java.util.NoSuchElementException;
 
 public class DaggerKey<T>
 {
@@ -27,5 +28,12 @@ public class DaggerKey<T>
 
     public void setType(Class<T> type) {
         this.type = type;
+    }
+
+    public T getItem(Object o)
+    {
+        if(!type.isInstance(o))
+            throw new IllegalArgumentException();
+        return type.cast(o);
     }
 }

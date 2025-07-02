@@ -1,12 +1,12 @@
 package xspleet.daggerapi.artifact.builder;
-import xspleet.daggerapi.artifact.ActiveArtifactItem;
+import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 import java.util.ArrayList;
 
-public class BuildableArtifactItem extends ActiveArtifactItem
+public class BuildableArtifactItem extends ArtifactItem
 {
     public BuildableArtifactItem(Settings settings) {
         super(settings);
