@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.base.ErrorLogger;
 import xspleet.daggerapi.artifact.build.ArtifactItemBuilder;
 import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
 
 import java.io.*;
@@ -33,6 +34,7 @@ public class DaggerAPI implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Mapper.registerMapper();
+		ActiveArtifactActivation.register();
 		Path file = Path.of(RESOURCES, "data/test_item/item.json");
 		try {
 			ItemModel itemModel = JSON_PARSER.fromJson(Files.newBufferedReader(file), ItemModel.class);

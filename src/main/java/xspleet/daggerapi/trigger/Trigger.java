@@ -44,6 +44,19 @@ public class Trigger
         listeners.get(listenerType).remove(listener);
     }
 
+    public Set<PlayerEntity> getListeners(ArtifactItem listenerType)
+    {
+        if(!listeners.containsKey(listenerType))
+            throw new NoSuchElementException();
+
+        return listeners.get(listenerType);
+    }
+
+    public boolean hasListeners(ArtifactItem listenerType)
+    {
+        return listeners.containsKey(listenerType);
+    }
+
     public void trigger(TriggerData data)
     {
         for(Map.Entry<ArtifactItem, Set<PlayerEntity>> entry: listeners.entrySet()) {

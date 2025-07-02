@@ -6,7 +6,7 @@
     "attribute_modifiers": [
         {
             "conditions":[
-                {
+                 {
                     "condition": "ifDimension",
                     "arguments": {
                         "dimension": "minecraft:overworld"
@@ -24,9 +24,8 @@
     ],
     "events":[
         {
-            "trigger":"afterHit",
-            "triggerer": "any",
-            "weight": 5,
+            "trigger":"activate",
+            "triggerer": "self",
             "actions":[
                 {
                     "action": "kill",
@@ -34,27 +33,9 @@
                 },
                 {
                     "action": "sendMessage",
-                    "on": "triggered",
+                    "on": "triggerer",
                     "arguments": {
                         "message": "The triggerer has been killed"
-                    }
-                }
-            ]
-        },
-        {
-            "trigger":"afterHit",
-            "triggerer": "any",
-            "weight": 1,
-            "actions":[
-                {
-                    "action": "kill",
-                    "on": "triggered"
-                },
-                {
-                    "action": "sendMessage",
-                    "on": "triggered",
-                    "arguments": {
-                        "message": "The triggered has been killed"
                     }
                 }
             ]

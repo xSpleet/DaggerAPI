@@ -52,7 +52,7 @@ public class TrinketsUtil
 		boolean playSound = false;
 		if(TrinketsApi.getTrinketComponent(playerEntity).isPresent())
 		{
-			for(Pair<SlotReference, ItemStack> pair:TrinketsApi.getTrinketComponent(playerEntity).get().getEquipped(stack -> stack.getItem() instanceof ActiveArtifactItem))
+			for(Pair<SlotReference, ItemStack> pair: TrinketsApi.getTrinketComponent(playerEntity).get().getEquipped(stack -> stack.getItem() instanceof ActiveArtifactItem))
 			{
 				Item item = pair.getRight().getItem();
 				if(!cooldownManager.isCoolingDown(item))

@@ -1,9 +1,12 @@
 package xspleet.daggerapi.collections.registration;
 
+import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.ProviderData;
+import xspleet.daggerapi.trigger.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 
 public class Provider<T>
@@ -28,9 +31,9 @@ public class Provider<T>
         return this;
     }
 
-    public Provider<T> addAssociatedTrigger(String trigger)
+    public Provider<T> addAssociatedTrigger(Trigger trigger)
     {
-        associatedTriggers.add(trigger);
+        associatedTriggers.add(trigger.getName());
         return this;
     }
 

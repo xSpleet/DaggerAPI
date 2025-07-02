@@ -65,5 +65,50 @@ public class ConditionProviders
             })
             .addArgument("dimension");
 
+    public static Provider<Condition> IF_ARTIFACT = Mapper
+            .registerConditionProvider("ifArtifact", args ->
+            {
+                String artifact = args.getData("artifact");
+                String[] artifactArguments = artifact.split(" ");
+
+                boolean choose;
+                String artifactName;
+
+                if(artifactArguments.length > 1)
+                {
+                    if(artifactArguments[0].equalsIgnoreCase("choose"))
+                    {
+                        choose = true;
+                        artifactName = artifactArguments[1];
+                    }
+                    else if(artifactArguments[0].equalsIgnoreCase("not"))
+                    {
+                        choose = false;
+                        artifactName = artifactArguments[1];
+                    }
+                    else
+                        throw new WrongArgumentException("artifact", artifact);
+                }
+                else
+                    throw new WrongArgumentException("artifact", artifact);
+
+                return data -> {
+                    return choose == data.getData("artifact").equalsIgnoreCase(artifactName);
+                };
+            })
+            .addArgument("artifact")
+            .addAssociatedTrigger(Triggers.ACTIVATE);
+
+    public static Provider<Condition> IF_SUCCESSFUL = Mapper
+            .registerConditionProvider("ifSuccessful", args ->
+            {
+                String successful = args.getData("successful");
+
+                return data -> {
+                    return data.getData("successful").equalsIgnoreCase("true");
+                };
+            })
+            .addArgument("successful")
+            .addAssociatedTrigger(Triggers.ACTIVATE);
 
 }

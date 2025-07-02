@@ -11,8 +11,8 @@ import java.util.Set;
 public class TriggerData implements DaggerContext
 {
     private final DaggerContext data;
-
     private final Set<PlayerEntity> listeners;
+
     private Trigger trigger;
     private @Nullable Entity triggerer;
     private World triggeredWorld;
@@ -67,6 +67,11 @@ public class TriggerData implements DaggerContext
 
     public TriggerData setTriggeredWorld(World triggeredWorld) {
         this.triggeredWorld = triggeredWorld;
+        return this;
+    }
+
+    public TriggerData addListeners(Set<PlayerEntity> listeners) {
+        this.listeners.addAll(listeners);
         return this;
     }
 }
