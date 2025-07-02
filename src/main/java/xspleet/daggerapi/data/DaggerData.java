@@ -12,7 +12,7 @@ public class DaggerData implements DaggerContext
 {
     protected @Nullable PlayerEntity player = null;
     protected @Nullable World world = null;
-    protected Map<String, String> data = new HashMap<>();
+    protected Map<String, Object> data = new HashMap<>();
 
     public DaggerData setPlayer(PlayerEntity player) {
         this.player = player;
@@ -46,13 +46,15 @@ public class DaggerData implements DaggerContext
     }
 
     @Override
-    public DaggerData addData(String key, String value) {
+    public <T> DaggerData addData(String key, T value) {
+        new DaggerKey<T>("amount", (Class<T>) value.getClass());
+
         data.put(key, value);
         return this;
     }
 
     @Override
-    public String getData(String key) {
+    public <T> T getData(String key) {
         return data.get(key);
     }
 }
