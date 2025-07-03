@@ -14,6 +14,10 @@ public class LivingEntityTriggersRegistration {
 	@Inject(at = @At("HEAD"), method = "damage")
 	private void beforeHitTrigger(CallbackInfoReturnable<Boolean> cir) {
 		LivingEntity entity = ((LivingEntity)(Object)this);
+
+		if(entity.getWorld().isClient)
+			return; // Don't trigger on the client side
+
 		Triggers.BEFORE_HIT.trigger(new TriggerData()
 				.addData(DaggerKeys.TRIGGERER, entity)
 				.addData(DaggerKeys.WORLD, entity.getWorld()));
@@ -25,6 +29,10 @@ public class LivingEntityTriggersRegistration {
 		if(cir.getReturnValue())
 		{
 			LivingEntity entity = ((LivingEntity)(Object)this);
+
+			if(entity.getWorld().isClient)
+				return; // Don't trigger on the client side
+
 			Triggers.AFTER_HIT.trigger(new TriggerData()
 					.addData(DaggerKeys.TRIGGERER, entity)
 					.addData(DaggerKeys.WORLD, entity.getWorld()));

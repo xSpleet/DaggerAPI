@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 
 public class DaggerKey<T>
 {
-    private String key;
-    private Class<T> type;
+    private final String key;
+    private final Class<T> type;
 
     public DaggerKey(String key, Class<T> type)
     {
@@ -18,16 +18,8 @@ public class DaggerKey<T>
         return key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public Class<T> getType() {
         return type;
-    }
-
-    public void setType(Class<T> type) {
-        this.type = type;
     }
 
     public T getItem(Object o)
@@ -35,5 +27,13 @@ public class DaggerKey<T>
         if(!type.isInstance(o))
             throw new IllegalArgumentException();
         return type.cast(o);
+    }
+
+    @Override
+    public String toString() {
+        return "DaggerKey{" +
+                "key='" + key + '\'' +
+                ", type=" + type +
+                '}';
     }
 }
