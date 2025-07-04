@@ -11,16 +11,24 @@ import java.util.Map;
 
 public class DaggerData implements DaggerContext
 {
-    protected Map<DaggerKey, Object> data = new HashMap<>();
+    protected ThreadLocal<HashMap<DaggerKey, Object>> data = ThreadLocal.withInitial(HashMap::new);
 
     @Override
     public <T> DaggerData addData(DaggerKey<T> key, T value) {
-        data.put(key, value);
+        data.get().put(key, value);
         return this;
     }
 
     @Override
     public <T> T getData(DaggerKey<T> key) {
-        return key.getItem(data.get(key));
+        if(!data.get().containsKey(key)) {
+            return null;
+        }
+        return key.getItem(data.get().get(key));
+    }
+
+    @Override
+    public boolean hasData(DaggerKey<?> key) {
+        return data.get().containsKey(key);
     }
 }

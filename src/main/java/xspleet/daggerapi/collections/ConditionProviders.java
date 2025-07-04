@@ -94,7 +94,7 @@ public class ConditionProviders
                     throw new WrongArgumentException("artifact", artifact);
 
                 return data -> {
-                    return choose == data.getData(DaggerKeys.ARTIFACT_ID).toString().equalsIgnoreCase(artifactName);
+                    return choose == data.getData(DaggerKeys.ARTIFACT).getIdentifier().toString().equalsIgnoreCase(artifactName);
                 };
             })
             .addArgument("artifact")
@@ -111,5 +111,17 @@ public class ConditionProviders
             })
             .addArgument("successful")
             .addAssociatedTrigger(Triggers.ACTIVATE);
+
+    public static Provider<Condition> IF_DAMAGE_SOURCE = Mapper
+            .registerConditionProvider("ifDamageSource", args ->
+            {
+                String damageSource = args.getData("damageSource");
+
+                return data -> {
+                    return data.getData(DaggerKeys.DAMAGE_SOURCE).getName().equalsIgnoreCase(damageSource);
+                };
+            })
+            .addArgument("damageSource")
+            .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 
 }

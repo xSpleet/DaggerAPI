@@ -40,6 +40,9 @@ public class ActiveArtifactActivation
                 {
                     Item item = pair.getRight().getItem();
 
+                    if(!(item instanceof ArtifactItem artifact))
+                        continue;
+
                     if(item instanceof ArtifactItem artifactItem && !artifactItem.isActive())
                         continue;
 
@@ -47,17 +50,17 @@ public class ActiveArtifactActivation
                         Triggers.ACTIVATE.trigger(new TriggerData()
                                 .addData(DaggerKeys.TRIGGERER, player)
                                 .addData(DaggerKeys.WORLD, player.getWorld())
-                                .addData(DaggerKeys.ARTIFACT_ID, Registries.ITEM.getId(item))
+                                .addData(DaggerKeys.ARTIFACT, artifact)
                                 .addData(DaggerKeys.SUCCESSFUL, true));
 
-                        cooldownManager.set(item, ((ArtifactItem) item).getCooldown());
+                        cooldownManager.set(item, artifact.getCooldown());
                     }
                     else
                     {
                         Triggers.ACTIVATE.trigger(new TriggerData()
                                 .addData(DaggerKeys.TRIGGERER, player)
                                 .addData(DaggerKeys.WORLD, player.getWorld())
-                                .addData(DaggerKeys.ARTIFACT_ID, Registries.ITEM.getId(item))
+                                .addData(DaggerKeys.ARTIFACT, artifact)
                                 .addData(DaggerKeys.SUCCESSFUL, false));
                     }
                 }

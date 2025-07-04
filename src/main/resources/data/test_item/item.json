@@ -39,6 +39,35 @@
                     }
                 }
             ]
+        },
+        {
+            "trigger": "beforeDamage",
+            "triggerer": "self",
+            "conditions": [
+                {
+                    "condition": "ifDamageSource",
+                    "on": "world",
+                    "arguments": {
+                        "damageSource": "fall"
+                    }
+                }
+            ],
+            "actions": [
+                {
+                    "action": "sendMessage",
+                    "on": "triggerer",
+                    "arguments": {
+                        "message": "You are about to take MASSIVE fall damage"
+                    }
+                },
+                {
+                    "action": "changeAmount",
+                    "on": "triggerer",
+                    "arguments": {
+                        "amount": "amount * 10"
+                    }
+                }
+            ]
         }
     ],
     "modifies_combat":false

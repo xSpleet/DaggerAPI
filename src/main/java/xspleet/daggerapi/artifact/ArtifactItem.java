@@ -9,8 +9,10 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xspleet.daggerapi.artifact.builder.ArtifactAttributeModifier;
@@ -52,35 +54,31 @@ public class ArtifactItem extends TrinketItem
 
     private void actOnWeightedActions(TriggerData data)
     {
-        for(PlayerEntity listener: data.getListeners())
-        {
-            ConditionData conditionData = new ConditionData(data)
-                    .addData(DaggerKeys.TRIGGERED, listener);
+        ConditionData conditionData = new ConditionData(data);
 
-            List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>());
-            actions = actions.stream()
+        List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>());
+        actions = actions.stream()
                     .filter(action -> action.getCondition().test(conditionData))
                     .toList();
 
-            if(actions.isEmpty())
-                return;
+        if(actions.isEmpty())
+            return;
 
-            int totalWeight = actions
-                    .stream()
-                    .mapToInt(WeightedConditionalAction::getWeight)
-                    .reduce(0, Integer::sum);
+        int totalWeight = actions
+                .stream()
+                .mapToInt(WeightedConditionalAction::getWeight)
+                .reduce(0, Integer::sum);
 
-            int currentWeight = 0;
-            int random = (new Random()).nextInt(totalWeight);
+        int currentWeight = 0;
+        int random = (new Random()).nextInt(totalWeight);
 
-            for(WeightedConditionalAction action: actions)
+        for(WeightedConditionalAction action: actions)
+        {
+            currentWeight += action.getWeight();
+            if(currentWeight > random)
             {
-                currentWeight += action.getWeight();
-                if(currentWeight > random)
-                {
-                    action.actOn(data);
-                    return;
-                }
+                action.actOn(data);
+                return;
             }
         }
     }
@@ -90,6 +88,11 @@ public class ArtifactItem extends TrinketItem
         events.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>()).forEach(a -> a.actOn(data));
 
         actOnWeightedActions(data);
+    }
+
+    public boolean hasTrigger(Trigger trigger)
+    {
+        return events.containsKey(trigger) || weightedEvents.containsKey(trigger);
     }
 
     public void registerAttributeModifiers(){}
@@ -113,7 +116,7 @@ public class ArtifactItem extends TrinketItem
         {
             updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for(Trigger trigger: triggers)
-                trigger.addListener(this, player);
+                trigger.addListener(player);
         }
     }
 
@@ -131,7 +134,7 @@ public class ArtifactItem extends TrinketItem
         {
             cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for(Trigger trigger: triggers)
-                trigger.removeListener(this, player);
+                trigger.removeListener(player);
         }
     }
 
@@ -206,5 +209,9 @@ public class ArtifactItem extends TrinketItem
     public ArtifactItem active(boolean active) {
         this.active = active;
         return this;
+    }
+
+    public Identifier getIdentifier() {
+        return Registries.ITEM.getId(this);
     }
 }

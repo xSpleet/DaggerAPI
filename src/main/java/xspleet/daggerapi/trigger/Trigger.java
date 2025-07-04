@@ -1,16 +1,23 @@
 package xspleet.daggerapi.trigger;
 
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Trigger
 {
     private final String name;
-    private final Map<ArtifactItem, Set<PlayerEntity>> listeners = new HashMap<>();
+    private final Set<PlayerEntity> listeners = new HashSet<>();
     private boolean worldful = false;
     private boolean hasTriggerer = false;
 
@@ -24,47 +31,45 @@ public class Trigger
         return name;
     }
 
-    public void addListenerType(ArtifactItem listenerType)
+    public void addListener(PlayerEntity listener)
     {
-        listeners.putIfAbsent(listenerType, new HashSet<>());
+        listeners.add(listener);
     }
 
-    public void addListener(ArtifactItem listenerType, PlayerEntity listener)
+    public void removeListener(PlayerEntity listener)
     {
-        if(!listeners.containsKey(listenerType))
-            throw new NoSuchElementException();
-
-        listeners.get(listenerType).add(listener);
-    }
-
-    public void removeListener(ArtifactItem listenerType, PlayerEntity listener)
-    {
-        if(!listeners.containsKey(listenerType))
-            throw new NoSuchElementException();
-
-        listeners.get(listenerType).remove(listener);
-    }
-
-    public Set<PlayerEntity> getListeners(ArtifactItem listenerType)
-    {
-        if(!listeners.containsKey(listenerType))
-            throw new NoSuchElementException();
-
-        return listeners.get(listenerType);
-    }
-
-    public boolean hasListeners(ArtifactItem listenerType)
-    {
-        return listeners.containsKey(listenerType);
+        listeners.remove(listener);
     }
 
     public void trigger(TriggerData data)
     {
-        for(Map.Entry<ArtifactItem, Set<PlayerEntity>> entry: listeners.entrySet()) {
-            TriggerData triggerData = new TriggerData(data, entry.getValue())
-                    .addData(DaggerKeys.TRIGGER, this);
+        data.addData(DaggerKeys.TRIGGER, this);
+        for(PlayerEntity player: listeners) {
+            data.addData(DaggerKeys.TRIGGERED, player);
 
-            entry.getKey().receiveTrigger(triggerData);
+            List<Pair<Integer, ArtifactItem>> artifacts = new ArrayList<>();
+
+            //get all the equipped artifacts of the player in the order of the slots
+            TrinketComponent component = TrinketsApi.getTrinketComponent(player).orElse(null);
+            if (component != null) {
+                component.forEach(
+                        (slot, stack) -> {
+                            if (stack.getItem() instanceof ArtifactItem artifact) {
+                                if(artifact.hasTrigger(this))
+                                {
+                                    int slotIndex = slot.index();
+                                    artifacts.add(new Pair<>(slotIndex, artifact));
+                                }
+                            }
+                        }
+                );
+            }
+
+            artifacts.stream().sorted(Comparator.comparingInt(Pair::getLeft))
+                    .map(Pair::getRight)
+                    .forEach(item -> {
+                        item.receiveTrigger(data);
+                    });
         }
     }
 

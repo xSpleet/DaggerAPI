@@ -39,6 +39,11 @@ public class ProviderData implements DaggerContext
         throw new NotImplementedException();
     }
 
+    @Override
+    public boolean hasData(DaggerKey<?> key) {
+        return false;
+    }
+
     public ProviderData addData(String key, String value) {
         arguments.put(key, value);
         return this;

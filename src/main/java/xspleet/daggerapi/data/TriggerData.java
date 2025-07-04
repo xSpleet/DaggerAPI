@@ -9,28 +9,15 @@ import xspleet.daggerapi.trigger.Trigger;
 
 import java.util.Set;
 
-public class TriggerData implements DaggerContext
-{
+public class TriggerData implements DaggerContext {
     private final DaggerContext data;
-    private final Set<PlayerEntity> listeners;
 
-    public TriggerData(DaggerContext data, Set<PlayerEntity> listeners) {
+    public TriggerData(DaggerContext data) {
         this.data = data;
-        this.listeners = listeners;
     }
 
     public TriggerData() {
         this.data = new DaggerData();
-        listeners = Set.of();
-    }
-
-    public Set<PlayerEntity> getListeners() {
-        return listeners;
-    }
-
-    public TriggerData addListeners(Set<PlayerEntity> listeners) {
-        this.listeners.addAll(listeners);
-        return this;
     }
 
     @Override
@@ -42,5 +29,10 @@ public class TriggerData implements DaggerContext
     @Override
     public <T> T getData(DaggerKey<T> key) {
         return data.getData(key);
+    }
+
+    @Override
+    public boolean hasData(DaggerKey<?> key) {
+        return data.hasData(key);
     }
 }

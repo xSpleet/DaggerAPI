@@ -1,10 +1,13 @@
 package xspleet.daggerapi.collections;
 
+import com.fathzer.soft.javaluator.DoubleEvaluator;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
+import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 
@@ -48,4 +51,17 @@ public class ActionProviders
             living.kill();
         };
     });
+
+    public static Provider<Action> CHANGE_AMOUNT = Mapper.registerActionProvider("changeAmount", (args) -> {
+        var amountExpression = args.getData("amount");
+        DoubleEvaluator evaluator = new DoubleEvaluator();
+        StaticVariableSet<Double> variables = new StaticVariableSet<>();
+
+        return data -> {
+            variables.set("amount", data.getData(DaggerKeys.AMOUNT).doubleValue());
+            var result = evaluator.evaluate(amountExpression, variables);
+            data.addData(DaggerKeys.AMOUNT, result.floatValue());
+        };
+    }).addArgument("amount")
+            .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 }

@@ -1,6 +1,9 @@
 package xspleet.daggerapi.trigger.registration;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,30 +15,29 @@ import xspleet.daggerapi.data.key.DaggerKeys;
 @Mixin(LivingEntity.class)
 public class LivingEntityTriggersRegistration {
 	@Inject(at = @At("HEAD"), method = "damage")
-	private void beforeHitTrigger(CallbackInfoReturnable<Boolean> cir) {
+	private void beforeHitTrigger(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+
+	}
+
+	@WrapMethod(method = "damage")
+	private boolean beforeDamage(DamageSource source, float amount, Operation<Boolean> original)
+	{
 		LivingEntity entity = ((LivingEntity)(Object)this);
 
 		if(entity.getWorld().isClient)
-			return; // Don't trigger on the client side
+			return original.call(source, amount); // Don't trigger on the client side
 
-		Triggers.BEFORE_HIT.trigger(new TriggerData()
+		var data = new TriggerData()
 				.addData(DaggerKeys.TRIGGERER, entity)
-				.addData(DaggerKeys.WORLD, entity.getWorld()));
-	}
+				.addData(DaggerKeys.WORLD, entity.getWorld())
+				.addData(DaggerKeys.AMOUNT, amount)
+				.addData(DaggerKeys.DAMAGE_SOURCE, source);
 
-	@Inject(at = @At("RETURN"), method = "damage")
-	private void afterHitTrigger(CallbackInfoReturnable<Boolean> cir)
-	{
-		if(cir.getReturnValue())
-		{
-			LivingEntity entity = ((LivingEntity)(Object)this);
+		Triggers.BEFORE_DAMAGE.trigger(data);
 
-			if(entity.getWorld().isClient)
-				return; // Don't trigger on the client side
+		source = data.getData(DaggerKeys.DAMAGE_SOURCE);
+		amount = data.getData(DaggerKeys.AMOUNT);
 
-			Triggers.AFTER_HIT.trigger(new TriggerData()
-					.addData(DaggerKeys.TRIGGERER, entity)
-					.addData(DaggerKeys.WORLD, entity.getWorld()));
-		}
+		return original.call(source, amount);
 	}
 }

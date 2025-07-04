@@ -1,5 +1,6 @@
 package xspleet.daggerapi;
 
+import com.fathzer.soft.javaluator.DoubleEvaluator;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

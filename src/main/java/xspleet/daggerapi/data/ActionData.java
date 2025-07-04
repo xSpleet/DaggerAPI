@@ -44,4 +44,9 @@ public class ActionData implements DaggerContext
     public <T> T getData(DaggerKey<T> key) {
         return data.getData(key);
     }
+
+    @Override
+    public boolean hasData(DaggerKey<?> key) {
+        return data.hasData(key);
+    }
 }

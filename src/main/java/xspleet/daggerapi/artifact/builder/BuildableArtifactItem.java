@@ -33,7 +33,5 @@ public class BuildableArtifactItem extends ArtifactItem
         }
 
         triggers.add(trigger);
-
-        trigger.addListenerType(this);
     }
 }
