@@ -8,21 +8,18 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityTriggersRegistration {
-	@Inject(at = @At("HEAD"), method = "damage")
-	private void beforeHitTrigger(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-
-	}
+public class LivingEntityTriggersRegistration implements Self<LivingEntity> {
 
 	@WrapMethod(method = "damage")
 	private boolean beforeDamage(DamageSource source, float amount, Operation<Boolean> original)
 	{
-		LivingEntity entity = ((LivingEntity)(Object)this);
+		LivingEntity entity = self();
 
 		if(entity.getWorld().isClient)
 			return original.call(source, amount); // Don't trigger on the client side
