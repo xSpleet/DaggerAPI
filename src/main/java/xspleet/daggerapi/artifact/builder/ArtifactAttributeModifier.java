@@ -12,7 +12,7 @@ import java.util.List;
 public class ArtifactAttributeModifier
 {
     private Condition condition;
-    private List<AttributeModifier> modifiers;
+    private final List<WrappedModifier> modifiers;
 
     public ArtifactAttributeModifier()
     {
@@ -20,7 +20,7 @@ public class ArtifactAttributeModifier
         modifiers = new ArrayList<>();
     }
 
-    public ArtifactAttributeModifier addAttributeModifier(AttributeModifier modifier)
+    public ArtifactAttributeModifier addAttributeModifier(WrappedModifier modifier)
     {
         modifiers.add(modifier);
         return this;
@@ -43,7 +43,7 @@ public class ArtifactAttributeModifier
     public void modifyPlayer(ConditionData data)
     {
         PlayerEntity player = data.getData(DaggerKeys.PLAYER);
-        for(AttributeModifier attributeModifier: modifiers) {
+        for(WrappedModifier attributeModifier: modifiers) {
 
             var attribute = attributeModifier.getAttribute();
             var modifier = attributeModifier.getModifier();
@@ -59,7 +59,7 @@ public class ArtifactAttributeModifier
     public void cleansePlayer(ConditionData data)
     {
         PlayerEntity player = data.getData(DaggerKeys.PLAYER);
-        for(AttributeModifier attributeModifier: modifiers) {
+        for(WrappedModifier attributeModifier: modifiers) {
 
             var attribute = attributeModifier.getAttribute();
             var modifier = attributeModifier.getModifier();

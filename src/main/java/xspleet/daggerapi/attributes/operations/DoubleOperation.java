@@ -1,12 +1,45 @@
 package xspleet.daggerapi.attributes.operations;
 
-import xspleet.daggerapi.attributes.operations.DaggerOperation;
+import com.mojang.datafixers.util.Function3;
+import xspleet.daggerapi.attributes.base.AttributeOperation;
 
-import java.util.function.BiFunction;
-
-public enum DoubleOperation implements DaggerOperation<Double>
+public enum DoubleOperation implements AttributeOperation<Double>
 {
-    ADD,
-    MULTIPLY_BASE,
-    MULTIPLY_TOTAL;
+    ADD("add", 0, (prev, prevGroup, value) -> prev + value),
+    MIN_BASE("min_base", 10, (prev, prevGroup, value) -> Math.min(prev, value)),
+    MAX_BASE("max_base", 20, (prev, prevGroup, value) -> Math.max(prev, value)),
+    MULTIPLY_BASE("multiply_base", 30, (prev, prevGroup, value) -> prev + prevGroup * value),
+    MULTIPLY_TOTAL("multiply_total", 40, (prev, prevGroup, value) -> prev * value),
+    MIN_TOTAL("min_total", 50, (prev, prevGroup, value) -> Math.min(prev, value)),
+    MAX_TOTAL("max_total", 60, (prev, prevGroup, value) -> Math.max(prev, value)),;
+
+    private final String name;
+    private final int precedence;
+    private final Function3<Double, Double, Double, Double> operation;
+
+    DoubleOperation(String name, int precedence, Function3<Double, Double, Double, Double> operation) {
+        this.name = name;
+        this.precedence = precedence;
+        this.operation = operation;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int getPrecedence() {
+        return precedence;
+    }
+
+    @Override
+    public Function3<Double, Double, Double, Double> getOperation() {
+        return operation;
+    }
+
+    @Override
+    public Double apply(Double prevResult, Double resultFromPrevType, Double value) {
+        return operation.apply(prevResult, resultFromPrevType, value);
+    }
 }

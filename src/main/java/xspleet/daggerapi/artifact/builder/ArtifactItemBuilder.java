@@ -91,7 +91,7 @@ public class ArtifactItemBuilder
                     );
 
                     artifactAttributeModifier.addAttributeModifier(
-                            new AttributeModifier(
+                            new WrappedModifier(
                                     attribute,
                                     modifier
                             )

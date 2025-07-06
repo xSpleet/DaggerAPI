@@ -3,12 +3,12 @@ package xspleet.daggerapi.artifact.builder;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 
-public class AttributeModifier
+public class WrappedModifier
 {
-    private EntityAttribute attribute;
-    private EntityAttributeModifier modifier;
+    private final EntityAttribute attribute;
+    private final EntityAttributeModifier modifier;
 
-    public AttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier)
+    public WrappedModifier(EntityAttribute attribute, EntityAttributeModifier modifier)
     {
         this.attribute = attribute;
         this.modifier = modifier;
