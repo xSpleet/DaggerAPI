@@ -1,4 +1,6 @@
-package xspleet.daggerapi.attributes.base;
+package xspleet.daggerapi.attributes.instance;
+
+import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 
 public interface AttributeInstance<T>
 {

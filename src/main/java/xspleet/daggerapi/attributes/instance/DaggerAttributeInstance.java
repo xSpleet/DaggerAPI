@@ -1,12 +1,10 @@
-package xspleet.daggerapi.attributes;
+package xspleet.daggerapi.attributes.instance;
 
-import xspleet.daggerapi.attributes.base.Attribute;
-import xspleet.daggerapi.attributes.base.AttributeInstance;
-import xspleet.daggerapi.attributes.base.AttributeModifier;
-import xspleet.daggerapi.attributes.base.AttributeOperation;
+import xspleet.daggerapi.attributes.modifier.AttributeModifier;
+import xspleet.daggerapi.attributes.Attribute;
+import xspleet.daggerapi.attributes.operations.AttributeOperation;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DaggerAttributeInstance<T> implements AttributeInstance<T>
 {

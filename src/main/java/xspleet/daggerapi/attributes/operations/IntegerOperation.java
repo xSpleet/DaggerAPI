@@ -1,7 +1,6 @@
 package xspleet.daggerapi.attributes.operations;
 
 import com.mojang.datafixers.util.Function3;
-import xspleet.daggerapi.attributes.base.AttributeOperation;
 
 public enum IntegerOperation implements AttributeOperation<Integer> {
     ADD_NONNEGATIVE("add_nonnegative", 0, (prev, prevGroup, value) -> Math.max(0, prev + value)),

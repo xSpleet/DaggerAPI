@@ -1,7 +1,6 @@
 package xspleet.daggerapi.attributes.operations;
 
 import com.mojang.datafixers.util.Function3;
-import xspleet.daggerapi.attributes.base.AttributeOperation;
 
 public enum DoubleOperation implements AttributeOperation<Double>
 {

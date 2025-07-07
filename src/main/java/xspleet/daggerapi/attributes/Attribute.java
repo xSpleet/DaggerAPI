@@ -1,4 +1,4 @@
-package xspleet.daggerapi.attributes.base;
+package xspleet.daggerapi.attributes;
 
 public interface Attribute<T>
 {

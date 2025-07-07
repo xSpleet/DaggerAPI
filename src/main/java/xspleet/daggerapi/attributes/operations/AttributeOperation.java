@@ -1,4 +1,4 @@
-package xspleet.daggerapi.attributes.base;
+package xspleet.daggerapi.attributes.operations;
 
 import com.mojang.datafixers.util.Function3;
 

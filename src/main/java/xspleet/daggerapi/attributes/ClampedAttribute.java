@@ -1,7 +1,5 @@
 package xspleet.daggerapi.attributes;
 
-import xspleet.daggerapi.attributes.base.Attribute;
-
 public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
 {
     private final T defaultValue;

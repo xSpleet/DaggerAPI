@@ -1,7 +1,6 @@
-package xspleet.daggerapi.attributes;
+package xspleet.daggerapi.attributes.modifier;
 
-import xspleet.daggerapi.attributes.base.AttributeModifier;
-import xspleet.daggerapi.attributes.base.AttributeOperation;
+import xspleet.daggerapi.attributes.operations.AttributeOperation;
 
 import java.util.UUID;
 

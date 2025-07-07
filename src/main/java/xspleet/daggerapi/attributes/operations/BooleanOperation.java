@@ -1,7 +1,6 @@
 package xspleet.daggerapi.attributes.operations;
 
 import com.mojang.datafixers.util.Function3;
-import xspleet.daggerapi.attributes.base.AttributeOperation;
 
 public enum BooleanOperation implements AttributeOperation<Boolean> {
     TRUE("true", 0, (prev, prevGroup, value) -> true),
