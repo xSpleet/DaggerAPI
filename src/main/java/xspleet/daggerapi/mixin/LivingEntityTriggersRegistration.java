@@ -1,13 +1,10 @@
-package xspleet.daggerapi.trigger.registration;
+package xspleet.daggerapi.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.TriggerData;

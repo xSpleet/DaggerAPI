@@ -7,11 +7,13 @@ import java.util.UUID;
 public class DaggerAttributeModifier<T> implements AttributeModifier<T>
 {
     private final T value;
+    private final String name;
     private final AttributeOperation<T> operation;
     private final UUID uuid;
 
-    public DaggerAttributeModifier(UUID uuid, T value, AttributeOperation<T> operation) {
+    public DaggerAttributeModifier(UUID uuid, String name, T value, AttributeOperation<T> operation) {
         this.value = value;
+        this.name = name;
         this.operation = operation;
         this.uuid = uuid;
     }
@@ -29,5 +31,10 @@ public class DaggerAttributeModifier<T> implements AttributeModifier<T>
     @Override
     public UUID getUUID() {
         return uuid;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

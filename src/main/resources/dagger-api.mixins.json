@@ -1,9 +1,12 @@
 {
 	"required": true,
-	"package": "xspleet.daggerapi.trigger.registration",
+	"package": "xspleet.daggerapi.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"LivingEntityTriggersRegistration"
+		"EntityAttributeInstanceMixin",
+		"EntityAttributeMixin",
+		"LivingEntityTriggersRegistration",
+		"PlayerEntityAttributeRegistration"
 	],
 	"injectors": {
 		"defaultRequire": 1

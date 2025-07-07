@@ -11,9 +11,17 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
     private final TreeMap<AttributeOperation<T>, Set<AttributeModifier<T>>> temporaryModifiers = new TreeMap<>(Comparator.comparingInt(AttributeOperation::getPrecedence));
     private final Set<AttributeModifier<T>> allModifiers = new HashSet<>();
     private final Attribute<T> attribute;
+    private boolean dirty = true;
+    private boolean updated = true;
+    private T value;
 
     public DaggerAttributeInstance(Attribute<T> attribute) {
         this.attribute = attribute;
+    }
+
+    @Override
+    public String getAttributeName() {
+        return attribute.getName();
     }
 
     @Override
@@ -22,10 +30,17 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
     }
 
     @Override
+    public boolean hasModifier(UUID modifierId) {
+        return allModifiers.stream().anyMatch(x -> x.getUUID().equals(modifierId));
+    }
+
+    @Override
     public void addTemporaryModifier(AttributeModifier<T> modifier) {
         temporaryModifiers.putIfAbsent(modifier.getOperation(), new HashSet<>());
         temporaryModifiers.get(modifier.getOperation()).add(modifier);
         allModifiers.add(modifier);
+        updated = true;
+        setDirty();
     }
 
     @Override
@@ -39,24 +54,43 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                 }
             }
         }
-
+        updated = true;
+        setDirty();
     }
 
     @Override
     public T getValue() {
-        T value = attribute.getDefaultValue();
+        if(!updated)
+            return value;
+        T computedValue = attribute.getDefaultValue();
         for(AttributeOperation<T> operation : temporaryModifiers.keySet()) {
             Set<AttributeModifier<T>> modifiers = temporaryModifiers.getOrDefault(operation, Collections.emptySet());
-            T valuePreviousGroup = value;
+            T valuePreviousGroup = computedValue;
             for (AttributeModifier<T> modifier : modifiers) {
-                value = operation.apply(value, valuePreviousGroup, modifier.getValue());
+                computedValue = operation.apply(computedValue, valuePreviousGroup, modifier.getValue());
             }
         }
-        return attribute.clamp(value);
+        updated = false;
+        value = computedValue;
+        return attribute.clamp(computedValue);
     }
 
     @Override
     public T getBaseValue() {
         return attribute.getDefaultValue();
+    }
+
+    public void setDirty() {
+        dirty = true;
+    }
+
+    @Override
+    public void clean() {
+        dirty = false;
+    }
+
+    @Override
+    public boolean isDirty() {
+        return dirty;
     }
 }
