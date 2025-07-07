@@ -18,6 +18,10 @@ public class DaggerAttributeModifier<T> implements AttributeModifier<T>
         this.uuid = uuid;
     }
 
+    public DaggerAttributeModifier(String name, T value, AttributeOperation<T> operation) {
+        this(UUID.randomUUID(), name, value, operation);
+    }
+
     @Override
     public T getValue() {
         return value;

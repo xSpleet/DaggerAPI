@@ -20,7 +20,7 @@ public class EntityAttributeInstanceMixin implements Self<EntityAttributeInstanc
 
     @Override
     public boolean DaggerAPI$hasModifier(AttributeModifier<Double> modifier) {
-        return self().hasModifier((EntityAttributeModifier) modifier);
+        return self().hasModifier(modifier.toMinecraftModifier());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class EntityAttributeInstanceMixin implements Self<EntityAttributeInstanc
 
     @Override
     public void DaggerAPI$addTemporaryModifier(AttributeModifier<Double> modifier) {
-        self().addTemporaryModifier((EntityAttributeModifier) modifier);
+        self().addTemporaryModifier(modifier.toMinecraftModifier());
     }
 
     @Override

@@ -4,7 +4,7 @@ public class AttributeModifierModel extends JSONModel
 {
     private String attribute;
     private String modificationType;
-    private double modificationValue;
+    private Double modificationValue;
 
     public String getAttribute() {
         return attribute;
@@ -22,7 +22,7 @@ public class AttributeModifierModel extends JSONModel
         this.modificationType = modificationType;
     }
 
-    public double getModificationValue() {
+    public Double getModificationValue() {
         return modificationValue;
     }
 

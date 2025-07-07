@@ -1,6 +1,7 @@
 package xspleet.daggerapi.artifact.builder;
 
 import net.minecraft.entity.player.PlayerEntity;
+import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.ConditionData;
 import xspleet.daggerapi.collections.ConditionProviders;
@@ -12,7 +13,7 @@ import java.util.List;
 public class ArtifactAttributeModifier
 {
     private Condition condition;
-    private final List<WrappedModifier> modifiers;
+    private final List<WrappedModifier<?>> modifiers;
 
     public ArtifactAttributeModifier()
     {
@@ -20,7 +21,7 @@ public class ArtifactAttributeModifier
         modifiers = new ArrayList<>();
     }
 
-    public ArtifactAttributeModifier addAttributeModifier(WrappedModifier modifier)
+    public ArtifactAttributeModifier addAttributeModifier(WrappedModifier<?> modifier)
     {
         modifiers.add(modifier);
         return this;
@@ -40,35 +41,45 @@ public class ArtifactAttributeModifier
             modifyPlayer(data);
     }
 
+    private <T> void safeAddTemporaryModifier(PlayerEntity player, WrappedModifier<T> attributeModifier)
+    {
+        var attribute = attributeModifier.attribute();
+        var modifier = attributeModifier.modifier();
+        var holder = AttributeHolder.asHolder(player);
+
+        if(holder.getAttributeInstance(attribute) == null)
+            return;
+
+        if(!holder.getAttributeInstance(attribute).hasModifier(modifier))
+            holder.getAttributeInstance(attribute).addTemporaryModifier(modifier);
+    }
+
+    private <T> void safeRemoveModifier(PlayerEntity player, WrappedModifier<T> attributeModifier)
+    {
+        var attribute = attributeModifier.attribute();
+        var modifier = attributeModifier.modifier();
+        var holder = AttributeHolder.asHolder(player);
+
+        if(holder.getAttributeInstance(attribute) == null)
+            return;
+
+        if(holder.getAttributeInstance(attribute).hasModifier(modifier))
+            holder.getAttributeInstance(attribute).removeModifier(modifier);
+    }
+
     public void modifyPlayer(ConditionData data)
     {
         PlayerEntity player = data.getData(DaggerKeys.PLAYER);
-        for(WrappedModifier attributeModifier: modifiers) {
-
-            var attribute = attributeModifier.getAttribute();
-            var modifier = attributeModifier.getModifier();
-
-            if(player.getAttributeInstance(attribute) == null)
-                return;
-
-            if(!player.getAttributeInstance(attribute).hasModifier(modifier))
-                player.getAttributeInstance(attribute).addTemporaryModifier(modifier);
+        for(WrappedModifier<?> attributeModifier: modifiers) {
+            safeAddTemporaryModifier(player, attributeModifier);
         }
     }
 
     public void cleansePlayer(ConditionData data)
     {
         PlayerEntity player = data.getData(DaggerKeys.PLAYER);
-        for(WrappedModifier attributeModifier: modifiers) {
-
-            var attribute = attributeModifier.getAttribute();
-            var modifier = attributeModifier.getModifier();
-
-            if(player.getAttributeInstance(attribute) == null)
-                return;
-
-            if (player.getAttributeInstance(attribute).hasModifier(modifier))
-                player.getAttributeInstance(attribute).removeModifier(modifier);
+        for(WrappedModifier<?> attributeModifier: modifiers) {
+            safeRemoveModifier(player, attributeModifier);
         }
     }
 }

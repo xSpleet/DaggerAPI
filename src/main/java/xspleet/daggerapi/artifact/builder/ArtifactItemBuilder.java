@@ -7,7 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import org.w3c.dom.Attr;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.attributes.Attribute;
+import xspleet.daggerapi.attributes.modifier.AttributeModifier;
+import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
+import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.base.*;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.ProviderData;
@@ -45,6 +50,21 @@ public class ArtifactItemBuilder
         return Registry.register(Registries.ITEM, Identifier.of(DaggerAPI.MOD_ID, name), item);
     }
 
+    private static <T> AttributeModifier<T> safeCreateModifier(
+            String name,
+            T value,
+            AttributeOperation<?> operation
+    )
+    {
+        var castOperation = (AttributeOperation<T>) operation;
+
+        return new DaggerAttributeModifier<>(
+                name,
+                value,
+                castOperation
+        );
+    }
+
     private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)
     {
         var modifierModels = itemModel.getAttributeModifiers();
@@ -74,7 +94,7 @@ public class ArtifactItemBuilder
             int j = 0;
             for(AttributeModifierModel attributeModifierModel: modifierModel.getModifiers())
             {
-                EntityAttribute attribute = null;
+                Attribute<?> attribute = null;
                 try{
                     attribute = Mapper.getEntityAttribute(attributeModifierModel.getAttribute());
                 }
@@ -84,7 +104,7 @@ public class ArtifactItemBuilder
                     ErrorLogger.log(itemModel.getName(), attributeException, modifierModel);
                 }
                 try {
-                    EntityAttributeModifier modifier = new EntityAttributeModifier(
+                    AttributeModifier<?> modifier = safeCreateModifier(
                             i + "/" + j + "/" + attributeModifierModel.getAttribute() + "/" + attributeModifierModel.getModificationType() + "/" + attributeModifierModel.getModificationValue(),
                             attributeModifierModel.getModificationValue(),
                             Mapper.getOperation(attributeModifierModel.getModificationType())

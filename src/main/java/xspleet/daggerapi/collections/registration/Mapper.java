@@ -3,6 +3,10 @@ package xspleet.daggerapi.collections.registration;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.attributes.Attribute;
+import xspleet.daggerapi.attributes.mixin.MixinAttribute;
+import xspleet.daggerapi.attributes.mixin.MixinAttributeOperation;
+import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.collections.*;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.ProviderData;
@@ -24,11 +28,11 @@ public class Mapper
         ConditionProviders.registerConditionProviders();
         ActionProviders.registerActionProviders();
         Triggers.registerTriggers();
-        EntityAttributes.registerEntityAttributes();
+        Attributes.registerAttributes();
     }
 
-    private static final Map<String, EntityAttribute> entityAttributes = new HashMap<>();
-    private static final Map<String, EntityAttributeModifier.Operation> operations = new HashMap<>();
+    private static final Map<String, Attribute<?>> entityAttributes = new HashMap<>();
+    private static final Map<String, AttributeOperation<?>> operations = new HashMap<>();
     private static final Map<String, Provider<Condition>> conditionProviders = new HashMap<>();
     private static final Map<String, Provider<Action>> actionProviders = new HashMap<>();
     private static final Map<String, Trigger> triggers = new HashMap<>();
@@ -55,13 +59,22 @@ public class Mapper
         return triggers.get(name);
     }
 
-    public static EntityAttributeModifier.Operation registerOperation(String name, EntityAttributeModifier.Operation operation)
+    public static <T> AttributeOperation<T> registerOperation(String name, AttributeOperation<T> operation)
     {
         operations.put(name, operation);
         return operation;
     }
 
-    public static EntityAttributeModifier.Operation getOperation(String name) {
+    public static AttributeOperation<Double> registerOperation(String name, EntityAttributeModifier.Operation operation) {
+        if(((Object)operation) instanceof AttributeOperation vanillaAttribute)
+        {
+            operations.put(name, vanillaAttribute);
+            return (AttributeOperation<Double>) vanillaAttribute;
+        }
+        throw new IllegalStateException("Cannot register Vanilla entity attribute operation: " + operation.name());
+    }
+
+    public static AttributeOperation<?> getOperation(String name) {
         if(!operations.containsKey(name)) {
             DaggerAPI.LOGGER.error("Operation with the name '{}' not found!", name);
             throw new NoSuchOperationException(name);
@@ -69,13 +82,22 @@ public class Mapper
         return operations.get(name);
     }
 
-    public static EntityAttribute registerEntityAttribute(String name, EntityAttribute attribute)
+    public static <T> Attribute<T> registerEntityAttribute(String name, Attribute<T> attribute)
     {
         entityAttributes.put(name, attribute);
         return attribute;
     }
 
-    public static EntityAttribute getEntityAttribute(String name) {
+    public static Attribute<Double> registerEntityAttribute(String name, EntityAttribute attribute) {
+        if(attribute instanceof MixinAttribute<?> vanillaAttribute)
+        {
+            entityAttributes.put(name, vanillaAttribute);
+            return (Attribute<Double>) vanillaAttribute;
+        }
+        throw new IllegalStateException("Cannot register Vanilla entity attribute: " + attribute.getClass().getName());
+    }
+
+    public static Attribute<?> getEntityAttribute(String name) {
         if(!entityAttributes.containsKey(name)) {
             DaggerAPI.LOGGER.error("Attribute with the name '{}' not found!", name);
             throw new NoSuchAttributeException(name);
