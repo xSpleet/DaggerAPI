@@ -1,6 +1,7 @@
 package xspleet.daggerapi.mixin;
 
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeInstance;
@@ -19,7 +20,7 @@ public class EntityAttributeInstanceMixin implements Self<EntityAttributeInstanc
 
     @Override
     public boolean DaggerAPI$hasModifier(AttributeModifier<Double> modifier) {
-        return self().hasModifier(modifier.toMinecraftModifier());
+        return self().hasModifier((EntityAttributeModifier) modifier);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class EntityAttributeInstanceMixin implements Self<EntityAttributeInstanc
 
     @Override
     public void DaggerAPI$addTemporaryModifier(AttributeModifier<Double> modifier) {
-        self().addTemporaryModifier(modifier.toMinecraftModifier());
+        self().addTemporaryModifier((EntityAttributeModifier) modifier);
     }
 
     @Override
