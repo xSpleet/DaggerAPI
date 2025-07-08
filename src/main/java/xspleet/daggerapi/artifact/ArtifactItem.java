@@ -31,9 +31,9 @@ public class ArtifactItem extends TrinketItem
     protected final List<ArtifactAttributeModifier> attributeModifiers;
     protected ArtifactRarity artifactRarity = ArtifactRarity.COMMON;
 
-    protected Map<Trigger, List<ConditionalAction>> events;
-    protected Map<Trigger, List<WeightedConditionalAction>> weightedEvents;
-    protected Set<Trigger> triggers = new HashSet<>();
+    protected final Map<Trigger, List<ConditionalAction>> events;
+    protected final Map<Trigger, List<WeightedConditionalAction>> weightedEvents;
+    protected final Set<Trigger> triggers = new HashSet<>();
 
     private int cooldown = -1;
     private boolean active = false;

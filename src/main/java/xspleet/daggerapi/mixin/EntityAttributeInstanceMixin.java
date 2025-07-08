@@ -1,9 +1,7 @@
 package xspleet.daggerapi.mixin;
 
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.base.Self;

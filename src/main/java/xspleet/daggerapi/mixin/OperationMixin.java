@@ -1,11 +1,9 @@
 package xspleet.daggerapi.mixin;
 
 import com.mojang.datafixers.util.Function3;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.transformer.meta.MixinInner;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeOperation;
 import xspleet.daggerapi.attributes.operations.DoubleOperation;
 import xspleet.daggerapi.base.Self;

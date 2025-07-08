@@ -1,6 +1,5 @@
 package xspleet.daggerapi.trigger.actions;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.base.Condition;

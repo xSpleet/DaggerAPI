@@ -1,9 +1,7 @@
 package xspleet.daggerapi.data;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.models.On;

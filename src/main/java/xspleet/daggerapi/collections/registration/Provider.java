@@ -1,20 +1,18 @@
 package xspleet.daggerapi.collections.registration;
 
-import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.trigger.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 
 public class Provider<T>
 {
-    protected String name;
-    protected List<String> arguments = new ArrayList<>();
-    protected List<String> associatedTriggers = new ArrayList<>();
-    protected Function<ProviderData, T> provider;
+    protected final String name;
+    protected final List<String> arguments = new ArrayList<>();
+    protected final List<String> associatedTriggers = new ArrayList<>();
+    protected final Function<ProviderData, T> provider;
 
     protected boolean isPlayerDependant = false;
     protected boolean isWorldDependant  = false;

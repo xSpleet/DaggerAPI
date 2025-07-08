@@ -5,19 +5,11 @@
     "cooldown":5000,
     "attribute_modifiers": [
         {
-            "conditions":[
-                 {
-                    "condition": "ifDimension",
-                    "arguments": {
-                        "dimension": "minecraft:overworld"
-                    }
-                }
-            ],
             "modifiers":[
                 {
-                    "attribute":"jump_height",
-                    "modification_type":"multiply_total",
-                    "modification_value":2.0
+                    "attribute":"can_walk_on_water",
+                    "modification_type":"set_true",
+                    "modification_value":true
                 }
             ]
         }

@@ -1,17 +1,12 @@
 package xspleet.daggerapi.base;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
 
 public class TrinketsUtil 
 {

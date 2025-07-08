@@ -12,14 +12,12 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import org.lwjgl.glfw.GLFW;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.TriggerData;
-import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 public class ActiveArtifactActivation

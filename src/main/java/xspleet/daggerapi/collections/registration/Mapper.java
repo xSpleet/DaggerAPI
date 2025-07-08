@@ -5,7 +5,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
-import xspleet.daggerapi.attributes.mixin.MixinAttributeOperation;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.collections.*;
 import xspleet.daggerapi.base.Condition;

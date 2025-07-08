@@ -4,7 +4,6 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.instance.DaggerAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
-import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class DaggerAttributeContainer
 {
-    private final HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances = new HashMap<>();
+    protected final HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances = new HashMap<>();
 
     protected DaggerAttributeContainer(HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances)
     {
@@ -29,6 +28,16 @@ public class DaggerAttributeContainer
             return instance;
         }
         return (AttributeInstance<T>) attributeInstances.get(attribute);
+    }
+
+    public void acceptSyncContainer(SyncAttributeContainer syncContainer) {
+        for (Map.Entry<Attribute<?>, AttributeInstance<?>> entry : syncContainer.attributeInstances.entrySet()) {
+            var attribute = entry.getKey();
+            var instance = getInstance(attribute);
+            if(!attributeInstances.containsKey(attribute))
+                throw new IllegalStateException("Attribute " + attribute.getName() + " is not present in this container.");
+            attributeInstances.put(attribute, instance);
+        }
     }
 
     public SyncAttributeContainer getSyncContainer() {

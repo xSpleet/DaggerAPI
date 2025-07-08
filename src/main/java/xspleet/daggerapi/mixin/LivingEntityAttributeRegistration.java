@@ -1,20 +1,25 @@
 package xspleet.daggerapi.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
+import xspleet.daggerapi.attributes.container.SyncAttributeContainer;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeHolder;
@@ -41,10 +46,24 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
         return getAttributeContainer().getAttributeInstance(attribute);
     }
 
+    @Override
+    public void DaggerAPI$syncAttributeContainer() {
+        daggerAPI$attributeContainer.getSyncContainer();
+    }
+
+    @Override
+    public void DaggerAPI$acceptSyncContainer(SyncAttributeContainer syncContainer) {
+        if (daggerAPI$attributeContainer == null) {
+            throw new IllegalStateException("Attribute container is not initialized.");
+        }
+        daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     private void daggerAPI$init(EntityType<? extends LivingEntity> entityType, World world, CallbackInfo ci) {
         var container = new DaggerAttributeContainer.Builder()
-                .addAttribute(Attributes.JUMP_HEIGHT);
+                .addAttribute(Attributes.JUMP_HEIGHT)
+                .addAttribute(Attributes.CAN_WALK_ON_WATER);
         daggerAPI$attributeContainer = container.build();
     }
 
@@ -64,22 +83,34 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
         return original;
     }
 
-    @ModifyArg(
+    @ModifyVariable(
             method = "computeFallDamage",
             at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/MathHelper;ceil(F)I"
+                    value = "STORE"
             ),
-            index = 0
+            ordinal = 2
     )
-    private float daggerAPI$modifyFallDamage(float original) {
+    private float daggerAPI$modifyFallDamage(float f) {
         if (self() instanceof PlayerEntity player && player instanceof AttributeHolder holder) {
-            var fallDamage = holder.getAttributeInstance(Attributes.JUMP_HEIGHT);
-            if (fallDamage != null) {
-                if(fallDamage.getValue().floatValue() > fallDamage.getBaseValue().floatValue()) {
-                    return original * fallDamage.getBaseValue().floatValue() / fallDamage.getValue().floatValue();
-                }
-                return original * fallDamage.getBaseValue().floatValue() / fallDamage.getValue().floatValue();
+            var jumpHeight = holder.getAttributeInstance(Attributes.JUMP_HEIGHT);
+            if (jumpHeight != null) {
+                return f + (int) Math.ceil(jumpHeight.getValue()/jumpHeight.getBaseValue());
+            }
+        }
+        return f;
+    }
+
+    @ModifyExpressionValue(
+            method = "canWalkOnFluid",
+            at = @At(
+                    value = "CONSTANT",
+                    args = "intValue=0")
+    )
+    private int daggerAPI$canWalkOnFluid(int original, @Local(argsOnly = true) FluidState state) {
+        if(self() instanceof PlayerEntity player && player instanceof AttributeHolder holder) {
+            var canWalkOnWater = holder.getAttributeInstance(Attributes.CAN_WALK_ON_WATER);
+            if(state.isOf(Fluids.WATER) && canWalkOnWater != null && canWalkOnWater.getValue()) {
+                return (canWalkOnWater.getValue() && self().getFluidHeight(FluidTags.WATER) > 0) ? 1 : 0;
             }
         }
         return original;

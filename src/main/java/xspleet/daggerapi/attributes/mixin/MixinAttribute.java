@@ -1,6 +1,5 @@
 package xspleet.daggerapi.attributes.mixin;
 
-import com.mojang.datafixers.util.Function3;
 import xspleet.daggerapi.attributes.Attribute;
 
 public interface MixinAttribute<T> extends Attribute<T>

@@ -16,7 +16,7 @@ public class ConditionProviders
         DaggerAPI.LOGGER.info("> Registering condition providers...");
     }
 
-    public static Provider<Condition> ALWAYS = Mapper
+    public static final Provider<Condition> ALWAYS = Mapper
             .registerConditionProvider("always", (args) -> {
                 return data -> true;
                     });
@@ -25,12 +25,12 @@ public class ConditionProviders
         return ALWAYS.provide(new ProviderData());
     }
 
-    public static Provider<Condition> NEVER = Mapper
+    public static final Provider<Condition> NEVER = Mapper
             .registerConditionProvider("never", (args) -> {
                 return data -> false;
                     });
 
-    public static Provider<Condition> IF_WEATHER = Mapper
+    public static final Provider<Condition> IF_WEATHER = Mapper
             .registerConditionProvider("ifWeather", (args) ->
             {
                 String weather = args.getData("weather");
@@ -50,7 +50,7 @@ public class ConditionProviders
             })
             .addArgument("weather");
 
-    public static Provider<Condition> IF_DIMENSION = Mapper
+    public static final Provider<Condition> IF_DIMENSION = Mapper
             .registerConditionProvider("ifDimension", (args) ->
             {
                 String dimension = args.getData("dimension");
@@ -66,7 +66,7 @@ public class ConditionProviders
             })
             .addArgument("dimension");
 
-    public static Provider<Condition> IF_ARTIFACT = Mapper
+    public static final Provider<Condition> IF_ARTIFACT = Mapper
             .registerConditionProvider("ifArtifact", args ->
             {
                 String artifact = args.getData("artifact");
@@ -100,7 +100,7 @@ public class ConditionProviders
             .addArgument("artifact")
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
-    public static Provider<Condition> IF_SUCCESSFUL = Mapper
+    public static final Provider<Condition> IF_SUCCESSFUL = Mapper
             .registerConditionProvider("ifSuccessful", args ->
             {
                 String successful = args.getData("successful");
@@ -112,7 +112,7 @@ public class ConditionProviders
             .addArgument("successful")
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
-    public static Provider<Condition> IF_DAMAGE_SOURCE = Mapper
+    public static final Provider<Condition> IF_DAMAGE_SOURCE = Mapper
             .registerConditionProvider("ifDamageSource", args ->
             {
                 String damageSource = args.getData("damageSource");

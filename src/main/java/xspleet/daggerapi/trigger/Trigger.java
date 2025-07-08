@@ -1,18 +1,14 @@
 package xspleet.daggerapi.trigger;
 
-import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.data.TriggerData;
-import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Trigger
 {
