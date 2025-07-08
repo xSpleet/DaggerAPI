@@ -2,6 +2,8 @@ package xspleet.daggerapi.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -9,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -49,14 +52,20 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
     @Override
     public void DaggerAPI$syncAttributeContainer() {
         daggerAPI$attributeContainer.getSyncContainer();
+        if(self() instanceof ServerPlayerEntity player)
+        {
+            ServerPlayNetworking.send();
+        }
     }
 
     @Override
     public void DaggerAPI$acceptSyncContainer(SyncAttributeContainer syncContainer) {
-        if (daggerAPI$attributeContainer == null) {
-            throw new IllegalStateException("Attribute container is not initialized.");
+        if(self() instanceof ClientPlayerEntity player) {
+            if (daggerAPI$attributeContainer == null) {
+                throw new IllegalStateException("Attribute container is not initialized.");
+            }
+            daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
         }
-        daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -94,7 +103,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
         if (self() instanceof PlayerEntity player && player instanceof AttributeHolder holder) {
             var jumpHeight = holder.getAttributeInstance(Attributes.JUMP_HEIGHT);
             if (jumpHeight != null) {
-                return f + (int) Math.ceil(jumpHeight.getValue()/jumpHeight.getBaseValue());
+                return f + (int) Math.round((jumpHeight.getValue()-jumpHeight.getBaseValue())/jumpHeight.getBaseValue());
             }
         }
         return f;
@@ -110,7 +119,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
         if(self() instanceof PlayerEntity player && player instanceof AttributeHolder holder) {
             var canWalkOnWater = holder.getAttributeInstance(Attributes.CAN_WALK_ON_WATER);
             if(state.isOf(Fluids.WATER) && canWalkOnWater != null && canWalkOnWater.getValue()) {
-                return (canWalkOnWater.getValue() && self().getFluidHeight(FluidTags.WATER) > 0) ? 1 : 0;
+                return (canWalkOnWater.getValue() && self().getFluidHeight(FluidTags.WATER) < 0.39 && self().getFluidHeight(FluidTags.WATER) > 0) ? 1 : 0;
             }
         }
         return original;

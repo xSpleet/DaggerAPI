@@ -19,6 +19,11 @@ public class EntityAttributeMixin implements Self<EntityAttribute>, MixinAttribu
     }
 
     @Override
+    public Class<Double> DaggerAPI$getType() {
+        return Double.TYPE;
+    }
+
+    @Override
     public Double DaggerAPI$clamp(Double value) {
         return self().clamp(value);
     }

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.base.ErrorLogger;
@@ -12,6 +13,7 @@ import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
+import xspleet.daggerapi.networking.NetworkingConstants;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -35,6 +37,15 @@ public class DaggerAPI implements ModInitializer {
 	public void onInitialize() {
 		Mapper.registerMapper();
 		ActiveArtifactActivation.register();
+
+		ClientPlayNetworking.registerGlobalReceiver(
+				NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID,
+				(client, handler, packet, sender) -> {
+					var syncContainer = packet.getSyncContainer();
+					client.player
+				}
+		);
+
 		Path file = Path.of(RESOURCES, "data/test_item/item.json");
 		try {
 			ItemModel itemModel = JSON_PARSER.fromJson(Files.newBufferedReader(file), ItemModel.class);

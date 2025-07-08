@@ -141,4 +141,26 @@ public class Mapper
         }
         return actionProviders.get(name);
     }
+
+    public static String getNameOf(Attribute<?> attribute) {
+        if(entityAttributes.containsValue(attribute)) {
+            return entityAttributes.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(attribute))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchAttributeException("No name found for attribute: " + attribute));
+        }
+        throw new IllegalArgumentException("Attribute is not registered: " + attribute);
+    }
+
+    public static String getNameOf(AttributeOperation<?> operation) {
+        if(operations.containsValue(operation)) {
+            return operations.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(operation))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchOperationException("No name found for operation: " + operation));
+        }
+        throw new IllegalArgumentException("Operation is not registered: " + operation);
+    }
 }

@@ -1,5 +1,6 @@
 package xspleet.daggerapi.attributes.instance;
 
+import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 
 import java.util.UUID;
@@ -15,4 +16,5 @@ public interface AttributeInstance<T>
     public T getBaseValue();
     public void clean();
     public boolean isDirty();
+    public void write(PacketByteBuf buf);
 }

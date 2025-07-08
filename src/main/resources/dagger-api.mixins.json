@@ -5,6 +5,7 @@
   "mixins": [
     "EntityAttributeInstanceMixin",
     "EntityAttributeMixin",
+    "EntityTrackerEntrySyncAttributeMixin",
     "LivingEntityAttributeRegistration",
     "LivingEntityTriggersRegistration",
     "OperationMixin"

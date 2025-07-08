@@ -3,12 +3,14 @@ package xspleet.daggerapi.attributes;
 public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
 {
     private final String name;
+    private final Class<T> type;
     private final T defaultValue;
     private final T minValue;
     private final T maxValue;
 
-    public ClampedAttribute(String name, T defaultValue, T minValue, T maxValue) {
+    public ClampedAttribute(String name, Class<T> type, T defaultValue, T minValue, T maxValue) {
         this.name = name;
+        this.type = type;
         this.defaultValue = defaultValue;
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -22,6 +24,11 @@ public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
     @Override
     public T getDefaultValue() {
         return defaultValue;
+    }
+
+    @Override
+    public Class<T> getType() {
+        return type;
     }
 
     @Override

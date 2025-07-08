@@ -1,5 +1,6 @@
 package xspleet.daggerapi.attributes.instance;
 
+import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
@@ -92,5 +93,38 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
     @Override
     public boolean isDirty() {
         return dirty;
+    }
+
+    @Override
+    public void write(PacketByteBuf buf) {
+        buf.writeMap(temporaryModifiers,
+                (buffer, operation) -> buffer.writeString(operation.getName()),
+                (buffer, modifiers) -> buffer.writeCollection(modifiers, (b, modifier) -> modifier.write(b))
+        );
+    }
+
+    public static AttributeInstance<?> read(PacketByteBuf buf)
+    {
+        DaggerAttributeInstance<?> instance = new DaggerAttributeInstance<>(null); // Attribute will be set later
+        Map<String, Set<AttributeModifier<?>>> modifiers = buf.readMap(
+                buffer -> buffer.readString(32767),
+                buffer -> {
+                    UUID uuid = buffer.readUuid();
+                    String name = buffer.readString(32767);
+                    Object value = switch (buffer.readString(32767)) {
+                        case "addition" -> buffer.readDouble();
+                        case "multiply_base" -> buffer.readDouble();
+                        case "multiply_total" -> buffer.readDouble();
+                        default -> throw new IllegalArgumentException("Unknown operation type");
+                    };
+                    return new DaggerAttributeModifier<>(uuid, name, value, AttributeOperation.getByName(name));
+                }
+        );
+        for (Map.Entry<String, Set<AttributeModifier<?>>> entry : modifiers.entrySet()) {
+            for (AttributeModifier<?> modifier : entry.getValue()) {
+                instance.addTemporaryModifier(modifier);
+            }
+        }
+        return instance;
     }
 }

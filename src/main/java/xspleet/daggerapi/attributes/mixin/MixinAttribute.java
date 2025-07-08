@@ -6,6 +6,7 @@ public interface MixinAttribute<T> extends Attribute<T>
 {
     public String DaggerAPI$getName();
     public T DaggerAPI$getDefaultValue();
+    public Class<T> DaggerAPI$getType();
     public T DaggerAPI$clamp(T value);
 
     public default String getName() {
@@ -14,6 +15,10 @@ public interface MixinAttribute<T> extends Attribute<T>
 
     public default T getDefaultValue() {
         return DaggerAPI$getDefaultValue();
+    }
+
+    public default Class<T> getType() {
+        return DaggerAPI$getType();
     }
 
     public default T clamp(T value) {
