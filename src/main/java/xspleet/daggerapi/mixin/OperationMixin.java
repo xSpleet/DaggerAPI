@@ -42,4 +42,9 @@ public class OperationMixin implements Self<EntityAttributeModifier.Operation>, 
     public Double DaggerAPI$apply(Double prevResult, Double resultFromPrevType, Double value) {
         return asOperation().apply(prevResult, resultFromPrevType, value);
     }
+
+    @Override
+    public Class<Double> getType() {
+        return Double.class;
+    }
 }

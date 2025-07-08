@@ -41,4 +41,9 @@ public enum DoubleOperation implements AttributeOperation<Double>
     public Double apply(Double prevResult, Double resultFromPrevType, Double value) {
         return operation.apply(prevResult, resultFromPrevType, value);
     }
+
+    @Override
+    public Class<Double> getType() {
+        return Double.class;
+    }
 }

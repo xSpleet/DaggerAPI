@@ -1,5 +1,7 @@
 package xspleet.daggerapi.artifact.builder;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -52,15 +54,45 @@ public class ArtifactItemBuilder
 
     private static <T> AttributeModifier<T> safeCreateModifier(
             String name,
-            T value,
+            JsonElement value,
             AttributeOperation<?> operation
     )
     {
+        if(value == null || value.isJsonNull())
+            throw new IllegalArgumentException("Value for attribute modifier cannot be null or JSON null");
+
+        if(!(value instanceof JsonPrimitive primitive))
+            throw new IllegalArgumentException("Value for attribute modifier must be a JSON primitive");
+
         var castOperation = (AttributeOperation<T>) operation;
+
+        T castValue;
+        if(castOperation.getType().equals(Integer.class))
+        {
+            if(!primitive.isNumber())
+                throw new IllegalArgumentException("Value for integer attribute modifier must be a number");
+            castValue = (T) Integer.valueOf(primitive.getAsInt());
+        }
+        else if(castOperation.getType().equals(Double.class))
+        {
+            if(!primitive.isNumber())
+                throw new IllegalArgumentException("Value for double attribute modifier must be a number");
+            castValue = (T) Double.valueOf(primitive.getAsDouble());
+        }
+        else if(castOperation.getType().equals(Boolean.class))
+        {
+            if(!primitive.isBoolean())
+                throw new IllegalArgumentException("Value for boolean attribute modifier must be a boolean");
+            castValue = (T) Boolean.valueOf(primitive.getAsBoolean());
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported attribute modifier type: " + castOperation.getType());
+        }
 
         return new DaggerAttributeModifier<>(
                 name,
-                value,
+                castValue,
                 castOperation
         );
     }

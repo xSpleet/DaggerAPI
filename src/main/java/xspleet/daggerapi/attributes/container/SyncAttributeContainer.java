@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class SyncAttributeContainer extends DaggerAttributeContainer
 {
-    public SyncAttributeContainer(HashMap<Attribute, AttributeInstance> attributeInstances)
+    public SyncAttributeContainer(HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances)
     {
         super(attributeInstances);
     }

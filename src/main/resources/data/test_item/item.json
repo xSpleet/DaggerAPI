@@ -15,9 +15,9 @@
             ],
             "modifiers":[
                 {
-                    "attribute":"movement_speed",
+                    "attribute":"jump_height",
                     "modification_type":"multiply_total",
-                    "modification_value":0.5
+                    "modification_value":2.0
                 }
             ]
         }
@@ -48,7 +48,7 @@
                     "condition": "ifDamageSource",
                     "on": "world",
                     "arguments": {
-                        "damageSource": "fall"
+                        "damageSource": "mob"
                     }
                 }
             ],
@@ -69,6 +69,5 @@
                 }
             ]
         }
-    ],
-    "modifies_combat":false
+    ]
 }

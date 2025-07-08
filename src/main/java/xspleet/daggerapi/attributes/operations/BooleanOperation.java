@@ -35,4 +35,9 @@ public enum BooleanOperation implements AttributeOperation<Boolean> {
     public Boolean apply(Boolean prevResult, Boolean resultFromPrevType, Boolean value) {
         return operation.apply(prevResult, resultFromPrevType, value);
     }
+
+    @Override
+    public Class<Boolean> getType() {
+        return Boolean.class;
+    }
 }

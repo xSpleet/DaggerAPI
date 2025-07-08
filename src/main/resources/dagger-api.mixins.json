@@ -5,9 +5,9 @@
   "mixins": [
     "EntityAttributeInstanceMixin",
     "EntityAttributeMixin",
+    "LivingEntityAttributeRegistration",
     "LivingEntityTriggersRegistration",
-    "OperationMixin",
-    "PlayerEntityAttributeRegistration"
+    "OperationMixin"
   ],
   "injectors": {
     "defaultRequire": 1

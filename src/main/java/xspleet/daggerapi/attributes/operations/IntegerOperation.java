@@ -37,4 +37,9 @@ public enum IntegerOperation implements AttributeOperation<Integer> {
     public Integer apply(Integer prevResult, Integer resultFromPrevType, Integer value) {
         return operation.apply(prevResult, resultFromPrevType, value);
     }
+
+    @Override
+    public Class<Integer> getType() {
+        return Integer.class;
+    }
 }

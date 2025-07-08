@@ -1,10 +1,12 @@
 package xspleet.daggerapi.models;
 
+import com.google.gson.JsonElement;
+
 public class AttributeModifierModel extends JSONModel
 {
     private String attribute;
     private String modificationType;
-    private Double modificationValue;
+    private JsonElement modificationValue;
 
     public String getAttribute() {
         return attribute;
@@ -22,11 +24,11 @@ public class AttributeModifierModel extends JSONModel
         this.modificationType = modificationType;
     }
 
-    public Double getModificationValue() {
+    public JsonElement getModificationValue() {
         return modificationValue;
     }
 
-    public void setModificationValue(double modificationValue) {
+    public void setModificationValue(JsonElement modificationValue) {
         this.modificationValue = modificationValue;
     }
 }

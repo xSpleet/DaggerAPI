@@ -11,8 +11,6 @@ public class ItemModel extends JSONModel
     private EventModel onActivation;
     private ArrayList<ArtifactAttributeModifierModel> attributeModifiers = new ArrayList<>();
     private ArrayList<EventModel> events = new ArrayList<>();
-    private boolean modifiesCombat;
-    private ArrayList<ArtifactCombatModifierModel> combatModifiers = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -68,21 +66,5 @@ public class ItemModel extends JSONModel
 
     public void setEvents(ArrayList<EventModel> events) {
         this.events = events;
-    }
-
-    public boolean isModifiesCombat() {
-        return modifiesCombat;
-    }
-
-    public void setModifiesCombat(boolean modifiesCombat) {
-        this.modifiesCombat = modifiesCombat;
-    }
-
-    public ArrayList<ArtifactCombatModifierModel> getCombatModifiers() {
-        return combatModifiers;
-    }
-
-    public void setCombatModifiers(ArrayList<ArtifactCombatModifierModel> combatModifiers) {
-        this.combatModifiers = combatModifiers;
     }
 }

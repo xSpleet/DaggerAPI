@@ -4,6 +4,7 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.instance.DaggerAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
+import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,15 +13,22 @@ import java.util.stream.Collectors;
 
 public class DaggerAttributeContainer
 {
-    private final HashMap<Attribute, AttributeInstance> attributeInstances = new HashMap<>();
-    protected DaggerAttributeContainer(HashMap<Attribute, AttributeInstance> attributeInstances)
+    private final HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances = new HashMap<>();
+
+    protected DaggerAttributeContainer(HashMap<Attribute<?>, AttributeInstance<?>> attributeInstances)
     {
         this.attributeInstances.putAll(attributeInstances);
     }
 
     private <T> AttributeInstance<T> getInstance(Attribute<T> attribute)
     {
-        return (DaggerAttributeInstance<T>) attributeInstances.computeIfAbsent(attribute, k -> new DaggerAttributeInstance<>(attribute));
+        if(!attributeInstances.containsKey(attribute))
+        {
+            var instance = new DaggerAttributeInstance<T>(attribute);
+            attributeInstances.put(attribute, instance);
+            return instance;
+        }
+        return (AttributeInstance<T>) attributeInstances.get(attribute);
     }
 
     public SyncAttributeContainer getSyncContainer() {
@@ -65,5 +73,22 @@ public class DaggerAttributeContainer
     public <T> T getValue(Attribute<T> attribute)
     {
         return require(attribute).getValue();
+    }
+
+    public static class Builder{
+        private final DaggerAttributeContainer container;
+
+        public Builder() {
+            this.container = new DaggerAttributeContainer(new HashMap<>());
+        }
+
+        public <T> Builder addAttribute(Attribute<T> attribute) {
+            container.getInstance(attribute);
+            return this;
+        }
+
+        public DaggerAttributeContainer build() {
+            return container;
+        }
     }
 }
