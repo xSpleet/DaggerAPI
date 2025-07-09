@@ -33,7 +33,7 @@ public interface MixinAttribute<T> extends Attribute<T>
         return DaggerAPI$clamp(value);
     }
 
-    public default MixinAttribute<T> setTracked() {
+    public default MixinAttribute<T> setUntracked() {
         return DaggerAPI$setTracked();
     }
 

@@ -4,7 +4,7 @@ public class UnclampedAttribute<T> implements Attribute<T> {
     private final String name;
     private final T defaultValue;
     private final Class<T> type;
-    private boolean tracked = false;
+    private boolean tracked = true;
 
     public UnclampedAttribute(String name, Class<T> type, T defaultValue) {
         this.name = name;
@@ -33,8 +33,8 @@ public class UnclampedAttribute<T> implements Attribute<T> {
     }
 
     @Override
-    public Attribute<T> setTracked() {
-        tracked = true;
+    public Attribute<T> setUntracked() {
+        tracked = false;
         return this;
     }
 
