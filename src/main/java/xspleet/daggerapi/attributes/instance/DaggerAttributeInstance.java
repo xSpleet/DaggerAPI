@@ -64,10 +64,8 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         }
         if(attribute.isTracked())
         {
-            if(addedModifiers.contains(modifier))
-                addedModifiers.remove(modifier);
-            else
-                removedModifiers.add(modifier.getUUID());
+            removedModifiers.add(modifier.getUUID());
+            addedModifiers.remove(modifier);
         }
         updated = true;
     }

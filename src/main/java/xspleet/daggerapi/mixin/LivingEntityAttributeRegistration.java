@@ -53,9 +53,9 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
 
     @Override
     public void DaggerAPI$syncAttributeContainer() {
-        var packet = daggerAPI$attributeContainer.toPacketByteBuf();
         if(self() instanceof ServerPlayerEntity player)
         {
+            var packet = daggerAPI$attributeContainer.toPacketByteBuf();
             ServerPlayNetworking.send(player, NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID, packet);
         }
     }

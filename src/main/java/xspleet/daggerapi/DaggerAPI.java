@@ -6,12 +6,15 @@ import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
 import xspleet.daggerapi.base.ErrorLogger;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
+import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
@@ -40,6 +43,28 @@ public class DaggerAPI implements ModInitializer {
 		Mapper.registerMapper();
 		ActiveArtifactActivation.register();
 		NetworkingConstants.init();
+
+		HudRenderCallback.EVENT.register(
+				((drawContext, v) -> {
+					var client = MinecraftClient.getInstance();
+					if(client != null && client.player instanceof AttributeHolder holder) {
+						var canWalkOnWater = holder.getAttributeInstance(Attributes.CAN_WALK_ON_WATER);
+						var jumpHeight = holder.getAttributeInstance(Attributes.JUMP_HEIGHT);
+
+						drawContext.drawTextWithShadow(
+								client.textRenderer,
+								"Can walk on water: " + canWalkOnWater.getValue(),
+								10, 10, 0xFFFFFF);
+
+						drawContext.drawTextWithShadow(
+								client.textRenderer,
+								"Jump height: " + jumpHeight.getValue(),
+								10, 20, 0xFFFFFF);
+					} else {
+						LOGGER.warn("Client or player is null, cannot render attributes.");
+					}
+				})
+		);
 
 		ClientPlayNetworking.registerGlobalReceiver(
 				NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID,
