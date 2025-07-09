@@ -12,9 +12,12 @@ public interface AttributeInstance<T>
     public boolean hasModifier(UUID modifierId);
     public void addTemporaryModifier(AttributeModifier<T> modifier);
     public void removeModifier(AttributeModifier<T> modifier);
+    public void removeModifier(UUID modifierId);
     public T getValue();
     public T getBaseValue();
-    public void clean();
-    public boolean isDirty();
     public void write(PacketByteBuf buf);
+    public default boolean isDirty()
+    {
+        return false;
+    }
 }

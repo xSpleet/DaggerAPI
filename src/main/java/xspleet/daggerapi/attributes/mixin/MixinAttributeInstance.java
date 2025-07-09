@@ -1,7 +1,10 @@
 package xspleet.daggerapi.attributes.mixin;
 
+import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
+
+import java.util.UUID;
 
 public interface MixinAttributeInstance<T> extends AttributeInstance<T>
 {
@@ -12,8 +15,8 @@ public interface MixinAttributeInstance<T> extends AttributeInstance<T>
     public void DaggerAPI$removeModifier(AttributeModifier<T> modifier);
     public T DaggerAPI$getValue();
     public T DaggerAPI$getBaseValue();
-    public void DaggerAPI$clean();
-    public boolean DaggerAPI$isDirty();
+    public void DaggerAPI$removeModifier(UUID modifierId);
+    public void DaggerAPI$write(PacketByteBuf byteBuf);
 
     public default String getAttributeName() {
         return DaggerAPI$getAttributeName();
@@ -43,11 +46,11 @@ public interface MixinAttributeInstance<T> extends AttributeInstance<T>
         return DaggerAPI$getBaseValue();
     }
 
-    public default void clean() {
-        DaggerAPI$clean();
+    public default void write(PacketByteBuf byteBuf) {
+        DaggerAPI$write(byteBuf);
     }
 
-    public default boolean isDirty() {
-        return DaggerAPI$isDirty();
+    public default void removeModifier(UUID modifierId) {
+        DaggerAPI$removeModifier(modifierId);
     }
 }

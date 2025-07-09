@@ -9,6 +9,14 @@ public interface MixinAttribute<T> extends Attribute<T>
     public Class<T> DaggerAPI$getType();
     public T DaggerAPI$clamp(T value);
 
+    public default MixinAttribute<T> DaggerAPI$setTracked() {
+        return this;
+    }
+
+    public default boolean DaggerAPI$isTracked(){
+        return false;
+    }
+
     public default String getName() {
         return DaggerAPI$getName();
     }
@@ -23,5 +31,13 @@ public interface MixinAttribute<T> extends Attribute<T>
 
     public default T clamp(T value) {
         return DaggerAPI$clamp(value);
+    }
+
+    public default MixinAttribute<T> setTracked() {
+        return DaggerAPI$setTracked();
+    }
+
+    public default boolean isTracked() {
+        return DaggerAPI$isTracked();
     }
 }

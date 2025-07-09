@@ -1,6 +1,7 @@
 package xspleet.daggerapi.mixin;
 
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.network.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
@@ -47,10 +48,12 @@ public class EntityAttributeInstanceMixin implements Self<EntityAttributeInstanc
     }
 
     @Override
-    public void DaggerAPI$clean() {}
+    public void DaggerAPI$removeModifier(UUID modifierId) {
+        self().removeModifier(modifierId);
+    }
 
     @Override
-    public boolean DaggerAPI$isDirty() {
-        return false;
+    public void DaggerAPI$write(PacketByteBuf byteBuf) {
+        throw new IllegalStateException("EntityAttributeInstance does not support writing to PacketByteBuf.");
     }
 }

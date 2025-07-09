@@ -27,7 +27,9 @@ public class EntityTrackerEntrySyncAttributeMixin implements Self<EntityTrackerE
             )
     )
     private void daggerAPI$syncAttributes(ServerPlayerEntity player, CallbackInfo ci) {
-        AttributeHolder.asHolder(player).syncAttributeContainer();
+        if(entity instanceof AttributeHolder holder) {
+            holder.syncAttributeContainer();
+        }
     }
 
     @Inject(
@@ -38,8 +40,11 @@ public class EntityTrackerEntrySyncAttributeMixin implements Self<EntityTrackerE
                     shift = At.Shift.AFTER)
     )
     private void daggerAPI$syncAttributesOnDataClear(CallbackInfo ci) {
-        if (entity instanceof AttributeHolder holder) {
-            holder.syncAttributeContainer();
+        if(entity instanceof AttributeHolder holder) {
+            if(holder.needsAttributeSync())
+            {
+                holder.syncAttributeContainer();
+            }
         }
     }
 }

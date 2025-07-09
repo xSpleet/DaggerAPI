@@ -1,9 +1,12 @@
 package xspleet.daggerapi.attributes.instance;
 
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.Attribute;
+import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
+import xspleet.daggerapi.collections.registration.Mapper;
 
 import java.util.*;
 
@@ -12,7 +15,10 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
     private final TreeMap<AttributeOperation<T>, Set<AttributeModifier<T>>> temporaryModifiers = new TreeMap<>(Comparator.comparingInt(AttributeOperation::getPrecedence));
     private final Set<AttributeModifier<T>> allModifiers = new HashSet<>();
     private final Attribute<T> attribute;
-    private boolean dirty = true;
+
+    private final List<UUID> removedModifiers = new ArrayList<>();
+    private final List<AttributeModifier<T>> addedModifiers = new ArrayList<>();
+
     private boolean updated = true;
     private T value;
 
@@ -40,8 +46,9 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         temporaryModifiers.putIfAbsent(modifier.getOperation(), new HashSet<>());
         temporaryModifiers.get(modifier.getOperation()).add(modifier);
         allModifiers.add(modifier);
+        if(attribute.isTracked())
+            addedModifiers.add(modifier);
         updated = true;
-        setDirty();
     }
 
     @Override
@@ -55,8 +62,22 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                 }
             }
         }
+        if(attribute.isTracked())
+        {
+            if(addedModifiers.contains(modifier))
+                addedModifiers.remove(modifier);
+            else
+                removedModifiers.add(modifier.getUUID());
+        }
         updated = true;
-        setDirty();
+    }
+
+    @Override
+    public void removeModifier(UUID modifierId) {
+        allModifiers.stream()
+                .filter(m -> m.getUUID().equals(modifierId))
+                .findFirst().ifPresent(this::removeModifier);
+        updated = true;
     }
 
     @Override
@@ -81,50 +102,62 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         return attribute.getDefaultValue();
     }
 
-    public void setDirty() {
-        dirty = true;
-    }
-
-    @Override
-    public void clean() {
-        dirty = false;
-    }
-
     @Override
     public boolean isDirty() {
-        return dirty;
+        return attribute.isTracked() && (!removedModifiers.isEmpty() || !addedModifiers.isEmpty());
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeMap(temporaryModifiers,
-                (buffer, operation) -> buffer.writeString(operation.getName()),
-                (buffer, modifiers) -> buffer.writeCollection(modifiers, (b, modifier) -> modifier.write(b))
+
+        buf.writeCollection(
+                removedModifiers,
+                PacketByteBuf::writeUuid
         );
+
+        buf.writeCollection(
+                addedModifiers,
+                (b, modifier) -> modifier.write(b)
+        );
+
+        removedModifiers.clear();
+        addedModifiers.clear();
     }
 
-    public static AttributeInstance<?> read(PacketByteBuf buf)
-    {
-        DaggerAttributeInstance<?> instance = new DaggerAttributeInstance<>(null); // Attribute will be set later
-        Map<String, Set<AttributeModifier<?>>> modifiers = buf.readMap(
-                buffer -> buffer.readString(32767),
-                buffer -> {
-                    UUID uuid = buffer.readUuid();
-                    String name = buffer.readString(32767);
-                    Object value = switch (buffer.readString(32767)) {
-                        case "addition" -> buffer.readDouble();
-                        case "multiply_base" -> buffer.readDouble();
-                        case "multiply_total" -> buffer.readDouble();
-                        default -> throw new IllegalArgumentException("Unknown operation type");
-                    };
-                    return new DaggerAttributeModifier<>(uuid, name, value, AttributeOperation.getByName(name));
+    public static AttributeInstanceSyncData read(PacketByteBuf buf) {
+        List<UUID> removedModifiers = buf.readCollection(
+                ArrayList::new,
+                PacketByteBuf::readUuid
+        );
+
+        List<AttributeModifier<?>> addedModifiers = buf.readCollection(
+                ArrayList::new,
+                (b) -> {
+                    UUID uuid = b.readUuid();
+                    String name = b.readString(32767);
+                    String operationName = b.readString(32767);
+                    AttributeOperation<?> operation = Mapper.getOperation(operationName);
+                    return readModifier(
+                            b, uuid, name, operation
+                    );
                 }
         );
-        for (Map.Entry<String, Set<AttributeModifier<?>>> entry : modifiers.entrySet()) {
-            for (AttributeModifier<?> modifier : entry.getValue()) {
-                instance.addTemporaryModifier(modifier);
-            }
+
+        return new AttributeInstanceSyncData(removedModifiers, addedModifiers);
+    }
+
+    private static <T> AttributeModifier<T> readModifier(PacketByteBuf buf, UUID uuid, String name, AttributeOperation<T> operation)
+    {
+        T value;
+        if(operation.getType() == Double.class) {
+            value = operation.getType().cast(buf.readDouble());
+        } else if(operation.getType() == Integer.class) {
+            value = operation.getType().cast(buf.readInt());
+        } else if(operation.getType() == Boolean.class) {
+            value = operation.getType().cast(buf.readBoolean());
+        } else {
+            throw new IllegalArgumentException("Unsupported attribute modifier type: " + operation.getType().getName());
         }
-        return instance;
+        return new DaggerAttributeModifier<>(uuid, name, value, operation);
     }
 }

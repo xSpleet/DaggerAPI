@@ -66,19 +66,19 @@ public class ArtifactItemBuilder
         {
             if(!primitive.isNumber())
                 throw new IllegalArgumentException("Value for integer attribute modifier must be a number");
-            castValue = (T) Integer.valueOf(primitive.getAsInt());
+            castValue = castOperation.getType().cast(primitive.getAsInt());
         }
         else if(castOperation.getType().equals(Double.class))
         {
             if(!primitive.isNumber())
                 throw new IllegalArgumentException("Value for double attribute modifier must be a number");
-            castValue = (T) Double.valueOf(primitive.getAsDouble());
+            castValue = castOperation.getType().cast(primitive.getAsDouble());
         }
         else if(castOperation.getType().equals(Boolean.class))
         {
             if(!primitive.isBoolean())
                 throw new IllegalArgumentException("Value for boolean attribute modifier must be a boolean");
-            castValue = (T) Boolean.valueOf(primitive.getAsBoolean());
+            castValue = castOperation.getType().cast(primitive.getAsBoolean());
         }
         else
         {

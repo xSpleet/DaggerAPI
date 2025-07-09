@@ -8,6 +8,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xspleet.daggerapi.attributes.AttributeHolder;
+import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
 import xspleet.daggerapi.base.ErrorLogger;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.collections.registration.Mapper;
@@ -37,12 +39,21 @@ public class DaggerAPI implements ModInitializer {
 	public void onInitialize() {
 		Mapper.registerMapper();
 		ActiveArtifactActivation.register();
+		NetworkingConstants.init();
 
 		ClientPlayNetworking.registerGlobalReceiver(
 				NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID,
 				(client, handler, packet, sender) -> {
-					var syncContainer = packet.getSyncContainer();
-					client.player
+					var syncContainer = DaggerAttributeContainer.readFromPacket(packet);
+					client.execute(() -> {
+						var player = client.player;
+						if (player instanceof AttributeHolder holder) {
+							holder.acceptSyncContainer(syncContainer);
+							LOGGER.info("Received attribute sync packet for player: {}", player.getName().getString());
+						} else {
+							LOGGER.warn("Received attribute sync packet but player is null.");
+						}
+					});
 				}
 		);
 

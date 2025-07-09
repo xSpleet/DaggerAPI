@@ -1,9 +1,12 @@
 package xspleet.daggerapi.attributes.container;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.instance.DaggerAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
+import xspleet.daggerapi.collections.registration.Mapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,24 +31,6 @@ public class DaggerAttributeContainer
             return instance;
         }
         return (AttributeInstance<T>) attributeInstances.get(attribute);
-    }
-
-    public void acceptSyncContainer(SyncAttributeContainer syncContainer) {
-        for (Map.Entry<Attribute<?>, AttributeInstance<?>> entry : syncContainer.attributeInstances.entrySet()) {
-            var attribute = entry.getKey();
-            var instance = getInstance(attribute);
-            if(!attributeInstances.containsKey(attribute))
-                throw new IllegalStateException("Attribute " + attribute.getName() + " is not present in this container.");
-            attributeInstances.put(attribute, instance);
-        }
-    }
-
-    public SyncAttributeContainer getSyncContainer() {
-        var syncData = attributeInstances.entrySet()
-                .stream()
-                .filter((e) -> e.getValue().isDirty())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return new SyncAttributeContainer(new HashMap<>(syncData));
     }
 
     private <T> AttributeInstance<T> require(Attribute<T> attribute)
@@ -82,6 +67,61 @@ public class DaggerAttributeContainer
     public <T> T getValue(Attribute<T> attribute)
     {
         return require(attribute).getValue();
+    }
+
+    public PacketByteBuf toPacketByteBuf()
+    {
+        PacketByteBuf buf = PacketByteBufs.create();
+
+        var instancesToUpdate = attributeInstances.entrySet()
+            .stream()
+            .filter((e) -> e.getValue().isDirty())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        buf.writeMap(
+                instancesToUpdate,
+                (byteBuf, attribute) -> byteBuf.writeString(Mapper.getNameOf(attribute)),
+                (byteBuf, instance) -> instance.write(byteBuf)
+        );
+        return buf;
+    }
+
+    public void acceptSyncContainer(SyncContainer container)
+    {
+        for(var entry : container.getSyncData().entrySet())
+        {
+            var attribute = entry.getKey();
+            var instanceSyncData = entry.getValue();
+            if(instanceSyncData == null) continue;
+
+            if(!attributeInstances.containsKey(attribute))
+            {
+                throw new IllegalArgumentException("Attribute " + attribute.getName() + " is not registered.");
+            }
+
+            var attributeInstance = attributeInstances.get(attribute);
+            for(var modifier : instanceSyncData.addedModifiers())
+            {
+                ((AttributeInstance<Object>)attributeInstance).addTemporaryModifier((AttributeModifier<Object>) modifier);
+            }
+            for(var modifierId : instanceSyncData.removedModifiers())
+            {
+                attributeInstance.removeModifier(modifierId);
+            }
+        }
+    }
+
+    public static SyncContainer readFromPacket(PacketByteBuf buf)
+    {
+        return new SyncContainer(buf.readMap(
+                byteBuf -> Mapper.getEntityAttribute(byteBuf.readString(32767)),
+                DaggerAttributeInstance::read
+        ));
+    }
+
+    public boolean needsSync()
+    {
+        return attributeInstances.values().stream().anyMatch(AttributeInstance::isDirty);
     }
 
     public static class Builder{

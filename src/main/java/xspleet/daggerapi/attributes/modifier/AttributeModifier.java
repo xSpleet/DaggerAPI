@@ -3,6 +3,7 @@ package xspleet.daggerapi.attributes.modifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
+import xspleet.daggerapi.collections.registration.Mapper;
 
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public interface AttributeModifier<T>
     public default void write(PacketByteBuf buf) {
         buf.writeUuid(getUUID());
         buf.writeString(getName());
+        buf.writeString(Mapper.getNameOf(getOperation()));
         if(getOperation().getType() == Double.class)
             buf.writeDouble((Double) getValue());
         else if(getOperation().getType() == Integer.class)
@@ -42,6 +44,5 @@ public interface AttributeModifier<T>
             buf.writeBoolean((Boolean) getValue());
         else
             throw new IllegalArgumentException("Unsupported attribute modifier type: " + getOperation().getType().getName());
-        buf.writeString(getOperation().getName());
     }
 }

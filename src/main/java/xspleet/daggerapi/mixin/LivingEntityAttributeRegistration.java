@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
@@ -22,12 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
-import xspleet.daggerapi.attributes.container.SyncAttributeContainer;
+import xspleet.daggerapi.attributes.container.SyncContainer;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeHolder;
 import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Attributes;
+import xspleet.daggerapi.networking.NetworkingConstants;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityAttributeRegistration implements Self<LivingEntity>, MixinAttributeHolder {
@@ -51,21 +53,26 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
 
     @Override
     public void DaggerAPI$syncAttributeContainer() {
-        daggerAPI$attributeContainer.getSyncContainer();
+        var packet = daggerAPI$attributeContainer.toPacketByteBuf();
         if(self() instanceof ServerPlayerEntity player)
         {
-            ServerPlayNetworking.send();
+            ServerPlayNetworking.send(player, NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID, packet);
         }
     }
 
     @Override
-    public void DaggerAPI$acceptSyncContainer(SyncAttributeContainer syncContainer) {
+    public void DaggerAPI$acceptSyncContainer(SyncContainer syncContainer) {
         if(self() instanceof ClientPlayerEntity player) {
             if (daggerAPI$attributeContainer == null) {
                 throw new IllegalStateException("Attribute container is not initialized.");
             }
             daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
         }
+    }
+
+    @Override
+    public boolean DaggerAPI$needsAttributeSync() {
+        return daggerAPI$attributeContainer.needsSync();
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

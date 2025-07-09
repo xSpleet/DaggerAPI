@@ -7,6 +7,7 @@ public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
     private final T defaultValue;
     private final T minValue;
     private final T maxValue;
+    private boolean tracked = false;
 
     public ClampedAttribute(String name, Class<T> type, T defaultValue, T minValue, T maxValue) {
         this.name = name;
@@ -43,5 +44,16 @@ public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
         }
 
         return clampedValue;
+    }
+
+    @Override
+    public Attribute<T> setTracked() {
+        tracked = true;
+        return this;
+    }
+
+    @Override
+    public boolean isTracked() {
+        return tracked;
     }
 }
