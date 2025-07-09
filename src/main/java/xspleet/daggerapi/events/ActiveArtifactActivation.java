@@ -23,9 +23,6 @@ import xspleet.daggerapi.data.key.DaggerKeys;
 public class ActiveArtifactActivation
 {
     public static final Identifier USE_ACTIVE_ARTIFACT_PACKET_ID = new Identifier("daggerapi", "use_active_artifact");
-    public static final String KEY_CATEGORY_DAGGERAPI = "key.category.daggerapi.daggerapi";
-    public static final String KEY_USE_ACTIVE_ARTIFACT = "key.daggerapi.use_active_artifact";
-    public static KeyBinding artifactUsingKey;
 
     public static void registerActivation()
     {
@@ -64,29 +61,5 @@ public class ActiveArtifactActivation
                 }
             }
         });
-    }
-
-    public static void registerKeyInputs()
-    {
-        ClientTickEvents.END_CLIENT_TICK.register(client->
-                {
-                    if(artifactUsingKey.wasPressed())
-                    {
-                        ClientPlayNetworking.send(USE_ACTIVE_ARTIFACT_PACKET_ID, PacketByteBufs.empty());
-                    }
-                }
-        );
-    }
-
-    public static void register()
-    {
-        artifactUsingKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                KEY_USE_ACTIVE_ARTIFACT,
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_U,
-                KEY_CATEGORY_DAGGERAPI
-        ));
-        registerKeyInputs();
-        registerActivation();
     }
 }

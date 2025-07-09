@@ -2,6 +2,7 @@ package xspleet.daggerapi.attributes.instance;
 
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
+import xspleet.daggerapi.attributes.instance.delta.AttributeInstanceDelta;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
@@ -16,8 +17,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
     private final Set<AttributeModifier<T>> allModifiers = new HashSet<>();
     private final Attribute<T> attribute;
 
-    private final List<UUID> removedModifiers = new ArrayList<>();
-    private final List<AttributeModifier<T>> addedModifiers = new ArrayList<>();
+    private final AttributeInstanceDelta<T> delta = new AttributeInstanceDelta<>();
 
     private boolean updated = true;
     private T value;
@@ -47,7 +47,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         temporaryModifiers.get(modifier.getOperation()).add(modifier);
         allModifiers.add(modifier);
         if(attribute.isTracked())
-            addedModifiers.add(modifier);
+            delta.addModifier(modifier);
         updated = true;
     }
 
@@ -57,15 +57,13 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
             Set<AttributeModifier<T>> modifiers = temporaryModifiers.get(modifier.getOperation());
             if (modifiers != null) {
                 modifiers.remove(modifier);
+                if(attribute.isTracked()) {
+                    delta.removeModifier(modifier);
+                }
                 if (modifiers.isEmpty()) {
                     temporaryModifiers.remove(modifier.getOperation());
                 }
             }
-        }
-        if(attribute.isTracked())
-        {
-            removedModifiers.add(modifier.getUUID());
-            addedModifiers.remove(modifier);
         }
         updated = true;
     }
@@ -102,24 +100,23 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
 
     @Override
     public boolean isDirty() {
-        return attribute.isTracked() && (!removedModifiers.isEmpty() || !addedModifiers.isEmpty());
+        return attribute.isTracked() && delta.hasDeltas();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
 
         buf.writeCollection(
-                removedModifiers,
-                PacketByteBuf::writeUuid
+                delta.getRemovedModifiers(),
+                (b, modifier) -> b.writeUuid(modifier.getUUID())
         );
 
         buf.writeCollection(
-                addedModifiers,
+                delta.getAddedModifiers(),
                 (b, modifier) -> modifier.write(b)
         );
 
-        removedModifiers.clear();
-        addedModifiers.clear();
+        delta.clear();
     }
 
     public static AttributeInstanceSyncData read(PacketByteBuf buf) {

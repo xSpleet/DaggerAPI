@@ -62,7 +62,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
 
     @Override
     public void DaggerAPI$acceptSyncContainer(SyncContainer syncContainer) {
-        if(self() instanceof ClientPlayerEntity player) {
+        if(self().getWorld().isClient()) {
             if (daggerAPI$attributeContainer == null) {
                 throw new IllegalStateException("Attribute container is not initialized.");
             }

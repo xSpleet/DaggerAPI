@@ -18,6 +18,9 @@
 		"main": [
 			"xspleet.daggerapi.DaggerAPI"
 		],
+		"client": [
+			"xspleet.daggerapi.DaggerAPIClient"
+		],
 		"fabric-datagen": [
 			"xspleet.daggerapi.DaggerAPIDataGenerator"
 		]
