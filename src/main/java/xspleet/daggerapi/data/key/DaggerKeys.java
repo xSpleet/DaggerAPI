@@ -18,4 +18,14 @@ public class DaggerKeys
     public static final DaggerKey<ArtifactItem> ARTIFACT = new DaggerKey<>("artifact", ArtifactItem.class);
     public static final DaggerKey<Boolean> SUCCESSFUL = new DaggerKey<>("successful", Boolean.class);
     public static final DaggerKey<DamageSource> DAMAGE_SOURCE = new DaggerKey<>("damage_source", DamageSource.class);
+
+    public static class Provider
+    {
+        public static final DaggerKey<String> AMOUNT = new DaggerKey<>("amount", String.class);
+        public static final DaggerKey<String> MESSAGE = new DaggerKey<>("message", String.class);
+        public static final DaggerKey<String> WEATHER = new DaggerKey<>("weather", String.class);
+        public static final DaggerKey<String> DIMENSION = new DaggerKey<>("dimension", String.class);
+        public static final DaggerKey<String> ARTIFACT = new DaggerKey<>("artifact", String.class);
+        public static final DaggerKey<String> DAMAGE_SOURCE = new DaggerKey<>("damageSource", String.class);
+    }
 }

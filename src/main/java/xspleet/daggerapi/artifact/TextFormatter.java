@@ -1,4 +1,4 @@
-package xspleet.daggerapi.base;
+package xspleet.daggerapi.artifact;
 
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

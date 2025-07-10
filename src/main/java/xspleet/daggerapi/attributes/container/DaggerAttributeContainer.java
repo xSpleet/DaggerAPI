@@ -7,6 +7,8 @@ import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.instance.DaggerAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.exceptions.DaggerAPIException;
+import xspleet.daggerapi.exceptions.NoSuchAttributeException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,10 +115,16 @@ public class DaggerAttributeContainer
 
     public static SyncContainer readFromPacket(PacketByteBuf buf)
     {
-        return new SyncContainer(buf.readMap(
-                byteBuf -> Mapper.getEntityAttribute(byteBuf.readString(32767)),
-                DaggerAttributeInstance::read
-        ));
+            return new SyncContainer(buf.readMap(
+                    byteBuf -> {
+                        try {
+                            return Mapper.getAttribute(byteBuf.readString(32767));
+                        } catch (NoSuchAttributeException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    DaggerAttributeInstance::read
+            ));
     }
 
     public boolean needsSync()

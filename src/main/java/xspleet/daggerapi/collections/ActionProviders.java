@@ -2,6 +2,7 @@ package xspleet.daggerapi.collections;
 
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import com.fathzer.soft.javaluator.StaticVariableSet;
+import com.google.gson.JsonElement;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
 import xspleet.daggerapi.DaggerAPI;
@@ -9,7 +10,6 @@ import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.trigger.actions.Action;
-import xspleet.daggerapi.exceptions.WrongArgumentException;
 
 public class ActionProviders
 {
@@ -23,27 +23,25 @@ public class ActionProviders
     });
 
     public static Provider<Action> HEAL = Mapper.registerActionProvider("heal", (args) -> {
-        if(!args.getData("amount").matches("\\d+"))
-            throw new WrongArgumentException("amount", args.getData("amount"));
-
-        int amount = Integer.parseInt(args.getData("amount"));
+        var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
+        DoubleEvaluator evaluator = new DoubleEvaluator();
+        StaticVariableSet<Double> variables = new StaticVariableSet<>();
 
         return data -> {
             LivingEntity living = (LivingEntity) data.getActEntity(args.getOn());
-            living.heal(amount);
+            variables.set("amount", data.getData(DaggerKeys.AMOUNT).doubleValue());
+            var result = evaluator.evaluate(amountExpression, variables);
+            living.heal(result.floatValue());
         };
-    }).addArgument("amount");
+    }).addArgument(DaggerKeys.Provider.AMOUNT, JsonElement::getAsString);
 
     public static Provider<Action> SEND_MESSAGE = Mapper.registerActionProvider("sendMessage", (args) -> {
-        if(!args.getData("message").matches(".+"))
-            throw new WrongArgumentException("message", args.getData("message"));
-
-        String message = args.getData("message");
+        String message = args.getData(DaggerKeys.Provider.MESSAGE);
 
         return data -> {
             data.getActEntity(args.getOn()).sendMessage(Text.literal(message));
         };
-    }).addArgument("message");
+    }).addArgument(DaggerKeys.Provider.MESSAGE, JsonElement::getAsString);
 
     public static Provider<Action> KILL = Mapper.registerActionProvider("kill", (args) -> {
         return data -> {
@@ -53,7 +51,7 @@ public class ActionProviders
     });
 
     public static Provider<Action> CHANGE_AMOUNT = Mapper.registerActionProvider("changeAmount", (args) -> {
-        var amountExpression = args.getData("amount");
+        var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
         DoubleEvaluator evaluator = new DoubleEvaluator();
         StaticVariableSet<Double> variables = new StaticVariableSet<>();
 
@@ -62,6 +60,6 @@ public class ActionProviders
             var result = evaluator.evaluate(amountExpression, variables);
             data.addData(DaggerKeys.AMOUNT, result.floatValue());
         };
-    }).addArgument("amount")
+    }).addArgument(DaggerKeys.Provider.AMOUNT, JsonElement::getAsString)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 }

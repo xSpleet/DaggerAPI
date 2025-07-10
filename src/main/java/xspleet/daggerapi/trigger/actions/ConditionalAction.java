@@ -3,7 +3,6 @@ package xspleet.daggerapi.trigger.actions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.base.Condition;
-import xspleet.daggerapi.collections.ConditionProviders;
 import xspleet.daggerapi.data.ActionData;
 import xspleet.daggerapi.data.ConditionData;
 import xspleet.daggerapi.data.key.DaggerKeys;
@@ -23,7 +22,7 @@ public class ConditionalAction
 
     public ConditionalAction()
     {
-        condition = ConditionProviders.alwaysTrue();
+        condition = conditionData -> true;
         actions = new ArrayList<>();
     }
 

@@ -13,11 +13,6 @@ import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.base.*;
-import xspleet.daggerapi.collections.Triggers;
-import xspleet.daggerapi.data.ProviderData;
-import xspleet.daggerapi.trigger.actions.ConditionalAction;
-import xspleet.daggerapi.trigger.Trigger;
-import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.models.*;
@@ -33,26 +28,119 @@ public class ArtifactItemBuilder
 
         BuildableArtifactItem item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
 
-        if(active)
-        {
-            item.cooldown(cooldown)
-                    .active(true);
+        if(active) {
+            item.cooldown(cooldown).active(true);
         }
 
         item.rarity(ArtifactRarity.getRarity(rarity));
-
         buildArtifactAttributes(itemModel, item);
         buildEvents(itemModel, item);
 
         return Registry.register(Registries.ITEM, Identifier.of(DaggerAPI.MOD_ID, name), item);
     }
 
+    private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)
+    {
+        var artifactModifierModels = itemModel.getAttributeModifiers();
+        for(int i = 0 ; i < artifactModifierModels.size() ; i++)
+        {
+            var artifactModifierModel = artifactModifierModels.get(i);
+
+            var artifactAttributeModifier = new ArtifactAttributeModifier();
+
+            var conditionsModels = artifactModifierModel.getConditions();
+            var modifierModels = artifactModifierModel.getModifiers();
+
+            for(int j = 0 ; j < conditionsModels.size() ; j++)
+            {
+                var conditionModel = conditionsModels.get(j);
+                try {
+                    if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
+                        throw new WrongConditionOnException("Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
+                }
+                catch (WrongConditionOnException e) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Condition", j), e);
+                    continue;
+                }
+                try {
+                    Condition conditionUnit = getCondition(conditionModel);
+                    artifactAttributeModifier.addCondition(conditionUnit);
+                }
+                catch (DaggerAPIException e) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Condition", j), e);
+                    continue;
+                }
+            }
+
+            for(int j = 0 ; j < modifierModels.size() ; j++)
+            {
+                var modifierModel = modifierModels.get(j);
+                try {
+                    String name = itemModel.getName() + "_" + modifierModel.getAttribute() + "_" + modifierModel.getModificationType() + "_" + modifierModel.getModificationValue().getAsString() + "_" + j + "_" + i;
+                    artifactAttributeModifier.addAttributeModifier(
+                            getModifier(name, modifierModel)
+                    );
+                }
+                catch (DaggerAPIException e) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Modifier", j), e);
+                    continue;
+                }
+            }
+
+            item.addAttributeModifier(artifactAttributeModifier);
+        }
+    }
+
+    private static void buildEvents(ItemModel itemModel, BuildableArtifactItem item)
+    {
+
+    }
+
+    private static WrappedModifier<?> getModifier(String name, AttributeModifierModel modifierModel) throws NoSuchAttributeException, NoSuchOperationException {
+        String attributeName = modifierModel.getAttribute();
+        String operationName = modifierModel.getModificationType();
+        JsonElement value = modifierModel.getModificationValue();
+
+        AttributeOperation<?> operation = Mapper.getOperation(operationName);
+        Attribute<?> attribute = Mapper.getAttribute(attributeName);
+
+        AttributeModifier<?> modifier = safeCreateModifier(name, attribute, value, operation);
+
+        return new WrappedModifier(
+                attribute,
+                modifier
+        );
+    }
+
+    private static Condition getCondition(ConditionModel conditionModel) throws NoSuchConditionException, MissingArgumentException {
+        String condition = conditionModel.getCondition();
+        var splitCondition = condition.split(" ");
+        boolean negate = false;
+        String conditionName;
+        if(splitCondition.length == 1) {
+            conditionName = splitCondition[0];
+        }
+        else if(splitCondition.length == 2) {
+            if(!splitCondition[0].equalsIgnoreCase("not"))
+                throw new NoSuchConditionException(condition);
+            negate = true;
+            conditionName = splitCondition[1];
+        }
+        else {
+            throw new NoSuchConditionException(condition);
+        }
+
+        var conditionProvider = Mapper.getConditionProvider(conditionName);
+        var conditionUnit = conditionProvider.provide(conditionModel.getOn(), conditionModel.getArguments());
+        return negate ? conditionUnit.negate() : conditionUnit;
+    }
+
     private static <T> AttributeModifier<T> safeCreateModifier(
             String name,
+            Attribute<?> attribute,
             JsonElement value,
             AttributeOperation<?> operation
-    )
-    {
+    ) {
         if(value == null || value.isJsonNull())
             throw new IllegalArgumentException("Value for attribute modifier cannot be null or JSON null");
 
@@ -90,158 +178,5 @@ public class ArtifactItemBuilder
                 castValue,
                 castOperation
         );
-    }
-
-    private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)
-    {
-        var modifierModels = itemModel.getAttributeModifiers();
-        int i = 0;
-        for(ArtifactAttributeModifierModel modifierModel: modifierModels)
-        {
-            ArtifactAttributeModifier artifactAttributeModifier = new ArtifactAttributeModifier();
-            for(ConditionModel conditionModel: modifierModel.getConditions())
-            {
-                try {
-                    Condition condition = Mapper
-                            .getConditionProvider(conditionModel.getCondition())
-                            .provide(new ProviderData(conditionModel.getArguments())
-                                    .setOn(conditionModel.getOn()));
-
-                    if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
-                        throw new NoSuchConditionException("Condition " + conditionModel.getCondition() + " is applied to self or world when used in attribute modifiers, but on is set to " + conditionModel.getOn());
-
-                    artifactAttributeModifier.addCondition(condition);
-                }
-                catch(NoSuchConditionException conditionException)
-                {
-                    conditionModel.setCondition("HERE --- " + conditionModel.getCondition() + " ---");
-                    ErrorLogger.log(itemModel.getName(), conditionException, modifierModel);
-                }
-            }
-            int j = 0;
-            for(AttributeModifierModel attributeModifierModel: modifierModel.getModifiers())
-            {
-                Attribute<?> attribute = null;
-                try{
-                    attribute = Mapper.getEntityAttribute(attributeModifierModel.getAttribute());
-                }
-                catch(NoSuchAttributeException attributeException)
-                {
-                    attributeModifierModel.setAttribute("HERE --- " + attributeModifierModel.getAttribute() + " ---");
-                    ErrorLogger.log(itemModel.getName(), attributeException, modifierModel);
-                }
-                try {
-                    AttributeModifier<?> modifier = safeCreateModifier(
-                            i + "/" + j + "/" + attributeModifierModel.getAttribute() + "/" + attributeModifierModel.getModificationType() + "/" + attributeModifierModel.getModificationValue(),
-                            attributeModifierModel.getModificationValue(),
-                            Mapper.getOperation(attributeModifierModel.getModificationType())
-                    );
-
-                    artifactAttributeModifier.addAttributeModifier(
-                            new WrappedModifier(
-                                    attribute,
-                                    modifier
-                            )
-                    );
-                }
-                catch(NoSuchOperationException operationException)
-                {
-                    attributeModifierModel.setModificationType("HERE --- " + attributeModifierModel.getModificationType() + " ---");
-                    ErrorLogger.log(itemModel.getName(), operationException, modifierModel);
-                }
-                j++;
-            }
-            i++;
-            item.addAttributeModifier(artifactAttributeModifier);
-        }
-    }
-
-    private static void buildEvents(ItemModel itemModel, BuildableArtifactItem item)
-    {
-        var eventModels = itemModel.getEvents();
-        for(EventModel eventModel: eventModels)
-        {
-            Trigger trigger = Mapper.getTrigger(eventModel.getTrigger());
-            ConditionalAction action;
-            if (eventModel.getWeight() != null)
-                action = new WeightedConditionalAction(eventModel.getWeight());
-            else
-                action = new ConditionalAction();
-
-            action.triggeredIn(eventModel.getTriggeredIn())
-                    .triggeredBy(eventModel.getTriggeredBy());
-
-            for (ConditionModel conditionModel : eventModel.getConditions()) {
-                try{
-                    var condition = Mapper
-                            .getConditionProvider(conditionModel.getCondition())
-                            .provide(new ProviderData(conditionModel.getArguments())
-                                    .setOn(conditionModel.getOn()));
-
-                    if(conditionModel.getOn() == On.SELF)
-                        throw new NoSuchConditionException("Condition " + conditionModel.getCondition() + " is not applied to self in events, but on is set to " + conditionModel.getOn());
-
-                    action.addCondition(condition);
-                }
-                catch(NoSuchConditionException conditionException)
-                {
-                    conditionModel.setCondition("HERE! --- " + conditionModel.getCondition() + " ---");
-                    ErrorLogger.log(itemModel.getName(), conditionException, eventModel);
-                }
-            }
-
-            for (ActionModel actionModel : eventModel.getActions()) {
-                try{
-                    var unitAction = Mapper
-                            .getActionProvider(actionModel.getAction())
-                            .provide(new ProviderData(actionModel.getArguments())
-                                    .setOn(actionModel.getOn()));
-
-                    if(actionModel.getOn() == On.SELF)
-                        throw new NoSuchActionException("Action " + actionModel.getAction() + " is not applied to self in events, but on is set to " + actionModel.getOn());
-
-                    action.addAction(unitAction);
-                }
-                catch(NoSuchActionException actionException)
-                {
-                    actionModel.setAction("HERE! --- " + actionModel.getAction() + " ---");
-                    ErrorLogger.log(itemModel.getName(), actionException, eventModel);
-                }
-            }
-            try {
-                if(!trigger.hasTriggerer() && eventModel.getTriggeredBy() != null)
-                {
-                    throw new NoSuchTriggerException("Trigger " + eventModel.getTrigger() + " does not provide a triggerer, but triggered by is set to " + eventModel.getTriggeredBy());
-                }
-                if(!trigger.isWorldful() && eventModel.getTriggeredIn() != null)
-                {
-                    throw new NoSuchTriggerException("Trigger " + eventModel.getTrigger() + " is not worldful, but triggered in is set to " + eventModel.getTriggeredIn());
-                }
-
-                if(trigger == Triggers.ACTIVATE
-                        && eventModel.getConditions().stream().anyMatch(x -> x.getCondition().equalsIgnoreCase("isArtifact"))
-                        && eventModel.getConditions().stream().anyMatch(x -> x.getCondition().equalsIgnoreCase("isSuccessful")))
-                {
-                    action.addCondition(
-                            Mapper.getConditionProvider("isArtifact")
-                                    .provide(new ProviderData().setOn(On.TRIGGERER)
-                                            .addData("artifact", "choose daggerapi:" + itemModel.getName()))
-                    );
-
-                    action.addCondition(
-                            Mapper.getConditionProvider("isSuccessful")
-                                    .provide(new ProviderData().setOn(On.TRIGGERER)
-                                            .addData("successful", "true"))
-                    );
-                }
-
-                item.addEvent(trigger, action);
-            }
-            catch (NoSuchTriggerException triggerException)
-            {
-                eventModel.setTrigger("HERE --- " + eventModel.getTrigger() + " ---");
-                ErrorLogger.log(itemModel.getName(), triggerException, eventModel);
-            }
-        }
     }
 }

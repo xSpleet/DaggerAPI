@@ -1,18 +1,14 @@
 package xspleet.daggerapi.exceptions;
 
-public class WrongArgumentException extends DaggerAPIException
+public class WrongArgumentException extends RuntimeException
 {
     private final String name;
     private final String value;
 
-    public String getName()
+    @Override
+    public String getMessage()
     {
-        return name;
-    }
-
-    public String getValue()
-    {
-        return value;
+        return "Wrong value of argument" + name + ": " + value;
     }
 
     public WrongArgumentException(String name, String value)

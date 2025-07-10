@@ -5,20 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xspleet.daggerapi.attributes.AttributeHolder;
-import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
-import xspleet.daggerapi.base.ErrorLogger;
+import xspleet.daggerapi.artifact.builder.ErrorLogger;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
-import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
-import xspleet.daggerapi.networking.NetworkingConstants;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -50,7 +43,7 @@ public class DaggerAPI implements ModInitializer {
             LOGGER.info("\n{}", JSON_PARSER.toJson(itemModel));
 			ArtifactItemBuilder.build(itemModel);
 
-			ErrorLogger.validateItems();
+			ErrorLogger.validate();
 		} catch (IOException e) {
             throw new RuntimeException(e);
         }

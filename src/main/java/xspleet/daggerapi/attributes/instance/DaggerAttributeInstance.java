@@ -8,6 +8,7 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.exceptions.NoSuchOperationException;
 
 import java.util.*;
 
@@ -131,7 +132,14 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                     UUID uuid = b.readUuid();
                     String name = b.readString(32767);
                     String operationName = b.readString(32767);
-                    AttributeOperation<?> operation = Mapper.getOperation(operationName);
+                    AttributeOperation<?> operation = null;
+                    try {
+                        operation = Mapper.getOperation(operationName);
+                    } catch (NoSuchOperationException e) {
+                        throw new IllegalStateException(
+                                "Unknown operation: " + operationName, e
+                        );
+                    }
                     return readModifier(
                             b, uuid, name, operation
                     );

@@ -1,12 +1,14 @@
 package xspleet.daggerapi.models;
 
+import com.google.gson.JsonElement;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class ActionModel extends JSONModel
 {
     private String action;
-    private Map<String, String> arguments = new HashMap<>();
+    private Map<String, JsonElement> arguments = new HashMap<>();
     private On on = On.TRIGGERED;
 
     public String getAction() {
@@ -17,11 +19,11 @@ public class ActionModel extends JSONModel
         this.action = action;
     }
 
-    public Map<String, String> getArguments() {
+    public Map<String, JsonElement> getArguments() {
         return arguments;
     }
 
-    public void setArguments(Map<String, String> arguments) {
+    public void setArguments(Map<String, JsonElement> arguments) {
         this.arguments = arguments;
     }
 

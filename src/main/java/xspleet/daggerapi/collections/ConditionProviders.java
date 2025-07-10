@@ -1,13 +1,16 @@
 package xspleet.daggerapi.collections;
 
+import com.google.gson.JsonElement;
 import net.minecraft.world.World;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
-import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
+import xspleet.daggerapi.models.On;
+
+import java.util.HashMap;
 
 public class ConditionProviders
 {
@@ -21,10 +24,6 @@ public class ConditionProviders
                 return data -> true;
                     });
 
-    public static Condition alwaysTrue() {
-        return ALWAYS.provide(new ProviderData());
-    }
-
     public static final Provider<Condition> NEVER = Mapper
             .registerConditionProvider("never", (args) -> {
                 return data -> false;
@@ -33,7 +32,7 @@ public class ConditionProviders
     public static final Provider<Condition> IF_WEATHER = Mapper
             .registerConditionProvider("ifWeather", (args) ->
             {
-                String weather = args.getData("weather");
+                String weather = args.getData(DaggerKeys.Provider.WEATHER);
                 boolean isRaining = weather.equalsIgnoreCase("rain");
                 boolean isThundering = weather.equalsIgnoreCase("thunder");
                 boolean isClear = weather.equalsIgnoreCase("clear");
@@ -48,12 +47,12 @@ public class ConditionProviders
                             || isClear && !world.isRaining();
                 };
             })
-            .addArgument("weather");
+            .addArgument(DaggerKeys.Provider.WEATHER, JsonElement::getAsString);
 
     public static final Provider<Condition> IF_DIMENSION = Mapper
             .registerConditionProvider("ifDimension", (args) ->
             {
-                String dimension = args.getData("dimension");
+                String dimension = args.getData(DaggerKeys.Provider.DIMENSION);
 
                 return data -> {
                     World world = data.getTestEntity(args.getOn()).getWorld();
@@ -64,64 +63,39 @@ public class ConditionProviders
                             .equalsIgnoreCase(dimension);
                 };
             })
-            .addArgument("dimension");
+            .addArgument(DaggerKeys.Provider.DIMENSION, JsonElement::getAsString);
 
     public static final Provider<Condition> IF_ARTIFACT = Mapper
             .registerConditionProvider("ifArtifact", args ->
             {
-                String artifact = args.getData("artifact");
-                String[] artifactArguments = artifact.split(" ");
-
-                boolean choose;
-                String artifactName;
-
-                if(artifactArguments.length > 1)
-                {
-                    if(artifactArguments[0].equalsIgnoreCase("choose"))
-                    {
-                        choose = true;
-                        artifactName = artifactArguments[1];
-                    }
-                    else if(artifactArguments[0].equalsIgnoreCase("not"))
-                    {
-                        choose = false;
-                        artifactName = artifactArguments[1];
-                    }
-                    else
-                        throw new WrongArgumentException("artifact", artifact);
-                }
-                else
-                    throw new WrongArgumentException("artifact", artifact);
+                String artifact = args.getData(DaggerKeys.Provider.ARTIFACT);
 
                 return data -> {
-                    return choose == data.getData(DaggerKeys.ARTIFACT).getIdentifier().toString().equalsIgnoreCase(artifactName);
+                    return data.getData(DaggerKeys.ARTIFACT).getIdentifier().toString().equalsIgnoreCase(artifact);
                 };
             })
-            .addArgument("artifact")
+            .addArgument(DaggerKeys.Provider.ARTIFACT, JsonElement::getAsString)
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
     public static final Provider<Condition> IF_SUCCESSFUL = Mapper
             .registerConditionProvider("ifSuccessful", args ->
             {
-                String successful = args.getData("successful");
-
                 return data -> {
-                    return data.getData(DaggerKeys.SUCCESSFUL) == Boolean.parseBoolean(successful);
+                    return data.getData(DaggerKeys.SUCCESSFUL);
                 };
             })
-            .addArgument("successful")
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
     public static final Provider<Condition> IF_DAMAGE_SOURCE = Mapper
             .registerConditionProvider("ifDamageSource", args ->
             {
-                String damageSource = args.getData("damageSource");
+                String damageSource = args.getData(DaggerKeys.Provider.DAMAGE_SOURCE);
 
                 return data -> {
                     return data.getData(DaggerKeys.DAMAGE_SOURCE).getName().equalsIgnoreCase(damageSource);
                 };
             })
-            .addArgument("damageSource")
+            .addArgument(DaggerKeys.Provider.DAMAGE_SOURCE, JsonElement::getAsString)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 
 }

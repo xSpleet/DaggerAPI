@@ -4,7 +4,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.ConditionData;
-import xspleet.daggerapi.collections.ConditionProviders;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class ArtifactAttributeModifier
 
     public ArtifactAttributeModifier()
     {
-        condition = ConditionProviders.alwaysTrue();
+        condition = (conditionData -> true);
         modifiers = new ArrayList<>();
     }
 

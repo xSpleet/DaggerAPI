@@ -47,7 +47,7 @@ public class Mapper
         return trigger;
     }
 
-    public static Trigger getTrigger(String name) {
+    public static Trigger getTrigger(String name) throws NoSuchTriggerException {
         DaggerAPI.LOGGER.info(triggers.values().stream().map(Trigger::getName).collect(Collectors.joining()));
         if(!triggers.containsKey(name))
         {
@@ -73,7 +73,7 @@ public class Mapper
         throw new IllegalStateException("Cannot register Vanilla entity attribute operation: " + operation.name());
     }
 
-    public static AttributeOperation<?> getOperation(String name) {
+    public static AttributeOperation<?> getOperation(String name) throws NoSuchOperationException {
         if(!operations.containsKey(name)) {
             DaggerAPI.LOGGER.error("Operation with the name '{}' not found!", name);
             throw new NoSuchOperationException(name);
@@ -81,13 +81,13 @@ public class Mapper
         return operations.get(name);
     }
 
-    public static <T> Attribute<T> registerEntityAttribute(String name, Attribute<T> attribute)
+    public static <T> Attribute<T> registerAttribute(String name, Attribute<T> attribute)
     {
         entityAttributes.put(name, attribute);
         return attribute;
     }
 
-    public static Attribute<Double> registerEntityAttribute(String name, EntityAttribute attribute) {
+    public static Attribute<Double> registerAttribute(String name, EntityAttribute attribute) {
         if(attribute instanceof MixinAttribute<?> vanillaAttribute)
         {
             entityAttributes.put(name, vanillaAttribute);
@@ -96,7 +96,7 @@ public class Mapper
         throw new IllegalStateException("Cannot register Vanilla entity attribute: " + attribute.getClass().getName());
     }
 
-    public static Attribute<?> getEntityAttribute(String name) {
+    public static Attribute<?> getAttribute(String name) throws NoSuchAttributeException {
         if(!entityAttributes.containsKey(name)) {
             DaggerAPI.LOGGER.error("Attribute with the name '{}' not found!", name);
             throw new NoSuchAttributeException(name);
@@ -115,7 +115,7 @@ public class Mapper
         return conditionProvider;
     }
 
-    public static Provider<Condition> getConditionProvider(String name) {
+    public static Provider<Condition> getConditionProvider(String name) throws NoSuchConditionException {
         if(!conditionProviders.containsKey(name)) {
             DaggerAPI.LOGGER.error("Condition provider with the name '{}' not found!", name);
             throw new NoSuchConditionException(name);
@@ -134,7 +134,7 @@ public class Mapper
         return actionProvider;
     }
 
-    public static Provider<Action> getActionProvider(String name) {
+    public static Provider<Action> getActionProvider(String name) throws NoSuchActionException {
         if(!actionProviders.containsKey(name)) {
             DaggerAPI.LOGGER.error("Action provider with the name '{}' not found!", name);
             throw new NoSuchActionException(name);
@@ -148,7 +148,7 @@ public class Mapper
                     .filter(entry -> entry.getValue().equals(attribute))
                     .map(Map.Entry::getKey)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchAttributeException("No name found for attribute: " + attribute));
+                    .orElseThrow(() -> new IllegalStateException("No name found for attribute: " + attribute));
         }
         throw new IllegalArgumentException("Attribute is not registered: " + attribute);
     }
@@ -159,7 +159,7 @@ public class Mapper
                     .filter(entry -> entry.getValue().equals(operation))
                     .map(Map.Entry::getKey)
                     .findFirst()
-                    .orElseThrow(() -> new NoSuchOperationException("No name found for operation: " + operation));
+                    .orElseThrow(() -> new IllegalStateException("No name found for operation: " + operation));
         }
         throw new IllegalArgumentException("Operation is not registered: " + operation);
     }

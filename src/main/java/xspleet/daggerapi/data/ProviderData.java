@@ -9,14 +9,11 @@ import java.util.Map;
 
 public class ProviderData implements DaggerContext
 {
-    private Map<String, String> arguments = new HashMap<>();
+    private Map<DaggerKey<?>, Object> arguments = new HashMap<>();
     private On on = On.WORLD;
 
-    public ProviderData(Map<String, String> arguments) {
-        this.arguments = arguments;
-    }
-
     public ProviderData() {
+        this.arguments = new HashMap<>();
     }
 
     public On getOn() {
@@ -30,25 +27,17 @@ public class ProviderData implements DaggerContext
 
     @Override
     public <T> DaggerContext addData(DaggerKey<T> key, T value) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public <T> T getData(DaggerKey<T> key) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public boolean hasData(DaggerKey<?> key) {
-        return false;
-    }
-
-    public ProviderData addData(String key, String value) {
         arguments.put(key, value);
         return this;
     }
 
-    public String getData(String key) {
-        return arguments.get(key);
+    @Override
+    public <T> T getData(DaggerKey<T> key) {
+        return key.type().cast(arguments.get(key));
+    }
+
+    @Override
+    public boolean hasData(DaggerKey<?> key) {
+        return arguments.containsKey(key);
     }
 }
