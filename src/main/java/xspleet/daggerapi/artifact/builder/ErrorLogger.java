@@ -2,6 +2,7 @@ package xspleet.daggerapi.artifact.builder;
 
 import net.fabricmc.loader.api.FabricLoader;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.exceptions.DaggerAPIException;
 
 import java.io.IOException;
@@ -10,20 +11,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ErrorLogger
 {
     private static final Map<String, List<String>> errors = new HashMap<>();
 
-    public static void log(String itemName, String place, DaggerAPIException exception)
-    {
-        errors.putIfAbsent(itemName, new ArrayList<>());
-        errors.get(itemName).add(place + " : " + exception.getMessage());
+    public static void log(String itemName, String place, DaggerAPIException exception) {
+        log(itemName, place, exception.getMessage());
     }
 
-    public static void log(String itemName, String place, String message)
-    {
+    public static void log(String itemName, String place, String message) {
+        DaggerLogger.error("Error in {} at {}: {}", itemName, place, message);
         errors.putIfAbsent(itemName, new ArrayList<>());
         errors.get(itemName).add(place + " : " + message);
     }
@@ -57,9 +55,7 @@ public class ErrorLogger
                             writer.println("=====================================");
                         }
                 );
-
                 writer.close();
-
                 throw new RuntimeException("DaggerAPI: There were problems found with your artifacts. See " + newFile + " for details");
             }
             catch (IOException e)
@@ -69,13 +65,11 @@ public class ErrorLogger
         }
     }
 
-    public static String placeOf(String type, int place)
-    {
+    public static String placeOf(String type, int place) {
         return type + "[" + place + "]";
     }
 
-    public static String placeOf(String type, int place, String innerType, int innerPlace)
-    {
+    public static String placeOf(String type, int place, String innerType, int innerPlace) {
         return type + "[" + place + "]" + "{ " + innerType + "[" + innerPlace + "] }";
     }
 }

@@ -1,6 +1,7 @@
 package xspleet.daggerapi.data;
 
 import xspleet.daggerapi.data.key.DaggerKey;
+import xspleet.daggerapi.exceptions.MissingDataException;
 
 import java.util.HashMap;
 
@@ -17,7 +18,7 @@ public class DaggerData implements DaggerContext
     @Override
     public <T> T getData(DaggerKey<T> key) {
         if(!data.get().containsKey(key)) {
-            return null;
+            throw new MissingDataException(key);
         }
         return key.getItem(data.get().get(key));
     }

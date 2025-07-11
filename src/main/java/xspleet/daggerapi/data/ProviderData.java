@@ -26,7 +26,7 @@ public class ProviderData implements DaggerContext
     }
 
     @Override
-    public <T> DaggerContext addData(DaggerKey<T> key, T value) {
+    public <T> ProviderData addData(DaggerKey<T> key, T value) {
         arguments.put(key, value);
         return this;
     }

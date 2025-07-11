@@ -132,6 +132,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                     UUID uuid = b.readUuid();
                     String name = b.readString(32767);
                     String operationName = b.readString(32767);
+                    String artifactName = b.readString(32767);
                     AttributeOperation<?> operation = null;
                     try {
                         operation = Mapper.getOperation(operationName);
@@ -141,7 +142,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                         );
                     }
                     return readModifier(
-                            b, uuid, name, operation
+                            b, uuid, name, operation, artifactName
                     );
                 }
         );
@@ -149,7 +150,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         return new AttributeInstanceSyncData(removedModifiers, addedModifiers);
     }
 
-    private static <T> AttributeModifier<T> readModifier(PacketByteBuf buf, UUID uuid, String name, AttributeOperation<T> operation)
+    private static <T> AttributeModifier<T> readModifier(PacketByteBuf buf, UUID uuid, String name, AttributeOperation<T> operation, String artifactName)
     {
         T value;
         if(operation.getType() == Double.class) {
@@ -161,6 +162,6 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         } else {
             throw new IllegalArgumentException("Unsupported attribute modifier type: " + operation.getType().getName());
         }
-        return new DaggerAttributeModifier<>(uuid, name, value, operation);
+        return new DaggerAttributeModifier<>(uuid, name, value, operation, artifactName);
     }
 }

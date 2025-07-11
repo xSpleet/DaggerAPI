@@ -3,14 +3,12 @@ package xspleet.daggerapi.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
@@ -20,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
@@ -27,6 +26,7 @@ import xspleet.daggerapi.attributes.container.SyncContainer;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeHolder;
+import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.networking.NetworkingConstants;
@@ -55,6 +55,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
     public void DaggerAPI$syncAttributeContainer() {
         if(self() instanceof ServerPlayerEntity player)
         {
+            DaggerLogger.debug("Syncing attributes for player {}: {}", player.getName().getString(), daggerAPI$attributeContainer.getSyncLogMessage());
             var packet = daggerAPI$attributeContainer.toPacketByteBuf();
             ServerPlayNetworking.send(player, NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID, packet);
         }
@@ -66,6 +67,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
             if (daggerAPI$attributeContainer == null) {
                 throw new IllegalStateException("Attribute container is not initialized.");
             }
+            DaggerLogger.debug("Accepting sync container for player {}: {}", self().getName().getString() , syncContainer.getSyncLogMessage());
             daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
         }
     }

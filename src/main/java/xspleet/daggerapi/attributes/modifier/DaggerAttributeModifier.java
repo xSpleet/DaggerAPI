@@ -11,16 +11,18 @@ public class DaggerAttributeModifier<T> implements AttributeModifier<T>
     private final String name;
     private final AttributeOperation<T> operation;
     private final UUID uuid;
+    private final String artifactName;
 
-    public DaggerAttributeModifier(UUID uuid, String name, T value, AttributeOperation<T> operation) {
+    public DaggerAttributeModifier(UUID uuid, String name, T value, AttributeOperation<T> operation, String artifactName) {
         this.value = value;
         this.name = name;
         this.operation = operation;
         this.uuid = uuid;
+        this.artifactName = artifactName;
     }
 
-    public DaggerAttributeModifier(String name, T value, AttributeOperation<T> operation) {
-        this(UUID.randomUUID(), name, value, operation);
+    public DaggerAttributeModifier(String name, T value, AttributeOperation<T> operation, String artifactName) {
+        this(UUID.randomUUID(), name, value, operation, artifactName);
     }
 
     @Override
@@ -41,5 +43,10 @@ public class DaggerAttributeModifier<T> implements AttributeModifier<T>
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getArtifactName() {
+        return artifactName;
     }
 }

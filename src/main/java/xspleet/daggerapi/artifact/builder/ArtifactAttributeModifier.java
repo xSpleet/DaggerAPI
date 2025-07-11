@@ -12,6 +12,7 @@ import java.util.List;
 public class ArtifactAttributeModifier
 {
     private Condition condition;
+    private List<String> conditions = new ArrayList<>();
     private final List<WrappedModifier<?>> modifiers;
 
     public ArtifactAttributeModifier()
@@ -26,8 +27,9 @@ public class ArtifactAttributeModifier
         return this;
     }
 
-    public ArtifactAttributeModifier addCondition(Condition condition)
+    public ArtifactAttributeModifier addCondition(Condition condition, String name)
     {
+        conditions.add(name);
         this.condition = this.condition.and(condition);
         return this;
     }

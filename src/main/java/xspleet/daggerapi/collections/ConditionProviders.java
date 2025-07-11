@@ -3,20 +3,18 @@ package xspleet.daggerapi.collections;
 import com.google.gson.JsonElement;
 import net.minecraft.world.World;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
-import xspleet.daggerapi.models.On;
-
-import java.util.HashMap;
 
 public class ConditionProviders
 {
     public static void registerConditionProviders()
     {
-        DaggerAPI.LOGGER.info("> Registering condition providers...");
+        DaggerLogger.info("> Registering condition providers...");
     }
 
     public static final Provider<Condition> ALWAYS = Mapper

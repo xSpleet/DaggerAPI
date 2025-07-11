@@ -15,19 +15,20 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.artifact.builder.ArtifactAttributeModifier;
 import xspleet.daggerapi.artifact.builder.ArtifactRarity;
 import xspleet.daggerapi.base.*;
 import xspleet.daggerapi.data.ConditionData;
 import xspleet.daggerapi.data.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.exceptions.MissingDataException;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 
-public class ArtifactItem extends TrinketItem
-{
+public class ArtifactItem extends TrinketItem {
     protected final List<ArtifactAttributeModifier> attributeModifiers;
     protected ArtifactRarity artifactRarity = ArtifactRarity.COMMON;
 
@@ -46,22 +47,20 @@ public class ArtifactItem extends TrinketItem
         weightedEvents = new HashMap<>();
     }
 
-    public ArtifactItem cooldown(int cooldown)
-    {
+    public ArtifactItem cooldown(int cooldown) {
         this.cooldown = cooldown;
         return this;
     }
 
-    private void actOnWeightedActions(TriggerData data)
-    {
+    private void actOnWeightedActions(TriggerData data) {
         ConditionData conditionData = new ConditionData(data);
 
         List<WeightedConditionalAction> actions = weightedEvents.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>());
         actions = actions.stream()
-                    .filter(action -> action.getCondition().test(conditionData))
-                    .toList();
+                .filter(action -> action.getCondition().test(conditionData))
+                .toList();
 
-        if(actions.isEmpty())
+        if (actions.isEmpty())
             return;
 
         int totalWeight = actions
@@ -72,50 +71,69 @@ public class ArtifactItem extends TrinketItem
         int currentWeight = 0;
         int random = (new Random()).nextInt(totalWeight);
 
-        for(WeightedConditionalAction action: actions)
-        {
+        for (WeightedConditionalAction action : actions) {
             currentWeight += action.getWeight();
-            if(currentWeight > random)
-            {
+            if (currentWeight > random) {
                 action.actOn(data);
                 return;
             }
         }
     }
 
-    public void receiveTrigger(TriggerData data)
-    {
-        events.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>()).forEach(a -> a.actOn(data));
-
-        actOnWeightedActions(data);
+    public void receiveTrigger(TriggerData data) {
+        DaggerLogger.debug("ArtifactItem: Received trigger {} for artifact {}", data.getData(DaggerKeys.TRIGGER).getName(), Registries.ITEM.getId(this));
+        try {
+            events.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>()).forEach(a -> a.actOn(data));
+            actOnWeightedActions(data);
+        }
+        catch (MissingDataException e) {
+            DaggerLogger.error("ArtifactItem: Missing data for trigger {} action in artifact {}. Error: {}",
+                    data.getData(DaggerKeys.TRIGGER).getName(),
+                    Registries.ITEM.getId(this),
+                    e.getMessage());
+            throw e;
+        }
     }
 
-    public boolean hasTrigger(Trigger trigger)
-    {
+    public boolean hasTrigger(Trigger trigger) {
         return events.containsKey(trigger) || weightedEvents.containsKey(trigger);
     }
 
-    public void registerAttributeModifiers(){}
-
-    private void updatePlayer(ConditionData data)
-    {
-        for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
-            attributeModifier.updatePlayer(data);
+    public void registerAttributeModifiers() {
     }
 
-    private void cleansePlayer(ConditionData data)
-    {
-        for(ArtifactAttributeModifier attributeModifier: attributeModifiers)
-            attributeModifier.cleansePlayer(data);
+    private void updatePlayer(ConditionData data) {
+        for (ArtifactAttributeModifier attributeModifier : attributeModifiers) {
+            try {
+                attributeModifier.updatePlayer(data);
+            } catch (MissingDataException e) {
+                DaggerLogger.error("ArtifactItem: Missing data for attribute modifier update in artifact {}. Error: {}",
+                        Registries.ITEM.getId(this),
+                        e.getMessage());
+                throw e;
+            }
+        }
+    }
+
+    private void cleansePlayer(ConditionData data) {
+        for (ArtifactAttributeModifier attributeModifier : attributeModifiers) {
+            try {
+                attributeModifier.cleansePlayer(data);
+            } catch (MissingDataException e) {
+                DaggerLogger.error("ArtifactItem: Missing data for attribute modifier cleansing in artifact {}. Error: {}",
+                        Registries.ITEM.getId(this),
+                        e.getMessage());
+                throw e;
+            }
+        }
     }
 
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onEquip(stack, slot, entity);
-        if(entity instanceof PlayerEntity player)
-        {
+        if (entity instanceof PlayerEntity player) {
             updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
-            for(Trigger trigger: triggers)
+            for (Trigger trigger : triggers)
                 trigger.addListener(player);
         }
     }
@@ -123,31 +141,27 @@ public class ArtifactItem extends TrinketItem
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
-        if(entity instanceof PlayerEntity player)
+        if (entity instanceof PlayerEntity player)
             updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onUnequip(stack, slot, entity);
-        if(entity instanceof PlayerEntity player)
-        {
+        if (entity instanceof PlayerEntity player) {
             cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
-            for(Trigger trigger: triggers)
+            for (Trigger trigger : triggers)
                 trigger.removeListener(player);
         }
     }
 
-    public ArtifactItem rarity(ArtifactRarity artifactRarity)
-    {
+    public ArtifactItem rarity(ArtifactRarity artifactRarity) {
         this.artifactRarity = artifactRarity;
         return this;
     }
 
-    private void addArtifactRarity(List<Text> tooltip)
-    {
-        switch (artifactRarity)
-        {
+    private void addArtifactRarity(List<Text> tooltip) {
+        switch (artifactRarity) {
             case COMMON: {
                 tooltip.add(Text.translatable("item.magpie.rarity.common").formatted(Formatting.BOLD).formatted(Formatting.GRAY));
                 break;
@@ -168,10 +182,8 @@ public class ArtifactItem extends TrinketItem
     }
 
     @Override
-    public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) 
-    {
-        if(TrinketsUtil.hasArtifact(entity, stack.getItem()))
-        {
+    public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (TrinketsUtil.hasArtifact(entity, stack.getItem())) {
             return false;
         }
         return super.canEquip(stack, slot, entity);
@@ -181,17 +193,13 @@ public class ArtifactItem extends TrinketItem
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         addArtifactRarity(tooltip);
-        if(Screen.hasShiftDown())
-        {
-            if(stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
-            {
-                tooltip.add(Text.translatable("item.magpie.tooltip.recharge", artifact.getCooldown()/20 + " "));
+        if (Screen.hasShiftDown()) {
+            if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive()) {
+                tooltip.add(Text.translatable("item.magpie.tooltip.recharge", artifact.getCooldown() / 20 + " "));
             }
-            TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip." + stack.getItem()),tooltip);
-        }
-        else
-        {
-            if(stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
+            TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip." + stack.getItem()), tooltip);
+        } else {
+            if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
                 TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip.active"), tooltip);
             TextFormatter.addTooltips(Text.translatable("item.magpie.description." + stack.getItem()), tooltip);
             tooltip.add(Text.translatable("item.magpie.tooltip.shiftmoreinfo"));

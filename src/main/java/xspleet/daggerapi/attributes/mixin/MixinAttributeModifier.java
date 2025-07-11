@@ -11,6 +11,8 @@ public interface MixinAttributeModifier<T> extends AttributeModifier<T> {
     public AttributeOperation<T> DaggerAPI$getOperation();
     public UUID DaggerAPI$getUUID();
     public String DaggerAPI$getName();
+    public String DaggerAPI$getArtifactName();
+    public void DaggerAPI$setArtifactName(String artifactName);
 
     public default T getValue() {
         return DaggerAPI$getValue();
@@ -26,6 +28,14 @@ public interface MixinAttributeModifier<T> extends AttributeModifier<T> {
 
     public default String getName() {
         return DaggerAPI$getName();
+    }
+
+    public default String getArtifactName() {
+        return DaggerAPI$getArtifactName();
+    }
+
+    public default void setArtifactName(String artifactName) {
+        DaggerAPI$setArtifactName(artifactName);
     }
 
 }

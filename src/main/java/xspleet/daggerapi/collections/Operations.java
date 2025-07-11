@@ -4,13 +4,14 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.attributes.operations.BooleanOperation;
+import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.collections.registration.Mapper;
 
 public class Operations
 {
     public static void registerOperations()
     {
-        DaggerAPI.LOGGER.info("> Registering operations...");
+        DaggerLogger.info("> Registering operations...");
     }
     public static AttributeOperation<Double> ADD = Mapper.registerOperation("add", EntityAttributeModifier.Operation.ADDITION);
     public static AttributeOperation<Double> MULTIPLY_BASE = Mapper.registerOperation("multiply_base", EntityAttributeModifier.Operation.MULTIPLY_BASE);

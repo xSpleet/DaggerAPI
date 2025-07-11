@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
+import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.events.KeyBindRegistration;
 import xspleet.daggerapi.networking.NetworkingConstants;
@@ -32,7 +33,7 @@ public class DaggerAPIClient implements ClientModInitializer {
                                 "Jump height: " + jumpHeight.getValue(),
                                 10, 20, 0xFFFFFF);
                     } else {
-                        DaggerAPI.LOGGER.warn("Client or player is null, cannot render attributes.");
+                        DaggerLogger.warn("Client or player is null, cannot render attributes.");
                     }
                 })
         );
@@ -45,9 +46,9 @@ public class DaggerAPIClient implements ClientModInitializer {
                         var player = client.player;
                         if (player instanceof AttributeHolder holder) {
                             holder.acceptSyncContainer(syncContainer);
-                            DaggerAPI.LOGGER.info("Received attribute sync packet for player: {}", player.getName().getString());
+                            DaggerLogger.debug("Received attribute sync packet for player: {}", player.getName().getString());
                         } else {
-                            DaggerAPI.LOGGER.warn("Received attribute sync packet but player is null.");
+                            DaggerLogger.error("Received attribute sync packet but player is null.");
                         }
                     });
                 }

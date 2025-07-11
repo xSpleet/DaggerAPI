@@ -15,10 +15,12 @@ import java.util.List;
 
 public class ConditionalAction
 {
-    private Condition condition;
-    private final List<Action> actions;
-    private TriggeredBy triggeredBy;
-    private TriggeredIn triggeredIn;
+    protected Condition condition;
+    protected final List<String> conditions = new ArrayList<>();
+    protected final List<Action> actions;
+    protected final List<String> actionNames = new ArrayList<>();
+    protected TriggeredBy triggeredBy;
+    protected TriggeredIn triggeredIn;
 
     public ConditionalAction()
     {
@@ -31,14 +33,16 @@ public class ConditionalAction
         return condition;
     }
 
-    public void addCondition(Condition condition)
+    public void addCondition(Condition condition, String name)
     {
+        conditions.add(name);
         this.condition = this.condition.and(condition);
     }
 
-    public void addAction(Action action)
+    public void addAction(Action action, String name)
     {
         actions.add(action);
+        actionNames.add(name);
     }
 
     public ConditionalAction triggeredBy(TriggeredBy triggeredBy) {

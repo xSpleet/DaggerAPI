@@ -4,6 +4,8 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.instance.AttributeInstanceSyncData;
 
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SyncContainer
 {
@@ -15,5 +17,13 @@ public class SyncContainer
 
     public Map<Attribute<?>, AttributeInstanceSyncData> getSyncData() {
         return syncData;
+    }
+
+    public String getSyncLogMessage() {
+        StringBuilder sb = new StringBuilder("SyncContainer: ");
+        syncData.forEach((attribute, data) -> {
+            sb.append(attribute.getName()).append("\n");
+        });
+        return sb.toString();
     }
 }

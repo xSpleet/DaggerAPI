@@ -1,8 +1,6 @@
 {
     "name":"test_item",
     "rarity":"rare",
-    "active":true,
-    "cooldown":5000,
     "attribute_modifiers": [
         {
             "modifiers":[
@@ -16,12 +14,26 @@
     ],
     "events":[
         {
-            "trigger":"activate",
+            "trigger":"beforeDamage",
             "triggerer": "self",
+            "conditions":[
+                {
+                    "condition": "ifDamageSource",
+                    "on": "world",
+                    "arguments": {
+                        "damageSource": "fall"
+                    }
+                }
+            ],
             "actions":[
                 {
-                    "action": "kill",
-                    "on": "triggerer"
+                    "action": "changeAmount",
+                    "arguments": {
+                        "amount": "5*damage",
+                        "variables": [
+                            "amount"
+                        ]
+                    }
                 }
             ]
         }

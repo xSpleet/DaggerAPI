@@ -132,6 +132,15 @@ public class DaggerAttributeContainer
         return attributeInstances.values().stream().anyMatch(AttributeInstance::isDirty);
     }
 
+    public String getSyncLogMessage()
+    {
+        if(!needsSync()) return "No attributes to sync.";
+        return "Attributes to sync: " + attributeInstances.values().stream()
+                .filter(AttributeInstance::isDirty)
+                .map(i -> i.getAttributeName() + ": " + i.getValue())
+                .collect(Collectors.joining(", "));
+    }
+
     public static class Builder{
         private final DaggerAttributeContainer container;
 

@@ -14,33 +14,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class Provider<T>
-{
+public class Provider<T> {
     protected final String name;
     protected final Map<String, ProviderArgument<?>> arguments = new HashMap<>();
     protected final List<Trigger> associatedTriggers = new ArrayList<>();
     protected final Function<ProviderData, T> provider;
+    protected boolean isModifier = false;
 
-    public Provider(String name, Function<ProviderData, T> provider)
-    {
+    public Provider(String name, Function<ProviderData, T> provider) {
         this.provider = provider;
         this.name = name;
     }
 
-    public <U> Provider<T> addArgument(DaggerKey<U> argument, Parser<U> parser)
-    {
+    public <U> Provider<T> addArgument(DaggerKey<U> argument, Parser<U> parser) {
         arguments.put(argument.key(), new ProviderArgument<>(argument, parser));
         return this;
     }
 
-    public Provider<T> addAssociatedTrigger(Trigger trigger)
-    {
+    public Provider<T> addAssociatedTrigger(Trigger trigger) {
         associatedTriggers.add(trigger);
         return this;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -49,39 +45,72 @@ public class Provider<T>
         return provider.apply(data);
     }
 
+    public T provide(ProviderData data) throws BadArgumentsException {
+        checkArgs(data);
+        return provider.apply(data);
+    }
+
+    public void checkArgs(ProviderData data) throws BadArgumentsException {
+        List<BadArgumentException> errors = new ArrayList<>();
+        for (var argument : arguments.entrySet()) {
+            try {
+                ProviderArgument<?> providerArgument = argument.getValue();
+                var key = providerArgument.key();
+                if (!data.hasData(key)) {
+                    throw new BadArgumentException("Missing argument: " + key.key());
+                }
+            } catch (BadArgumentException e) {
+                errors.add(e);
+            }
+        }
+        if (!errors.isEmpty())
+            throw new BadArgumentsException(
+                    errors.stream()
+                            .map(BadArgumentException::getMessage)
+                            .toList()
+            );
+    }
+
     private ProviderData getArgs(Map<String, JsonElement> args) throws BadArgumentsException {
         ProviderData data = new ProviderData();
         List<BadArgumentException> errors = new ArrayList<>();
-        for(var argument: arguments.entrySet())
-        {
+        for (var argument : arguments.entrySet()) {
             try {
                 String name = argument.getKey();
                 ProviderArgument<?> providerArgument = argument.getValue();
 
-                if(!args.containsKey(name)) {
+                if (!args.containsKey(name)) {
                     throw new BadArgumentException("Missing argument: " + name);
                 }
 
                 var element = args.get(name);
                 providerArgument.addData(data, element);
-            }
-            catch (BadArgumentException e) {
+            } catch (BadArgumentException e) {
                 errors.add(e);
             }
         }
-        if(!errors.isEmpty())
+        if (!errors.isEmpty())
             throw new BadArgumentsException(
-                errors.stream()
-                        .map(BadArgumentException::getMessage)
-                        .toList()
+                    errors.stream()
+                            .map(BadArgumentException::getMessage)
+                            .toList()
             );
         return data;
     }
 
     public boolean canBeOnTrigger(
-        Trigger trigger
+            Trigger trigger
     ) {
         return associatedTriggers.isEmpty() || associatedTriggers.stream()
                 .anyMatch(t -> t.getName().equals(trigger.getName()));
+    }
+
+    public boolean isModifier() {
+        return isModifier;
+    }
+
+    public Provider<T> modifier() {
+        this.isModifier = true;
+        return this;
     }
 }

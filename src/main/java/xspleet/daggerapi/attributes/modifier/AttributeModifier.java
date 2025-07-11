@@ -13,6 +13,7 @@ public interface AttributeModifier<T>
     public AttributeOperation<T> getOperation();
     public UUID getUUID();
     public String getName();
+    public String getArtifactName();
 
     public default EntityAttributeModifier toMinecraftModifier() {
         if(getValue() instanceof Double value) {
@@ -36,6 +37,7 @@ public interface AttributeModifier<T>
         buf.writeUuid(getUUID());
         buf.writeString(getName());
         buf.writeString(Mapper.getNameOf(getOperation()));
+        buf.writeString(getArtifactName());
         if(getOperation().getType() == Double.class)
             buf.writeDouble((Double) getValue());
         else if(getOperation().getType() == Integer.class)
