@@ -1,5 +1,7 @@
 package xspleet.daggerapi.attributes;
 
+import java.util.Objects;
+
 public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
 {
     private final String name;
@@ -55,5 +57,18 @@ public class ClampedAttribute<T extends Comparable<T>> implements Attribute<T>
     @Override
     public boolean isTracked() {
         return tracked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClampedAttribute<?> that = (ClampedAttribute<?>) o;
+        return tracked == that.tracked && Objects.equals(name, that.name) && Objects.equals(type, that.type) && Objects.equals(defaultValue, that.defaultValue) && Objects.equals(minValue, that.minValue) && Objects.equals(maxValue, that.maxValue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, defaultValue, minValue, maxValue, tracked);
     }
 }

@@ -8,6 +8,7 @@ import xspleet.daggerapi.data.key.DaggerKeys;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ArtifactAttributeModifier
 {
@@ -82,5 +83,18 @@ public class ArtifactAttributeModifier
         for(WrappedModifier<?> attributeModifier: modifiers) {
             safeRemoveModifier(player, attributeModifier);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArtifactAttributeModifier that = (ArtifactAttributeModifier) o;
+        return Objects.equals(condition, that.condition) && Objects.equals(modifiers, that.modifiers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(condition, modifiers);
     }
 }

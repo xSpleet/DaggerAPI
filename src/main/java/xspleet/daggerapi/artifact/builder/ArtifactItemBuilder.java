@@ -35,6 +35,13 @@ public class ArtifactItemBuilder
 
         BuildableArtifactItem item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
 
+        if(active && cooldown <= 0) {
+            ErrorLogger.log(name, "Cooldown", "Active artifact must have a cooldown greater than 0");
+        }
+        if(!active && cooldown > 0) {
+            ErrorLogger.log(name, "Cooldown", "Inactive artifact must have no cooldown");
+        }
+
         if(active) {
             item.cooldown(cooldown).active(true);
         }

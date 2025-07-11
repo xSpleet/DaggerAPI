@@ -8,10 +8,7 @@ import xspleet.daggerapi.exceptions.BadArgumentsException;
 import xspleet.daggerapi.models.On;
 import xspleet.daggerapi.trigger.Trigger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class Provider<T> {
@@ -122,5 +119,18 @@ public class Provider<T> {
     public Provider<T> modifier() {
         this.isModifier = true;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Provider<?> provider1 = (Provider<?>) o;
+        return Objects.equals(name, provider1.name) && Objects.equals(provider, provider1.provider);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, provider);
     }
 }

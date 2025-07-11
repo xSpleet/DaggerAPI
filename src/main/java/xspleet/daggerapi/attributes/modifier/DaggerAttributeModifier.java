@@ -3,6 +3,7 @@ package xspleet.daggerapi.attributes.modifier;
 import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class DaggerAttributeModifier<T> implements AttributeModifier<T>
@@ -48,5 +49,18 @@ public class DaggerAttributeModifier<T> implements AttributeModifier<T>
     @Override
     public String getArtifactName() {
         return artifactName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DaggerAttributeModifier<?> that = (DaggerAttributeModifier<?>) o;
+        return Objects.equals(value, that.value) && Objects.equals(name, that.name) && Objects.equals(operation, that.operation) && Objects.equals(uuid, that.uuid) && Objects.equals(artifactName, that.artifactName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, name, operation, uuid, artifactName);
     }
 }

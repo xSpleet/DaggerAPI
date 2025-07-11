@@ -37,8 +37,10 @@ public class ErrorLogger
                         .split("\\.")[0];
                 Path path = FabricLoader.getInstance().getGameDir();
                 Path folder = Path.of(path.toString(), "daggerapi");
+
                 if(!Files.exists(folder))
                     Files.createDirectories(folder);
+
                 Path newFile = Files.createFile(Path.of(path.toString(), "daggerapi/"
                         + now
                         + "-error.log"));

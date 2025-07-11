@@ -1,5 +1,7 @@
 package xspleet.daggerapi.attributes;
 
+import java.util.Objects;
+
 public class UnclampedAttribute<T> implements Attribute<T> {
     private final String name;
     private final T defaultValue;
@@ -41,5 +43,18 @@ public class UnclampedAttribute<T> implements Attribute<T> {
     @Override
     public boolean isTracked() {
         return tracked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UnclampedAttribute<?> that = (UnclampedAttribute<?>) o;
+        return tracked == that.tracked && Objects.equals(name, that.name) && Objects.equals(defaultValue, that.defaultValue) && Objects.equals(type, that.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, defaultValue, type, tracked);
     }
 }

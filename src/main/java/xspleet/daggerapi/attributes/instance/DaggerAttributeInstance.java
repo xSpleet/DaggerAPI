@@ -164,4 +164,17 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         }
         return new DaggerAttributeModifier<>(uuid, name, value, operation, artifactName);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DaggerAttributeInstance<?> that = (DaggerAttributeInstance<?>) o;
+        return Objects.equals(attribute, that.attribute);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(attribute);
+    }
 }

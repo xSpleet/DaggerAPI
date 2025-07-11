@@ -12,7 +12,6 @@ import static xspleet.daggerapi.DaggerAPI.SYMBOLS_PER_LINE;
 
 public class TextFormatter
 {
-
     private static List<Formatting> translateFormatTag(String tagSequence)
     {
         List<Formatting> formats = new ArrayList<>();
