@@ -31,7 +31,7 @@
                     "arguments": {
                         "amount": "5*damage",
                         "variables": [
-                            "amount"
+                            "damage"
                         ]
                     }
                 }

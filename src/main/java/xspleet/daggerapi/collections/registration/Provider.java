@@ -42,12 +42,22 @@ public class Provider<T> {
 
     public T provide(On on, Map<String, JsonElement> args) throws BadArgumentsException {
         var data = getArgs(args).setOn(on);
-        return provider.apply(data);
+        try {
+            return provider.apply(data);
+        }
+        catch (Exception e) {
+            throw new BadArgumentsException(List.of("Failed to provide data: " + e.getMessage()));
+        }
     }
 
-    public T provide(ProviderData data) throws BadArgumentsException {
+    public T provide(ProviderData data) throws BadArgumentsException{
         checkArgs(data);
-        return provider.apply(data);
+        try {
+            return provider.apply(data);
+        }
+        catch (Exception e) {
+            throw new BadArgumentsException(List.of("Failed to provide data: " + e.getMessage()));
+        }
     }
 
     public void checkArgs(ProviderData data) throws BadArgumentsException {

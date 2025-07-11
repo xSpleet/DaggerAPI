@@ -61,6 +61,8 @@ public class ActionProviders
         var variables = args.getData(DaggerKeys.Provider.VARIABLES);
         DoubleEvaluator evaluator = new DoubleEvaluator();
 
+        variables.validate(amountExpression);
+
         return data -> {
             var result = evaluator.evaluate(amountExpression, variables.asStaticVariableSet(data));
             data.addData(DaggerKeys.AMOUNT, result);

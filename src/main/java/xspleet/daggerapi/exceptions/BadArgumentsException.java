@@ -10,7 +10,7 @@ public class BadArgumentsException extends DaggerAPIException
     private final String message;
 
     public BadArgumentsException(List<String> messages) {
-        this.message = String.join(", ", messages.stream().map(m -> m + "/n").collect(Collectors.toSet()));
+        this.message = String.join(", ", messages.stream().map(m -> m + "\n").collect(Collectors.toSet()));
     }
 
     @Override

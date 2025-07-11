@@ -6,15 +6,14 @@ import com.google.gson.JsonElement;
 import xspleet.daggerapi.data.DaggerContext;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
-import xspleet.daggerapi.exceptions.BadArgumentException;
-import xspleet.daggerapi.exceptions.BadArgumentsException;
-import xspleet.daggerapi.exceptions.MissingDataException;
-import xspleet.daggerapi.exceptions.ParseException;
+import xspleet.daggerapi.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DoubleVariableSet
@@ -23,8 +22,11 @@ public class DoubleVariableSet
 
     public void addKey(String key) throws ParseException {
         var daggerKey = DaggerKeys.get(key);
+        if(daggerKey == null) {
+            throw new ParseException("Key '" + key + "' does not exist");
+        }
         if(daggerKey.type() != Double.class) {
-            throw new ParseException("Key " + key + " is not of type Double");
+            throw new ParseException("Key '" + key + "' is not of type Double");
         }
         keys.add((DaggerKey<Double>) daggerKey);
     }
@@ -71,7 +73,7 @@ public class DoubleVariableSet
         return set;
     }
 
-    public void validate(String expression) throws BadArgumentsException {
+    public void validate(String expression) {
         List<String> messages = new ArrayList<>();
         Set<String> variableNames = getVariableNames(expression);
         Set<String> keyNames = keys.stream()
@@ -92,34 +94,40 @@ public class DoubleVariableSet
         }
         if(!messages.isEmpty())
         {
-            throw new BadArgumentsException(messages);
+            throw new BadExpressionException(messages);
         }
     }
 
     public static Set<String> getVariableNames(String expression) {
-        Set<String> variableNames = new HashSet<>();
-
         DoubleEvaluator evaluator = new DoubleEvaluator();
-        var functions = evaluator.getFunctions().stream().map(
-                Function::getName
-        ).collect(Collectors.toSet());
-        var constants = evaluator.getConstants().stream().map(
-                Constant::getName
-        ).collect(Collectors.toSet());
-        var operators = evaluator.getOperators().stream().map(
-                Operator::getSymbol
-        ).collect(Collectors.toSet());
 
-        // Remove functions, constants, and operators from the expression
-        String cleanedExpression = expression.replaceAll(
-                String.join("|", functions) + "|" +
-                String.join("|", constants) + "|" +
-                String.join("|", operators), " "
-        ).replaceAll("[(),.]*|[0-9]*", " ");
+        Set<String> functions = evaluator.getFunctions().stream()
+                .map(Function::getName)
+                .collect(Collectors.toSet());
 
-        // Split the cleaned expression into words
-        String[] words = cleanedExpression.trim().split("\\s+");
+        Set<String> constants = evaluator.getConstants().stream()
+                .map(Constant::getName)
+                .collect(Collectors.toSet());
 
-        return Set.of(words);
+        Set<String> operators = evaluator.getOperators().stream()
+                .map(Operator::getSymbol)
+                .collect(Collectors.toSet());
+
+        // Match valid variable-like identifiers
+        Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+        Matcher matcher = pattern.matcher(expression);
+
+        Set<String> variables = new HashSet<>();
+
+        while (matcher.find()) {
+            String token = matcher.group();
+            if (!functions.contains(token) &&
+                    !constants.contains(token) &&
+                    !operators.contains(token)) {
+                variables.add(token);
+            }
+        }
+
+        return variables;
     }
 }
