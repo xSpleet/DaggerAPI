@@ -16,6 +16,9 @@ import xspleet.daggerapi.base.*;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.models.*;
+import xspleet.daggerapi.trigger.Trigger;
+import xspleet.daggerapi.trigger.actions.ConditionalAction;
+import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 public class ArtifactItemBuilder
 {
@@ -54,21 +57,14 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                try {
                     if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
-                        throw new WrongConditionOnException("Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
-                }
-                catch (WrongConditionOnException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Condition", j), e);
-                    continue;
-                }
+                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
                 try {
                     Condition conditionUnit = getCondition(conditionModel);
                     artifactAttributeModifier.addCondition(conditionUnit);
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Condition", j), e);
-                    continue;
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Condition", j), e);
                 }
             }
 
@@ -76,14 +72,13 @@ public class ArtifactItemBuilder
             {
                 var modifierModel = modifierModels.get(j);
                 try {
-                    String name = itemModel.getName() + "_" + modifierModel.getAttribute() + "_" + modifierModel.getModificationType() + "_" + modifierModel.getModificationValue().getAsString() + "_" + j + "_" + i;
+                    String name = itemModel.getName() + "/" + modifierModel.getAttribute() + "/" + modifierModel.getModificationType() + "/" + modifierModel.getModificationValue().getAsString() + "/" + j + "/" + i;
                     artifactAttributeModifier.addAttributeModifier(
                             getModifier(name, modifierModel)
                     );
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("ArtifactModifier", i, "Modifier", j), e);
-                    continue;
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Modifier", j), e);
                 }
             }
 
@@ -93,10 +88,73 @@ public class ArtifactItemBuilder
 
     private static void buildEvents(ItemModel itemModel, BuildableArtifactItem item)
     {
+        var events = itemModel.getEvents();
+        for(int i = 0 ; i < events.size() ; i++)
+        {
+            var eventModel = events.get(i);
+            var conditionalAction = new ConditionalAction();
 
+            if(eventModel.getWeight() != null) {
+                conditionalAction = new WeightedConditionalAction(eventModel.getWeight());
+            }
+
+            Trigger trigger = null;
+            try {
+                trigger = Mapper.getTrigger(eventModel.getTrigger());
+            }
+            catch (NoSuchTriggerException e) {
+                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), e);
+                continue;
+            }
+
+            TriggeredBy triggeredBy = eventModel.getTriggeredBy();
+            TriggeredIn triggeredIn = eventModel.getTriggeredIn();
+
+            if(triggeredBy != null && !trigger.hasTriggerer()) {
+                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "TriggeredBy is set on event " + eventModel.getTrigger() + " but the trigger does not provide a triggerer");
+            }
+            if(triggeredIn != null && !trigger.isWorldful()) {
+                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "TriggeredIn is set on event " + eventModel.getTrigger() + " but the trigger is not worldful");
+            }
+
+            conditionalAction
+                    .triggeredIn(triggeredIn)
+                    .triggeredBy(triggeredBy);
+
+            var conditionsModels = eventModel.getConditions();
+            for(int j = 0 ; j < conditionsModels.size() ; j++)
+            {
+                var conditionModel = conditionsModels.get(j);
+                if(conditionModel.getOn() == On.SELF)
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), "Condition on SELF is not supported for events");
+                try {
+                    Condition conditionUnit = getCondition(conditionModel);
+                    conditionalAction.addCondition(conditionUnit);
+                }
+                catch (DaggerAPIException e) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), e);
+                }
+            }
+
+            var actionsModels = eventModel.getActions();
+            for(int j = 0 ; j < actionsModels.size() ; j++)
+            {
+                var actionModel = actionsModels.get(j);
+                try {
+                    var actionProvider = Mapper.getActionProvider(actionModel.getAction());
+                    var actionUnit = actionProvider.provide(actionModel.getOn(), actionModel.getArguments());
+                    conditionalAction.addAction(actionUnit);
+                }
+                catch (DaggerAPIException e) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), e);
+                }
+            }
+
+            item.addEvent(trigger, conditionalAction);
+        }
     }
 
-    private static WrappedModifier<?> getModifier(String name, AttributeModifierModel modifierModel) throws NoSuchAttributeException, NoSuchOperationException {
+    private static WrappedModifier<?> getModifier(String name, AttributeModifierModel modifierModel) throws NoSuchAttributeException, NoSuchOperationException, ParseException {
         String attributeName = modifierModel.getAttribute();
         String operationName = modifierModel.getModificationType();
         JsonElement value = modifierModel.getModificationValue();
@@ -112,7 +170,7 @@ public class ArtifactItemBuilder
         );
     }
 
-    private static Condition getCondition(ConditionModel conditionModel) throws NoSuchConditionException, MissingArgumentException {
+    private static Condition getCondition(ConditionModel conditionModel) throws NoSuchConditionException, BadArgumentsException {
         String condition = conditionModel.getCondition();
         var splitCondition = condition.split(" ");
         boolean negate = false;
@@ -140,7 +198,7 @@ public class ArtifactItemBuilder
             Attribute<?> attribute,
             JsonElement value,
             AttributeOperation<?> operation
-    ) {
+    ) throws ParseException {
         if(value == null || value.isJsonNull())
             throw new IllegalArgumentException("Value for attribute modifier cannot be null or JSON null");
 
@@ -153,24 +211,23 @@ public class ArtifactItemBuilder
         if(castOperation.getType().equals(Integer.class))
         {
             if(!primitive.isNumber())
-                throw new IllegalArgumentException("Value for integer attribute modifier must be a number");
+                throw new ParseException("Value for integer attribute modifier must be a integer");
             castValue = castOperation.getType().cast(primitive.getAsInt());
         }
         else if(castOperation.getType().equals(Double.class))
         {
             if(!primitive.isNumber())
-                throw new IllegalArgumentException("Value for double attribute modifier must be a number");
+                throw new ParseException("Value for double attribute modifier must be a double");
             castValue = castOperation.getType().cast(primitive.getAsDouble());
         }
         else if(castOperation.getType().equals(Boolean.class))
         {
             if(!primitive.isBoolean())
-                throw new IllegalArgumentException("Value for boolean attribute modifier must be a boolean");
+                throw new ParseException("Value for boolean attribute modifier must be a boolean");
             castValue = castOperation.getType().cast(primitive.getAsBoolean());
         }
-        else
-        {
-            throw new IllegalArgumentException("Unsupported attribute modifier type: " + castOperation.getType());
+        else {
+            throw new ParseException("Unsupported attribute modifier type: " + castOperation.getType());
         }
 
         return new DaggerAttributeModifier<>(

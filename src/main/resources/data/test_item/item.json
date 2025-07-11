@@ -9,7 +9,7 @@
                 {
                     "attribute":"can_walk_on_water",
                     "modification_type":"set_true",
-                    "modification_value":true
+                    "modification_value": true
                 }
             ]
         }
@@ -22,42 +22,6 @@
                 {
                     "action": "kill",
                     "on": "triggerer"
-                },
-                {
-                    "action": "sendMessage",
-                    "on": "triggerer",
-                    "arguments": {
-                        "message": "The triggerer has been killed"
-                    }
-                }
-            ]
-        },
-        {
-            "trigger": "beforeDamage",
-            "triggerer": "self",
-            "conditions": [
-                {
-                    "condition": "ifDamageSource",
-                    "on": "world",
-                    "arguments": {
-                        "damageSource": "mob"
-                    }
-                }
-            ],
-            "actions": [
-                {
-                    "action": "sendMessage",
-                    "on": "triggerer",
-                    "arguments": {
-                        "message": "You are about to take MASSIVE fall damage"
-                    }
-                },
-                {
-                    "action": "changeAmount",
-                    "on": "triggerer",
-                    "arguments": {
-                        "amount": "amount * 10"
-                    }
                 }
             ]
         }

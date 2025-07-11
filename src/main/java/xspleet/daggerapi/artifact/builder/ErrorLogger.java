@@ -22,6 +22,12 @@ public class ErrorLogger
         errors.get(itemName).add(place + " : " + exception.getMessage());
     }
 
+    public static void log(String itemName, String place, String message)
+    {
+        errors.putIfAbsent(itemName, new ArrayList<>());
+        errors.get(itemName).add(place + " : " + message);
+    }
+
     public static void validate(){
         if(!errors.isEmpty())
         {
@@ -33,6 +39,8 @@ public class ErrorLogger
                         .split("\\.")[0];
                 Path path = FabricLoader.getInstance().getGameDir();
                 Path folder = Path.of(path.toString(), "daggerapi");
+                if(!Files.exists(folder))
+                    Files.createDirectories(folder);
                 Path newFile = Files.createFile(Path.of(path.toString(), "daggerapi/"
                         + now
                         + "-error.log"));
@@ -44,10 +52,9 @@ public class ErrorLogger
                         {
                             writer.println(itemName + ":");
                             for (String error : itemModelErrors) {
-                                writer.println();
-                                writer.printf("%s\n", error);
+                                writer.printf("\t > %s\n", error);
                             }
-                            writer.println();
+                            writer.println("=====================================");
                         }
                 );
 

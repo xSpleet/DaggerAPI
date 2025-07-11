@@ -1,6 +1,8 @@
 package xspleet.daggerapi.exceptions;
 
-public class WrongConditionOnException extends DaggerAPIException
+import java.util.List;
+
+public class BadArgumentException extends DaggerAPIException
 {
     private final String message;
 
@@ -9,7 +11,7 @@ public class WrongConditionOnException extends DaggerAPIException
         return message;
     }
 
-    public WrongConditionOnException(String message) {
+    public BadArgumentException(String message) {
         this.message = message;
     }
 }

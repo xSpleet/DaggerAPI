@@ -3,7 +3,8 @@ package xspleet.daggerapi.collections.registration;
 import com.google.gson.JsonElement;
 import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
-import xspleet.daggerapi.exceptions.MissingArgumentException;
+import xspleet.daggerapi.exceptions.BadArgumentException;
+import xspleet.daggerapi.exceptions.BadArgumentsException;
 import xspleet.daggerapi.models.On;
 import xspleet.daggerapi.trigger.Trigger;
 
@@ -43,30 +44,37 @@ public class Provider<T>
         return name;
     }
 
-    public T provide(On on, Map<String, JsonElement> args) throws MissingArgumentException {
+    public T provide(On on, Map<String, JsonElement> args) throws BadArgumentsException {
         var data = getArgs(args).setOn(on);
         return provider.apply(data);
     }
 
-    private ProviderData getArgs(Map<String, JsonElement> args) throws MissingArgumentException {
+    private ProviderData getArgs(Map<String, JsonElement> args) throws BadArgumentsException {
         ProviderData data = new ProviderData();
-        List<String> missingArguments = new ArrayList<>();
+        List<BadArgumentException> errors = new ArrayList<>();
         for(var argument: arguments.entrySet())
         {
-            String name = argument.getKey();
-            ProviderArgument<?> providerArgument = argument.getValue();
+            try {
+                String name = argument.getKey();
+                ProviderArgument<?> providerArgument = argument.getValue();
 
-            if(!args.containsKey(name))
-            {
-                missingArguments.add(name);
-                continue;
+                if(!args.containsKey(name)) {
+                    throw new BadArgumentException("Missing argument: " + name);
+                }
+
+                var element = args.get(name);
+                providerArgument.addData(data, element);
             }
-
-            var element = args.get(name);
-            providerArgument.addData(data, element);
+            catch (BadArgumentException e) {
+                errors.add(e);
+            }
         }
-        if(!missingArguments.isEmpty())
-            throw new MissingArgumentException(missingArguments);
+        if(!errors.isEmpty())
+            throw new BadArgumentsException(
+                errors.stream()
+                        .map(BadArgumentException::getMessage)
+                        .toList()
+            );
         return data;
     }
 
