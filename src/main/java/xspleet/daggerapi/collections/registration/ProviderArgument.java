@@ -13,7 +13,7 @@ public record ProviderArgument<T>(DaggerKey<T> key, Parser<T> parser)
             data.addData(key, parser.parse(value));
         }
         catch (Exception e) {
-            throw new BadArgumentException("Failed to parse argument '" + key.key() + "' with value " + value.getAsString() + ": " + e.getMessage());
+            throw new BadArgumentException("Failed to get argument '" + key.key() + "' with value " + value.getAsString() + ": " + e.getMessage());
         }
     }
 

@@ -5,12 +5,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.base.DoubleVariableSet;
+import xspleet.daggerapi.base.DoubleExpression;
 import xspleet.daggerapi.trigger.Trigger;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DaggerKeys
@@ -39,12 +37,11 @@ public class DaggerKeys
 
     public static class Provider
     {
-        public static final DaggerKey<String> AMOUNT = new DaggerKey<>("amount", String.class);
+        public static final DaggerKey<DoubleExpression> AMOUNT = new DaggerKey<>("amount", DoubleExpression.class);
         public static final DaggerKey<String> MESSAGE = new DaggerKey<>("message", String.class);
         public static final DaggerKey<String> WEATHER = new DaggerKey<>("weather", String.class);
         public static final DaggerKey<String> DIMENSION = new DaggerKey<>("dimension", String.class);
         public static final DaggerKey<String> ARTIFACT = new DaggerKey<>("artifact", String.class);
         public static final DaggerKey<String> DAMAGE_SOURCE = new DaggerKey<>("damageSource", String.class);
-        public static final DaggerKey<DoubleVariableSet> VARIABLES = new DaggerKey<>("variables", DoubleVariableSet.class);
     }
 }

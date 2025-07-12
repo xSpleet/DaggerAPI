@@ -29,10 +29,7 @@
                 {
                     "action": "changeAmount",
                     "arguments": {
-                        "amount": "5*damage",
-                        "variables": [
-                            "damage"
-                        ]
+                        "amount": "2*amount"
                     }
                 }
             ]
