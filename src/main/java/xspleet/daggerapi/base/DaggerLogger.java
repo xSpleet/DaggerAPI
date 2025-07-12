@@ -4,10 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.DaggerAPI;
 
+import static xspleet.daggerapi.DaggerAPI.DEBUG_MODE;
+
 public class DaggerLogger
 {
     private static final Logger logger = LoggerFactory.getLogger(DaggerAPI.MOD_ID);
-    private static final boolean DEBUG_MODE = true; // Set to false in production
     public static void debug(String message) {
         if(DEBUG_MODE) {
             logger.info("[DEBUG] {}", message);

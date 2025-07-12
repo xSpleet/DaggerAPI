@@ -121,6 +121,13 @@ public class ArtifactItemBuilder
                 continue;
             }
 
+            if (trigger == Triggers.ACTIVATE) {
+                if(!itemModel.isActive()) {
+                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "Activate event cannot be set on an inactive artifact");
+                    continue;
+                }
+            }
+
             TriggeredBy triggeredBy = eventModel.getTriggeredBy();
             TriggeredIn triggeredIn = eventModel.getTriggeredIn();
 

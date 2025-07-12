@@ -120,6 +120,11 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
         delta.clear();
     }
 
+    @Override
+    public List<AttributeModifier<T>> getModifiers() {
+        return allModifiers.stream().toList();
+    }
+
     public static AttributeInstanceSyncData read(PacketByteBuf buf) {
         List<UUID> removedModifiers = buf.readCollection(
                 ArrayList::new,

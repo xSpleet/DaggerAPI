@@ -4,6 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface MixinAttributeInstance<T> extends AttributeInstance<T>
@@ -17,6 +18,7 @@ public interface MixinAttributeInstance<T> extends AttributeInstance<T>
     public T DaggerAPI$getBaseValue();
     public void DaggerAPI$removeModifier(UUID modifierId);
     public void DaggerAPI$write(PacketByteBuf byteBuf);
+    public List<AttributeModifier<T>> DaggerAPI$getModifiers();
 
     public default String getAttributeName() {
         return DaggerAPI$getAttributeName();
@@ -52,5 +54,9 @@ public interface MixinAttributeInstance<T> extends AttributeInstance<T>
 
     public default void removeModifier(UUID modifierId) {
         DaggerAPI$removeModifier(modifierId);
+    }
+
+    public default List<AttributeModifier<T>> getModifiers() {
+        return DaggerAPI$getModifiers();
     }
 }

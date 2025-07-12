@@ -5,10 +5,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.item.Item;
+import net.minecraft.util.Identifier;
 import xspleet.daggerapi.artifact.builder.ErrorLogger;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.commands.AttributeArgumentType;
+import xspleet.daggerapi.commands.ServerCommands;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ItemModel;
 
@@ -27,6 +33,8 @@ public class DaggerAPI implements ModInitializer {
 			.setPrettyPrinting()
 			.create();
 
+	public static final boolean DEBUG_MODE = true; // Set to false in production
+
 	private static final String RESOURCES = "../src/main/resources/";
 
 	@Override
@@ -40,11 +48,17 @@ public class DaggerAPI implements ModInitializer {
 			ItemModel itemModel = JSON_PARSER.fromJson(Files.newBufferedReader(file), ItemModel.class);
 
             DaggerLogger.debug("\n{}", JSON_PARSER.toJson(itemModel));
-			ArtifactItemBuilder.build(itemModel);
+			Item item = ArtifactItemBuilder.build(itemModel);
 
 			ErrorLogger.validate();
 		} catch (IOException e) {
             throw new RuntimeException(e);
         }
+		ArgumentTypeRegistry.registerArgumentType(
+				new Identifier(MOD_ID, "attribute"),
+				AttributeArgumentType.class,
+				ConstantArgumentSerializer.of(AttributeArgumentType::new)
+		);
+		ServerCommands.registerCommands();
     }
 }

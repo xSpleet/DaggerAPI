@@ -14,7 +14,9 @@ import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.exceptions.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -160,5 +162,9 @@ public class Mapper
                     .orElseThrow(() -> new IllegalStateException("No name found for operation: " + operation));
         }
         throw new IllegalArgumentException("Operation is not registered: " + operation);
+    }
+
+    public static List<String> getAllAttributeNames() {
+        return new ArrayList<>(entityAttributes.keySet());
     }
 }
