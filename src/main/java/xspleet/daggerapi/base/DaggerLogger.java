@@ -4,19 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.DaggerAPI;
 
-import static xspleet.daggerapi.DaggerAPI.DEBUG_MODE;
+import static xspleet.daggerapi.DaggerAPI.SERVER_DEV_MODE;
 
 public class DaggerLogger
 {
     private static final Logger logger = LoggerFactory.getLogger(DaggerAPI.MOD_ID);
     public static void debug(String message) {
-        if(DEBUG_MODE) {
+        if(SERVER_DEV_MODE) {
             logger.info("[DEBUG] {}", message);
         }
     }
 
     public static void debug(String format, Object... args) {
-        if(DEBUG_MODE) {
+        if(SERVER_DEV_MODE) {
             logger.info("[DEBUG] " + format, args);
         }
     }
