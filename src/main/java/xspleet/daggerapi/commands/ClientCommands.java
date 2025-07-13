@@ -3,12 +3,11 @@ package xspleet.daggerapi.commands;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.text.Text;
-import xspleet.daggerapi.DaggerAPIClient;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
+import xspleet.daggerapi.client.ClientDevModeConfig;
 
 public class ClientCommands
 {
@@ -24,7 +23,7 @@ public class ClientCommands
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, commandRegistryAccess) -> {
                     dispatcher.register(ClientCommandManager.literal(COMMAND_PREFIX)
-                            .requires(x -> x.hasPermissionLevel(2) && DaggerAPIClient.CLIENT_DEV_MODE)
+                            .requires(x -> x.hasPermissionLevel(2) && ClientDevModeConfig.CLIENT_DEV_MODE)
                             .then(ClientCommandManager.literal(COMMAND_SNOOP)
                                     .then(ClientCommandManager.literal(COMMAND_ATTRIBUTE)
                                             .then(ClientCommandManager.argument(COMMAND_ATTRIBUTE, new AttributeArgumentType())

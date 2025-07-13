@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xspleet.daggerapi.DaggerAPI;
 
-import static xspleet.daggerapi.DaggerAPI.SERVER_DEV_MODE;
+import static xspleet.daggerapi.server.ServerDevModeConfig.SERVER_DEV_MODE;
 
 public class DaggerLogger
 {

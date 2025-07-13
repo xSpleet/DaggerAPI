@@ -50,7 +50,7 @@ public class ArtifactItemBuilder
         buildArtifactAttributes(itemModel, item);
         buildEvents(itemModel, item);
 
-        return Registry.register(Registries.ITEM, Identifier.of(DaggerAPI.MOD_ID, name), item);
+        return item;
     }
 
     private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)

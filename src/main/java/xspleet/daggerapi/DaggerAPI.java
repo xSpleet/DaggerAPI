@@ -24,10 +24,9 @@ import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.models.ConfigModel;
 import xspleet.daggerapi.models.ItemModel;
 import xspleet.daggerapi.networking.NetworkingConstants;
+import xspleet.daggerapi.server.ServerDevModeConfig;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class DaggerAPI implements ModInitializer {
 	public static final String MOD_ID = "daggerapi";
@@ -40,59 +39,18 @@ public class DaggerAPI implements ModInitializer {
 			.setPrettyPrinting()
 			.create();
 
-	public static boolean SERVER_DEV_MODE = false;
-	private static final String RESOURCES = "../src/main/resources/";
-
 	@Override
 	public void onInitialize() {
-		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-			var configs = FabricLoader.getInstance().getConfigDir();
-			var config = configs.resolve("daggerapi.json").toFile();
-			if(!config.exists()) {
-				DaggerLogger.warn("DaggerAPI config file not found at " + config.getAbsolutePath() + ". Creating default one");
-				try (BufferedWriter writer = new BufferedWriter(new FileWriter(config))) {
-					var defaultConfig = new ConfigModel();
-					JSON_PARSER.toJson(defaultConfig, writer);
-					DaggerLogger.warn("Default DaggerAPI config created at " + config.getAbsolutePath());
-				} catch (IOException e) {
-					DaggerLogger.error("Failed to create DaggerAPI config file: " + e.getMessage());
-				}
-			}
-			try (BufferedReader reader = new BufferedReader(new FileReader(config))) {
-				var json = JSON_PARSER.fromJson(reader, ConfigModel.class);
-				DaggerLogger.debug("DaggerAPI config loaded: " + json);
-				if(json.isDevMode()) {
-					DaggerLogger.warn("DaggerAPI is running in development mode. This is not recommended for production servers.");
-				}
-				DaggerAPI.SERVER_DEV_MODE = json.isDevMode();
-			} catch (IOException e) {
-				DaggerLogger.error("Failed to read DaggerAPI config file: " + e.getMessage());
-			}
-
-			ServerPlayConnectionEvents.JOIN.register(
-					(handler, sender, server) -> {
-						PacketByteBuf buf = PacketByteBufs.create();
-						buf.writeBoolean(DaggerAPI.SERVER_DEV_MODE);
-						ServerPlayNetworking.send(handler.getPlayer(), NetworkingConstants.SYNC_DEV_MODE_PACKET_ID, buf);
-					}
-			);
-		}
-
 		DaggerLogger.debug("Started DaggerAPI in debug mode");
 		Mapper.registerMapper();
 		ActiveArtifactActivation.registerActivation();
+		ServerDevModeConfig.init();
 
-		Path file = Path.of(RESOURCES, "data/test_item/item.json");
-		try {
-			ItemModel itemModel = JSON_PARSER.fromJson(Files.newBufferedReader(file), ItemModel.class);
+		ItemModel itemModel = new ItemModel();
+		DaggerLogger.debug("\n{}", JSON_PARSER.toJson(itemModel));
+		Item item = ArtifactItemBuilder.build(itemModel);
+		ErrorLogger.validate();
 
-            DaggerLogger.debug("\n{}", JSON_PARSER.toJson(itemModel));
-			Item item = ArtifactItemBuilder.build(itemModel);
-
-			ErrorLogger.validate();
-		} catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 		ArgumentTypeRegistry.registerArgumentType(
 				new Identifier(MOD_ID, "attribute"),
 				AttributeArgumentType.class,
