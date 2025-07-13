@@ -5,12 +5,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
-import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.data.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
-import xspleet.daggerapi.trigger.TriggerTracker;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityTriggersRegistration implements Self<LivingEntity> {

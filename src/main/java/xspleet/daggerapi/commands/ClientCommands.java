@@ -6,9 +6,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.text.Text;
 import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.Attribute;
-import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
-import xspleet.daggerapi.trigger.TriggerTracker;
 
 public class ClientCommands
 {
@@ -25,31 +23,6 @@ public class ClientCommands
                     dispatcher.register(ClientCommandManager.literal(COMMAND_PREFIX)
                             .requires(x -> x.hasPermissionLevel(2) || DaggerAPI.DEBUG_MODE)
                             .then(ClientCommandManager.literal(COMMAND_SNOOP)
-                                    .then(ClientCommandManager.literal(COMMAND_TRIGGER)
-                                            .then(ClientCommandManager.argument(COMMAND_SET, BoolArgumentType.bool())
-                                                    .executes(
-                                                        ctx -> {
-
-                                                            boolean snoop = BoolArgumentType.getBool(ctx, COMMAND_SET);
-                                                            var player = ctx.getSource().getPlayer();
-
-                                                            if(player == null) {
-                                                                ctx.getSource().sendError(Text.literal("This command can only be used by players."));
-                                                                return 0;
-                                                            }
-
-                                                            if(!(player instanceof TriggerTracker tracker)) {
-                                                                ctx.getSource().sendError(Text.literal("This command can only be used by players that are a TriggerTracker."));
-                                                                return 0;
-                                                            }
-
-                                                            ctx.getSource().sendFeedback(Text.literal("Trigger snooping " + (snoop?"enabled":"disabled")));
-                                                            tracker.setTrackingEnabled(snoop);
-                                                            return 1;
-                                                        }
-                                                        )
-                                            )
-                                    )
                                     .then(ClientCommandManager.literal(COMMAND_ATTRIBUTE)
                                             .then(ClientCommandManager.argument(COMMAND_ATTRIBUTE, new AttributeArgumentType())
                                                     .then(ClientCommandManager.argument(COMMAND_SET, BoolArgumentType.bool())

@@ -2,12 +2,18 @@ package xspleet.daggerapi.trigger;
 
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
+import xspleet.daggerapi.attributes.ClientAttributeHolder;
 import xspleet.daggerapi.data.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.networking.NetworkingConstants;
 
 import java.util.*;
 
@@ -65,9 +71,6 @@ public class Trigger
             artifacts.stream().sorted(Comparator.comparingInt(Pair::getLeft))
                     .map(Pair::getRight)
                     .forEach(item -> {
-                        if(player instanceof MixinTriggerTracker tracker && tracker.isTrackingEnabled()) {
-                            tracker.daggerAPI$trigger(this, item, player.getWorld().getTime());
-                        }
                         if(player instanceof ServerPlayerEntity) {
                             item.receiveTrigger(data);
                         }

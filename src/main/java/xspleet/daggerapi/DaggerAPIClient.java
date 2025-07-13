@@ -8,11 +8,9 @@ import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
 import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.commands.ClientCommands;
 import xspleet.daggerapi.events.KeyBindRegistration;
 import xspleet.daggerapi.networking.NetworkingConstants;
-import xspleet.daggerapi.trigger.TriggerTracker;
 
 public class DaggerAPIClient implements ClientModInitializer {
     @Override
@@ -22,33 +20,6 @@ public class DaggerAPIClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(
                 ((drawContext, v) -> {
                     var client = MinecraftClient.getInstance();
-                    if(client != null && client.player instanceof TriggerTracker tracker && tracker.isTrackingEnabled())
-                    {
-                        var triggers = tracker.getTriggerTrackEntries(client.player.getWorld().getTime());
-                        var worldTick = client.player.getWorld().getTime() + v;
-                        for(var entry : triggers) {
-                            int index = triggers.indexOf(entry);
-                            var trigger = entry.trigger().getName();
-                            var item = entry.item().getName();
-                            var tick = entry.tick();
-
-                            int screenWidth = client.getWindow().getScaledWidth();
-                            int textWidth = client.textRenderer.getWidth(item + ": " + trigger);
-
-                            int x = screenWidth - textWidth - 10;
-                            int y = 10 + index * 10;
-
-                            int color = 0xFFFFFF + ((int)(worldTick - tick)) << 24;
-
-                            drawContext.drawText(
-                                    client.textRenderer,
-                                    item + ": " + trigger,
-                                    x, y,
-                                    color,
-                                    false
-                            );
-                        }
-                    }
 
                     if(client != null && client.player instanceof ClientAttributeHolder clientHolder && client.player instanceof AttributeHolder holder) {
                         var attributes = clientHolder.getAttributesToUpdate();
