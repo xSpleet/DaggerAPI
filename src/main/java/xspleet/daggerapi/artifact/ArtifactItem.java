@@ -30,6 +30,11 @@ import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 public class ArtifactItem extends TrinketItem {
     protected final List<ArtifactAttributeModifier> attributeModifiers;
+
+    public ArtifactRarity getArtifactRarity() {
+        return artifactRarity;
+    }
+
     protected ArtifactRarity artifactRarity = ArtifactRarity.COMMON;
 
     protected final Map<Trigger, List<ConditionalAction>> events;
@@ -163,19 +168,19 @@ public class ArtifactItem extends TrinketItem {
     private void addArtifactRarity(List<Text> tooltip) {
         switch (artifactRarity) {
             case COMMON: {
-                tooltip.add(Text.translatable("item.magpie.rarity.common").formatted(Formatting.BOLD).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable("item.daggerapi.rarity.common").formatted(Formatting.BOLD).formatted(Formatting.GRAY));
                 break;
             }
             case RARE: {
-                tooltip.add(Text.translatable("item.magpie.rarity.rare").formatted(Formatting.BOLD).formatted(Formatting.BLUE));
+                tooltip.add(Text.translatable("item.daggerapi.rarity.rare").formatted(Formatting.BOLD).formatted(Formatting.BLUE));
                 break;
             }
             case EPIC: {
-                tooltip.add(Text.translatable("item.magpie.rarity.epic").formatted(Formatting.BOLD).formatted(Formatting.DARK_PURPLE));
+                tooltip.add(Text.translatable("item.daggerapi.rarity.epic").formatted(Formatting.BOLD).formatted(Formatting.DARK_PURPLE));
                 break;
             }
             case LEGENDARY: {
-                tooltip.add(Text.translatable("item.magpie.rarity.legendary").formatted(Formatting.BOLD).formatted(Formatting.GOLD));
+                tooltip.add(Text.translatable("item.daggerapi.rarity.legendary").formatted(Formatting.BOLD).formatted(Formatting.GOLD));
                 break;
             }
         }
@@ -195,14 +200,22 @@ public class ArtifactItem extends TrinketItem {
         addArtifactRarity(tooltip);
         if (Screen.hasShiftDown()) {
             if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive()) {
-                tooltip.add(Text.translatable("item.magpie.tooltip.recharge", artifact.getCooldown() / 20 + " "));
+                tooltip.add(Text.translatable("item.daggerapi.tooltip.recharge", artifact.getCooldown() / 20 + " "));
             }
-            TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip." + stack.getItem()), tooltip);
+            var artifactItem = stack.getItem();
+            if(artifactItem instanceof ArtifactItem artifact)
+                TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
+            else
+                TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip." + stack.getItem()), tooltip);
         } else {
             if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
-                TextFormatter.addTooltips(Text.translatable("item.magpie.tooltip.active"), tooltip);
-            TextFormatter.addTooltips(Text.translatable("item.magpie.description." + stack.getItem()), tooltip);
-            tooltip.add(Text.translatable("item.magpie.tooltip.shiftmoreinfo"));
+                TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip.active"), tooltip);
+            var artifactItem = stack.getItem();
+            if(artifactItem instanceof ArtifactItem artifact)
+                TextFormatter.addTooltips(Text.translatable("item.daggerapi.description." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
+            else
+                TextFormatter.addTooltips(Text.translatable("item.daggerapi.description." + stack.getItem()), tooltip);
+            tooltip.add(Text.translatable("item.daggerapi.tooltip.shiftmoreinfo"));
         }
     }
 

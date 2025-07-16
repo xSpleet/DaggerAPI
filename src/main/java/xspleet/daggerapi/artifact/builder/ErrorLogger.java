@@ -15,6 +15,8 @@ import java.util.*;
 public class ErrorLogger
 {
     private static final Map<String, List<String>> errors = new HashMap<>();
+    private static final LocalDateTime nowTime = LocalDateTime.now();
+    private static boolean errorsLogged = false;
 
     public static void log(String itemName, String place, DaggerAPIException exception) {
         log(itemName, place, exception.getMessage());
@@ -26,11 +28,12 @@ public class ErrorLogger
         errors.get(itemName).add(place + " : " + message);
     }
 
-    public static void validate(){
+    public static boolean validate(String packName) {
         if(!errors.isEmpty())
         {
+            errorsLogged = true;
             try {
-                String now = LocalDateTime.now()
+                String now = nowTime
                         .toString()
                         .replace(':', '-')
                         .replace('T', '_')
@@ -41,30 +44,36 @@ public class ErrorLogger
                 if(!Files.exists(folder))
                     Files.createDirectories(folder);
 
-                Path newFile = Files.createFile(Path.of(path.toString(), "daggerapi/"
-                        + now
-                        + "-error.log"));
+                var newFile = folder.resolve(now + "_errors.txt");
+                if(!newFile.toFile().exists())
+                    Files.createFile(newFile);
 
                 PrintWriter writer = new PrintWriter(Files.newBufferedWriter(newFile));
 
+                writer.println("=====================================");
+                writer.println("Errors in pack " + packName + ":");
                 errors.forEach(
                         (itemName, itemModelErrors) ->
                         {
-                            writer.println(itemName + ":");
+                            writer.println("----------------------------------");
+                            writer.println("\t" + itemName + ":");
                             for (String error : itemModelErrors) {
-                                writer.printf("\t > %s\n", error);
+                                writer.printf("\t\t > %s\n", error);
                             }
-                            writer.println("=====================================");
+                            writer.println("----------------------------------");
                         }
                 );
+
+                writer.println("=====================================");
                 writer.close();
-                throw new RuntimeException("DaggerAPI: There were problems found with your artifacts. See " + newFile + " for details");
+                errors.clear();
+                return false;
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
                 throw new RuntimeException("DaggerAPI: There were problems found with your artifacts, but no log file could be created! Reason: " + e.getMessage());
             }
         }
+        return true;
     }
 
     public static String placeOf(String type, int place) {
@@ -73,5 +82,9 @@ public class ErrorLogger
 
     public static String placeOf(String type, int place, String innerType, int innerPlace) {
         return type + "[" + place + "]" + "{ " + innerType + "[" + innerPlace + "] }";
+    }
+
+    public static boolean hasErrors() {
+        return errorsLogged;
     }
 }

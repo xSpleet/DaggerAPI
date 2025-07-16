@@ -13,10 +13,16 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.item.Item;
+import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.artifact.builder.ErrorLogger;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
+import xspleet.daggerapi.base.ArtifactPackParser;
+import xspleet.daggerapi.base.ArtifactPoolEntrySerializer;
 import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
@@ -39,6 +45,12 @@ public class DaggerAPI implements ModInitializer {
 			.setPrettyPrinting()
 			.create();
 
+	public static final LootPoolEntryType ARTIFACT_POOL_ENTRY_TYPE = Registry.register(
+			Registries.LOOT_POOL_ENTRY_TYPE,
+			new Identifier(MOD_ID, "artifact_pool_entry"),
+			new LootPoolEntryType(new ArtifactPoolEntrySerializer())
+	);
+
 	@Override
 	public void onInitialize() {
 		DaggerLogger.debug("Started DaggerAPI in debug mode");
@@ -46,15 +58,12 @@ public class DaggerAPI implements ModInitializer {
 		ActiveArtifactActivation.registerActivation();
 		ServerDevModeConfig.init();
 
-		ItemModel itemModel = new ItemModel();
-		DaggerLogger.debug("\n{}", JSON_PARSER.toJson(itemModel));
-		Item item = ArtifactItemBuilder.build(itemModel);
-		ErrorLogger.validate();
-
 		ArgumentTypeRegistry.registerArgumentType(
 				new Identifier(MOD_ID, "attribute"),
 				AttributeArgumentType.class,
 				ConstantArgumentSerializer.of(AttributeArgumentType::new)
 		);
+
+		ArtifactPackParser.readPacks();
     }
 }

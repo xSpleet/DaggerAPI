@@ -9,7 +9,9 @@
     "EntityTrackerEntrySyncAttributeMixin",
     "LivingEntityAttributeRegistration",
     "LivingEntityTriggersRegistration",
-    "OperationMixin"
+    "OperationMixin",
+    "ResourcePackManagerAccessor",
+    "ResourcePackProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

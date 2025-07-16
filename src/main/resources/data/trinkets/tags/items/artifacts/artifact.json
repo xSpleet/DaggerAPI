@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-	  "daggerapi:test_item"
+    "#daggerapi:artifacts"
   ]
 }

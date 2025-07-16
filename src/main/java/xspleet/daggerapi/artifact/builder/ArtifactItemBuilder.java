@@ -8,6 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
@@ -26,10 +27,10 @@ import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
 public class ArtifactItemBuilder
 {
-    public static Item build(ItemModel itemModel)
+    public static ArtifactItem build(ItemModel itemModel)
     {
         String name = itemModel.getName();
-        String rarity = itemModel.getRarity();
+        ArtifactRarity rarity = itemModel.getRarity();
         boolean active = itemModel.isActive();
         int cooldown = itemModel.getCooldown();
 
@@ -46,7 +47,7 @@ public class ArtifactItemBuilder
             item.cooldown(cooldown).active(true);
         }
 
-        item.rarity(ArtifactRarity.getRarity(rarity));
+        item.rarity(rarity);
         buildArtifactAttributes(itemModel, item);
         buildEvents(itemModel, item);
 

@@ -1,11 +1,13 @@
 package xspleet.daggerapi.models;
 
+import xspleet.daggerapi.artifact.builder.ArtifactRarity;
+
 import java.util.ArrayList;
 
 public class ItemModel extends JSONModel
 {
     private String name;
-    private String rarity;
+    private ArtifactRarity rarity;
     private boolean active = false;
     private int cooldown = -1;
     private EventModel onActivation;
@@ -20,11 +22,11 @@ public class ItemModel extends JSONModel
         this.name = name;
     }
 
-    public String getRarity() {
+    public ArtifactRarity getRarity() {
         return rarity;
     }
 
-    public void setRarity(String rarity) {
+    public void setRarity(ArtifactRarity rarity) {
         this.rarity = rarity;
     }
 
