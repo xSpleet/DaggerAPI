@@ -15,7 +15,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.artifact.builder.ArtifactAttributeModifier;
 import xspleet.daggerapi.artifact.builder.ArtifactRarity;
 import xspleet.daggerapi.base.*;
@@ -230,6 +229,23 @@ public class ArtifactItem extends TrinketItem {
     public ArtifactItem active(boolean active) {
         this.active = active;
         return this;
+    }
+
+    public ArtifactBehavior getBehavior() {
+        return new ArtifactBehavior(events, weightedEvents, triggers, attributeModifiers, artifactRarity, cooldown);
+    }
+
+    public void setBehavior(ArtifactBehavior behavior) {
+        this.events.clear();
+        this.events.putAll(behavior.events());
+        this.weightedEvents.clear();
+        this.weightedEvents.putAll(behavior.weightedEvents());
+        this.triggers.clear();
+        this.triggers.addAll(behavior.triggers());
+        this.attributeModifiers.clear();
+        this.attributeModifiers.addAll(behavior.attributeModifiers());
+        this.artifactRarity = behavior.artifactRarity();
+        this.cooldown = behavior.cooldown();
     }
 
     public Identifier getIdentifier() {
