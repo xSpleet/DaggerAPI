@@ -29,7 +29,7 @@ public class TagFileCreator
             try {
                 Files.createDirectories(tagDataPack);
             } catch (IOException e) {
-                DaggerLogger.error("Failed to create tag data pack directory: {}", e.getMessage());
+                DaggerLogger.error( LoggingContext.STARTUP, "Failed to create tag data pack directory: {}", e.getMessage());
                 return;
             }
         }
@@ -40,7 +40,7 @@ public class TagFileCreator
             try {
                 Files.createDirectories(dataFolder);
             } catch (IOException e) {
-                DaggerLogger.error("Failed to create data folder for tags: {}", e.getMessage());
+                DaggerLogger.error(LoggingContext.STARTUP, "Failed to create data folder for tags: {}", e.getMessage());
                 return;
             }
         }
@@ -55,7 +55,7 @@ public class TagFileCreator
                     Map.of("pack", Map.of("pack_format", 15, "description", "DaggerAPI Artifact Tags - Service Pack")));
             writer.write(packMeta);
         } catch (IOException e) {
-            DaggerLogger.error("Failed to write pack.mcmeta file: {}", e.getMessage());
+            DaggerLogger.error(LoggingContext.STARTUP, "Failed to write pack.mcmeta file: {}", e.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class TagFileCreator
                     .toList());
             writer.write(DaggerAPI.JSON_PARSER.toJson(tagModel, TagModel.class));
         } catch (IOException e) {
-            DaggerLogger.error("Failed to write artifact tag file: {}", e.getMessage());
+            DaggerLogger.error(LoggingContext.STARTUP, "Failed to write artifact tag file: {}", e.getMessage());
         }
     }
 }

@@ -6,13 +6,14 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.ClampedAttribute;
 import xspleet.daggerapi.attributes.UnclampedAttribute;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.collections.registration.Mapper;
 
 public class Attributes
 {
     public static void registerAttributes()
     {
-        DaggerLogger.info("> Registering entity attributes...");
+        DaggerLogger.info(LoggingContext.STARTUP, "Registering entity attributes...");
     }
     public static final Attribute<Double> GENERIC_MOVEMENT_SPEED = Mapper.registerAttribute("movement_speed", EntityAttributes.GENERIC_MOVEMENT_SPEED);
     public static final Attribute<Double> JUMP_HEIGHT = Mapper.registerAttribute("jump_height", new ClampedAttribute<>("daggerapi:jump_height", Double.class, 0.42, 0.01, 2.0));

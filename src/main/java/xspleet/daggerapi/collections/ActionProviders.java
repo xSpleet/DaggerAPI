@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
 import xspleet.daggerapi.base.DaggerLogger;
 import xspleet.daggerapi.base.DoubleExpression;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.collections.registration.Provider;
 import xspleet.daggerapi.data.key.DaggerKeys;
@@ -16,7 +17,7 @@ public class ActionProviders
 {
     public static void registerActionProviders()
     {
-        DaggerLogger.info("> Registering action providers...");
+        DaggerLogger.info(LoggingContext.STARTUP, "Registering action providers...");
     }
 
     public static Provider<Action> DO_NOTHING = Mapper.registerActionProvider("doNothing", (args) -> {

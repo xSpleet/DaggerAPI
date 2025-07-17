@@ -93,7 +93,7 @@ public class DoubleExpression
             throw new ExpressionParseException("Invalid expression: " + e.getMessage());
         } catch (ArithmeticException ignored) {
         } catch (Exception e) {
-            DaggerLogger.warn("Unexpected exception during expression validation", e);
+            DaggerLogger.warn(LoggingContext.PARSING, "Unexpected exception during expression validation: {}", e.getMessage());
         }
 
         doubleExpression.expression = expression;

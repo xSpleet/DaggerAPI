@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ItemModel extends JSONModel
 {
     private String name;
-    private ArtifactRarity rarity;
+    private ArtifactRarity rarity = ArtifactRarity.COMMON;
     private boolean active = false;
     private int cooldown = -1;
     private EventModel onActivation;

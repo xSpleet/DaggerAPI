@@ -5,13 +5,14 @@ import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.attributes.operations.BooleanOperation;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.collections.registration.Mapper;
 
 public class Operations
 {
     public static void registerOperations()
     {
-        DaggerLogger.info("> Registering operations...");
+        DaggerLogger.info(LoggingContext.STARTUP, "Registering operations...");
     }
     public static AttributeOperation<Double> ADD = Mapper.registerOperation("add", EntityAttributeModifier.Operation.ADDITION);
     public static AttributeOperation<Double> MULTIPLY_BASE = Mapper.registerOperation("multiply_base", EntityAttributeModifier.Operation.MULTIPLY_BASE);

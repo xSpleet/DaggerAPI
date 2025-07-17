@@ -1,5 +1,7 @@
 package xspleet.daggerapi.mixin;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProvider;
@@ -31,8 +33,10 @@ public class ResourcePackProviderMixin implements Self<ResourcePackManager>
     )
     private void daggerapi$init(CallbackInfo ci) {
         var providers = new LinkedHashSet<>(this.providers);
-        providers.add(new DaggerResourcePackProvider(ResourceType.CLIENT_RESOURCES));
-        providers.add(new DaggerResourcePackProvider(ResourceType.SERVER_DATA));
+        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+            providers.add(new DaggerResourcePackProvider(ResourceType.CLIENT_RESOURCES));
+        else
+            providers.add(new DaggerResourcePackProvider(ResourceType.SERVER_DATA));
         ((ResourcePackManagerAccessor)this).daggerapi$setProviders(providers);
     }
 }

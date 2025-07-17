@@ -7,32 +7,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.item.Item;
-import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.entry.LootPoolEntryType;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import xspleet.daggerapi.artifact.builder.ErrorLogger;
-import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.base.ArtifactPackParser;
 import xspleet.daggerapi.base.ArtifactPoolEntrySerializer;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
-import xspleet.daggerapi.models.ConfigModel;
-import xspleet.daggerapi.models.ItemModel;
-import xspleet.daggerapi.networking.NetworkingConstants;
-import xspleet.daggerapi.server.ServerDevModeConfig;
-
-import java.io.*;
+import xspleet.daggerapi.config.ServerDevModeConfig;
+import xspleet.daggerapi.networking.ServerNetworking;
 
 public class DaggerAPI implements ModInitializer {
 	public static final String MOD_ID = "daggerapi";
@@ -51,19 +42,24 @@ public class DaggerAPI implements ModInitializer {
 			new LootPoolEntryType(new ArtifactPoolEntrySerializer())
 	);
 
+	public static final boolean DEBUG_MODE = FabricLoader.getInstance().isDevelopmentEnvironment();
+
 	@Override
 	public void onInitialize() {
-		DaggerLogger.debug("Started DaggerAPI in debug mode");
+		DaggerLogger.debug(LoggingContext.STARTUP, "Started DaggerAPI in debug mode");
 		Mapper.registerMapper();
-		ActiveArtifactActivation.registerActivation();
-		ServerDevModeConfig.init();
+		ArtifactPackParser.readPacks();
+
+		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
+			ActiveArtifactActivation.registerActivation();
+			ServerDevModeConfig.init();
+			ServerNetworking.init();
+		}
 
 		ArgumentTypeRegistry.registerArgumentType(
 				new Identifier(MOD_ID, "attribute"),
 				AttributeArgumentType.class,
 				ConstantArgumentSerializer.of(AttributeArgumentType::new)
 		);
-
-		ArtifactPackParser.readPacks();
     }
 }

@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Unique;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.mixin.MixinClientAttributeHolder;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.base.Self;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class ClientPlayerEntityAttributeUpdatesMixin implements Self<ClientPlaye
     @Override
     public void DaggerAPI$updateAttribute(Attribute<?> attribute, long tick) {
         if(daggerAPI$attributeUpdateTimes.containsKey(attribute)) {
-            DaggerLogger.warn("Updating attribute " + attribute.getName() + " at tick " + tick + " for player " + self().getName().getString() + ", but this attribute is not tracked for updates.");
+            DaggerLogger.warn(LoggingContext.SYNC, "Updating attribute " + attribute.getName() + " at tick " + tick + " for player " + self().getName().getString() + ", but this attribute is not tracked for updates.");
         }
         daggerAPI$attributeUpdateTimes.put(attribute, tick);
     }

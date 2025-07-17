@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
-import xspleet.daggerapi.client.ClientDevModeConfig;
+import xspleet.daggerapi.config.ClientDevModeConfig;
 
 public class ClientCommands
 {

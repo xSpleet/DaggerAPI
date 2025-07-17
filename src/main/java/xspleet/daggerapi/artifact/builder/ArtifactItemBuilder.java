@@ -2,6 +2,7 @@ package xspleet.daggerapi.artifact.builder;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -30,17 +31,24 @@ public class ArtifactItemBuilder
     public static ArtifactItem build(ItemModel itemModel)
     {
         String name = itemModel.getName();
+        if(name == null || name.isEmpty()) {
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item at {} : {}", "Name", "Artifact must have a name");
+            return null;
+        }
         ArtifactRarity rarity = itemModel.getRarity();
+        if(rarity == null) {
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", name, "Rarity", "Artifact must have a rarity");
+        }
         boolean active = itemModel.isActive();
         int cooldown = itemModel.getCooldown();
 
         BuildableArtifactItem item = new BuildableArtifactItem(new FabricItemSettings().maxCount(1));
 
         if(active && cooldown <= 0) {
-            ErrorLogger.log(name, "Cooldown", "Active artifact must have a cooldown greater than 0");
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", name, "Cooldown", "Active artifact must have a cooldown greater than 0");
         }
         if(!active && cooldown > 0) {
-            ErrorLogger.log(name, "Cooldown", "Inactive artifact must have no cooldown");
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", name, "Cooldown", "Inactive artifact must have no cooldown");
         }
 
         if(active) {
@@ -70,13 +78,13 @@ public class ArtifactItemBuilder
             {
                 var conditionModel = conditionsModels.get(j);
                     if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
                 try {
                     Condition conditionUnit = getCondition(conditionModel);
                     artifactAttributeModifier.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Condition", j), e);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), e.getMessage());
                 }
             }
 
@@ -90,7 +98,7 @@ public class ArtifactItemBuilder
                     );
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("AttributeModifier", i, "Modifier", j), e);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Modifier", j), e.getMessage());
                 }
             }
 
@@ -102,7 +110,7 @@ public class ArtifactItemBuilder
     {
         var events = itemModel.getEvents();
         if(itemModel.isActive() && events.stream().noneMatch(e -> e.getTrigger().equalsIgnoreCase(Triggers.ACTIVATE.getName()))) {
-            ErrorLogger.log(itemModel.getName(), "Events", "Active artifact must have an activate event");
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), "Events", "Active artifact must have an activate event");
         }
         for(int i = 0 ; i < events.size() ; i++)
         {
@@ -118,13 +126,13 @@ public class ArtifactItemBuilder
                 trigger = Mapper.getTrigger(eventModel.getTrigger());
             }
             catch (NoSuchTriggerException e) {
-                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), e);
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), e.getMessage());
                 continue;
             }
 
             if (trigger == Triggers.ACTIVATE) {
                 if(!itemModel.isActive()) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "Activate event cannot be set on an inactive artifact");
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "Activate event cannot be set on an inactive artifact");
                     continue;
                 }
             }
@@ -133,10 +141,10 @@ public class ArtifactItemBuilder
             TriggeredIn triggeredIn = eventModel.getTriggeredIn();
 
             if(triggeredBy != null && !trigger.hasTriggerer()) {
-                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "TriggeredBy is set on event " + eventModel.getTrigger() + " but the trigger does not provide a triggerer");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "TriggeredBy is set on event " + eventModel.getTrigger() + " but the trigger does not provide a triggerer");
             }
             if(triggeredIn != null && !trigger.isWorldful()) {
-                ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "TriggeredIn is set on event " + eventModel.getTrigger() + " but the trigger is not worldful");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "TriggeredIn is set on event " + eventModel.getTrigger() + " but the trigger is not worldful");
             }
 
             conditionalAction
@@ -148,25 +156,26 @@ public class ArtifactItemBuilder
             {
                 var conditionModel = conditionsModels.get(j);
                 if(conditionModel.getOn() == On.SELF)
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), "Condition on SELF is not supported for events. If on is missing, it defaults to SELF!");
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on SELF is not supported for events. If on is missing, it defaults to SELF!");
                 if(!trigger.hasTriggerer() && conditionModel.getOn() == On.TRIGGERER) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), "Condition on TRIGGERER but the trigger does not provide a triggerer");
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on TRIGGERER but the trigger does not provide a triggerer");
                 }
                 if(!trigger.isWorldful() && conditionModel.getOn() == On.WORLD) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
                 }
                 try {
                     Mapper.getConditionProvider(conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), e);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
+                    continue;
                 }
                 try {
                     Condition conditionUnit = getCondition(conditionModel);
                     conditionalAction.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Condition", j), e);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
                 }
             }
 
@@ -177,22 +186,22 @@ public class ArtifactItemBuilder
                 try {
                     var actionProvider = Mapper.getActionProvider(actionModel.getAction());
                     if(actionProvider.isModifier() && actionModel.getOn() != On.TRIGGERER) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is a modifier but is not on TRIGGERER, which is not supported");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is a modifier but is not on TRIGGERER, which is not supported");
                     }
                     if(!actionProvider.canBeOnTrigger(trigger)) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " cannot be used on trigger " + trigger.getName());
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " cannot be used on trigger " + trigger.getName());
                     }
                     if(!trigger.hasTriggerer() && actionModel.getOn() == On.TRIGGERER) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on TRIGGERER but the trigger does not provide a triggerer");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on TRIGGERER but the trigger does not provide a triggerer");
                     }
                     if(!trigger.isWorldful() && actionModel.getOn() == On.WORLD) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on WORLD but the trigger is not worldful");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on WORLD but the trigger is not worldful");
                     }
                     var actionUnit = actionProvider.provide(actionModel.getOn(), actionModel.getArguments());
                     conditionalAction.addAction(actionUnit, actionModel.getAction());
                 }
                 catch (DaggerAPIException e) {
-                    ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i, "Action", j), e);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());
                 }
             }
 
@@ -207,9 +216,9 @@ public class ArtifactItemBuilder
                                                 .addData(DaggerKeys.Provider.ARTIFACT, itemModel.getName())),
                                 "ifArtifact"
                         );
-                        DaggerLogger.warn("Artifact {} has no ifArtifact condition on activate event, adding it automatically.", itemModel.getName());
+                        DaggerLogger.warn(LoggingContext.PARSING, "Artifact {} has no ifArtifact condition on activate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "Missing ifArtifact condition on active artifact.");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "Missing ifArtifact condition on active artifact.");
                     }
                 }
 
@@ -220,9 +229,9 @@ public class ArtifactItemBuilder
                                         .provide(new ProviderData().setOn(On.TRIGGERER)),
                                 "isSuccessful"
                         );
-                        DaggerLogger.warn("Artifact {} has no isSuccessful condition on activate event, adding it automatically.", itemModel.getName());
+                        DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on activate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
-                        ErrorLogger.log(itemModel.getName(), ErrorLogger.placeOf("Event", i), "Missing isSuccessful condition on active artifact.");
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "Missing isSuccessful condition on active artifact.");
                     }
                 }
             }

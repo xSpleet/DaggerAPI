@@ -45,16 +45,14 @@ public class ArtifactPoolEntry extends LootPoolEntry {
         }
 
         int weight = context.getRandom().nextInt(100);
-        DaggerLogger.debug("ArtifactPoolEntry: Generated weight {}", weight);
+        DaggerLogger.debug(LoggingContext.GENERIC, "ArtifactPoolEntry: Generated weight {}", weight);
         int sumWeight = 0;
         for(ArtifactRarity rarity: rarities)
         {
-            DaggerLogger.debug("ArtifactPoolEntry: Checking rarity {} with weight {}", rarity, rarity.getWeight());
             sumWeight += rarity.getWeight();
             if(weight < sumWeight)
             {
                 // We found a rarity that matches the weight
-                DaggerLogger.debug("ArtifactPoolEntry: Selected rarity {}", rarity);
                 List<ArtifactItem> filteredItems = items.stream()
                         .filter(item -> item.getArtifactRarity() == rarity)
                         .toList();
@@ -63,7 +61,7 @@ public class ArtifactPoolEntry extends LootPoolEntry {
                     int index = context.getRandom().nextInt(size);
                     ArtifactItem selectedItem = filteredItems.get(index);
                     ItemStack stack = new ItemStack(selectedItem, 1);
-                    DaggerLogger.debug("ArtifactPoolEntry: Selected item {} with rarity {}", selectedItem, rarity);
+                    DaggerLogger.debug(LoggingContext.GENERIC, "ArtifactPoolEntry: Selected item {} with rarity {}", selectedItem, rarity);
                     choiceConsumer.accept(new LootChoice() {
                         @Override
                         public int getWeight(float luck) {

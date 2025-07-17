@@ -1,10 +1,11 @@
-package xspleet.daggerapi.client;
+package xspleet.daggerapi.events;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 
 public class HudEvents
 {
@@ -41,7 +42,7 @@ public class HudEvents
                             }
                         }
                     } else {
-                        DaggerLogger.warn("Client or player is null, cannot render attributes.");
+                        DaggerLogger.warn(LoggingContext.GENERIC, "Client or player is null, cannot render attributes.");
                     }
                 })
         );

@@ -7,6 +7,7 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.base.DaggerLogger;
+import xspleet.daggerapi.base.LoggingContext;
 import xspleet.daggerapi.collections.*;
 import xspleet.daggerapi.base.Condition;
 import xspleet.daggerapi.data.ProviderData;
@@ -24,7 +25,7 @@ public class Mapper
 {
     public static void registerMapper()
     {
-        DaggerLogger.info("Registering Mapper: ");
+        DaggerLogger.info(LoggingContext.STARTUP, "Registering Mapper: ");
         Operations.registerOperations();
         ConditionProviders.registerConditionProviders();
         ActionProviders.registerActionProviders();
@@ -52,7 +53,7 @@ public class Mapper
     public static Trigger getTrigger(String name) throws NoSuchTriggerException {
         if(!triggers.containsKey(name))
         {
-            DaggerLogger.error("Trigger with the name '{}' not found!", name);
+            DaggerLogger.error(LoggingContext.PARSING, "Trigger with the name '{}' not found!", name);
             throw new NoSuchTriggerException(name);
         }
         return triggers.get(name);
@@ -75,7 +76,7 @@ public class Mapper
 
     public static AttributeOperation<?> getOperation(String name) throws NoSuchOperationException {
         if(!operations.containsKey(name)) {
-            DaggerLogger.error("Operation with the name '{}' not found!", name);
+            DaggerLogger.error(LoggingContext.PARSING, "Operation with the name '{}' not found!", name);
             throw new NoSuchOperationException(name);
         }
         return operations.get(name);
@@ -98,7 +99,7 @@ public class Mapper
 
     public static Attribute<?> getAttribute(String name) throws NoSuchAttributeException {
         if(!entityAttributes.containsKey(name)) {
-            DaggerLogger.error("Attribute with the name '{}' not found!", name);
+            DaggerLogger.error(LoggingContext.PARSING, "Attribute with the name '{}' not found!", name);
             throw new NoSuchAttributeException(name);
         }
         return entityAttributes.get(name);
@@ -117,7 +118,7 @@ public class Mapper
 
     public static Provider<Condition> getConditionProvider(String name) throws NoSuchConditionException {
         if(!conditionProviders.containsKey(name)) {
-            DaggerLogger.error("Condition provider with the name '{}' not found!", name);
+            DaggerLogger.error(LoggingContext.PARSING, "Condition provider with the name '{}' not found!", name);
             throw new NoSuchConditionException(name);
         }
         return conditionProviders.get(name);
@@ -136,7 +137,7 @@ public class Mapper
 
     public static Provider<Action> getActionProvider(String name) throws NoSuchActionException {
         if(!actionProviders.containsKey(name)) {
-            DaggerLogger.error("Action provider with the name '{}' not found!", name);
+            DaggerLogger.error(LoggingContext.PARSING, "Action provider with the name '{}' not found!", name);
             throw new NoSuchActionException(name);
         }
         return actionProviders.get(name);

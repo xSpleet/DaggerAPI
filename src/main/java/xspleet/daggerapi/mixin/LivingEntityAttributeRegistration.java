@@ -31,6 +31,8 @@ import xspleet.daggerapi.base.Self;
 import xspleet.daggerapi.collections.Attributes;
 import xspleet.daggerapi.networking.NetworkingConstants;
 
+import static xspleet.daggerapi.base.LoggingContext.SYNC;
+
 @Mixin(LivingEntity.class)
 public class LivingEntityAttributeRegistration implements Self<LivingEntity>, MixinAttributeHolder {
 
@@ -55,7 +57,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
     public void DaggerAPI$syncAttributeContainer() {
         if(self() instanceof ServerPlayerEntity player)
         {
-            DaggerLogger.debug("Syncing attributes for player {}: {}", player.getName().getString(), daggerAPI$attributeContainer.getSyncLogMessage());
+            DaggerLogger.debug(SYNC,"Syncing attributes for player {}: {}", player.getName().getString(), daggerAPI$attributeContainer.getSyncLogMessage());
             var packet = daggerAPI$attributeContainer.toPacketByteBuf();
             ServerPlayNetworking.send(player, NetworkingConstants.SYNC_ATTRIBUTES_PACKET_ID, packet);
         }
@@ -67,7 +69,7 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
             if (daggerAPI$attributeContainer == null) {
                 throw new IllegalStateException("Attribute container is not initialized.");
             }
-            DaggerLogger.debug("Accepting sync container for player {}: {}", self().getName().getString() , syncContainer.getSyncLogMessage());
+            DaggerLogger.debug(SYNC,"Accepting sync container for player {}: {}", self().getName().getString() , syncContainer.getSyncLogMessage());
             daggerAPI$attributeContainer.acceptSyncContainer(syncContainer);
         }
     }

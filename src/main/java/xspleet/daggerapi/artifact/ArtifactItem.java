@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -85,13 +86,13 @@ public class ArtifactItem extends TrinketItem {
     }
 
     public void receiveTrigger(TriggerData data) {
-        DaggerLogger.debug("ArtifactItem: Received trigger {} for artifact {}", data.getData(DaggerKeys.TRIGGER).getName(), Registries.ITEM.getId(this));
+        DaggerLogger.debug(LoggingContext.GENERIC, "ArtifactItem: Received trigger {} for artifact {}", data.getData(DaggerKeys.TRIGGER).getName(), Registries.ITEM.getId(this));
         try {
             events.getOrDefault(data.getData(DaggerKeys.TRIGGER), new ArrayList<>()).forEach(a -> a.actOn(data));
             actOnWeightedActions(data);
         }
         catch (MissingDataException e) {
-            DaggerLogger.error("ArtifactItem: Missing data for trigger {} action in artifact {}. Error: {}",
+            DaggerLogger.error(LoggingContext.GENERIC, "ArtifactItem: Missing data for trigger {} action in artifact {}. Error: {}",
                     data.getData(DaggerKeys.TRIGGER).getName(),
                     Registries.ITEM.getId(this),
                     e.getMessage());
@@ -111,7 +112,7 @@ public class ArtifactItem extends TrinketItem {
             try {
                 attributeModifier.updatePlayer(data);
             } catch (MissingDataException e) {
-                DaggerLogger.error("ArtifactItem: Missing data for attribute modifier update in artifact {}. Error: {}",
+                DaggerLogger.error(LoggingContext.GENERIC, "ArtifactItem: Missing data for attribute modifier update in artifact {}. Error: {}",
                         Registries.ITEM.getId(this),
                         e.getMessage());
                 throw e;
@@ -124,7 +125,7 @@ public class ArtifactItem extends TrinketItem {
             try {
                 attributeModifier.cleansePlayer(data);
             } catch (MissingDataException e) {
-                DaggerLogger.error("ArtifactItem: Missing data for attribute modifier cleansing in artifact {}. Error: {}",
+                DaggerLogger.error(LoggingContext.GENERIC, "ArtifactItem: Missing data for attribute modifier cleansing in artifact {}. Error: {}",
                         Registries.ITEM.getId(this),
                         e.getMessage());
                 throw e;
@@ -135,7 +136,7 @@ public class ArtifactItem extends TrinketItem {
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onEquip(stack, slot, entity);
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof ServerPlayerEntity player) {
             updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for (Trigger trigger : triggers)
                 trigger.addListener(player);
@@ -145,14 +146,14 @@ public class ArtifactItem extends TrinketItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
-        if (entity instanceof PlayerEntity player)
+        if (entity instanceof ServerPlayerEntity player)
             updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onUnequip(stack, slot, entity);
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof ServerPlayerEntity player) {
             cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
             for (Trigger trigger : triggers)
                 trigger.removeListener(player);
