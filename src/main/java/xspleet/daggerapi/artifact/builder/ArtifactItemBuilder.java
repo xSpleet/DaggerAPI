@@ -164,13 +164,6 @@ public class ArtifactItemBuilder
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
                 }
                 try {
-                    Mapper.getConditionProvider(conditionModel.getCondition());
-                }
-                catch (DaggerAPIException e) {
-                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
-                    continue;
-                }
-                try {
                     Condition conditionUnit = getCondition(conditionModel);
                     conditionalAction.addCondition(conditionUnit, conditionModel.getCondition());
                 }

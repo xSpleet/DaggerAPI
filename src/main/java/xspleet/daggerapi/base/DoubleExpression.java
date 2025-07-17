@@ -2,6 +2,7 @@ package xspleet.daggerapi.base;
 
 import com.fathzer.soft.javaluator.*;
 import com.google.gson.JsonElement;
+import xspleet.daggerapi.collections.registration.ComplexDataEntry;
 import xspleet.daggerapi.data.DaggerContext;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
@@ -15,9 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class DoubleExpression
+public class DoubleExpression implements ComplexDataEntry
 {
-    private List<DaggerKey<Double>> keys = new ArrayList<>();
+    private final List<DaggerKey<Double>> neededKeys = new ArrayList<>();
     private String expression;
 
     private static final DoubleEvaluator evaluator = new DoubleEvaluator();
@@ -30,7 +31,7 @@ public class DoubleExpression
         if(daggerKey.type() != Double.class) {
             throw new ParseException("Key '" + key + "' is not of type Double");
         }
-        keys.add((DaggerKey<Double>) daggerKey);
+        neededKeys.add((DaggerKey<Double>) daggerKey);
     }
 
     public static DoubleExpression create(JsonElement jsonElement) throws ExpressionParseException {
@@ -55,7 +56,7 @@ public class DoubleExpression
                 .map(Operator::getSymbol)
                 .collect(Collectors.toSet());
 
-        Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+        Pattern pattern = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_#]*");
         Matcher matcher = pattern.matcher(expression);
 
         Set<String> variables = new HashSet<>();
@@ -86,7 +87,7 @@ public class DoubleExpression
 
         try {
             var testSet = new StaticVariableSet<Double>();
-            for (DaggerKey<Double> key : doubleExpression.keys)
+            for (DaggerKey<Double> key : doubleExpression.neededKeys)
                 testSet.set(key.key(), 1000.0);
             evaluator.evaluate(expression, testSet);
         } catch (IllegalArgumentException e) {
@@ -103,10 +104,15 @@ public class DoubleExpression
     public Double evaluate(DaggerContext data)
     {
         var set = new StaticVariableSet<Double>();
-        for (DaggerKey<Double> key : keys) {
+        for (DaggerKey<Double> key : neededKeys) {
             Double value = data.getData(key);
             set.set(key.key(), value);
         }
         return evaluator.evaluate(expression, set);
+    }
+
+    @Override
+    public List<DaggerKey<Double>> getRequiredData() {
+        return neededKeys;
     }
 }

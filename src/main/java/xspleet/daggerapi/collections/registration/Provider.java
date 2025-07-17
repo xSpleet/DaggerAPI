@@ -17,6 +17,7 @@ public class Provider<T> {
     protected final List<Trigger> associatedTriggers = new ArrayList<>();
     protected final Function<ProviderData, T> provider;
     protected boolean isModifier = false;
+    protected final List<DaggerKey<?>> requiredData = new ArrayList<>();
 
     public Provider(String name, Function<ProviderData, T> provider) {
         this.provider = provider;
@@ -91,7 +92,7 @@ public class Provider<T> {
                 }
 
                 var element = args.get(name);
-                providerArgument.addData(data, element);
+                var entry = providerArgument.addData(data, element);
             } catch (BadArgumentException e) {
                 errors.add(e);
             }
@@ -110,6 +111,12 @@ public class Provider<T> {
     ) {
         return associatedTriggers.isEmpty() || associatedTriggers.stream()
                 .anyMatch(t -> t.getName().equals(trigger.getName()));
+    }
+
+    public void addRequiredData(DaggerKey<?> key) {
+        if (!requiredData.contains(key)) {
+            requiredData.add(key);
+        }
     }
 
     public boolean isModifier() {
