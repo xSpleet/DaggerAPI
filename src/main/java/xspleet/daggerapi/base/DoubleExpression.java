@@ -8,22 +8,21 @@ import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DoubleExpression implements ComplexDataEntry
 {
-    private final List<DaggerKey<Double>> neededKeys = new ArrayList<>();
+    private final Set<DaggerKey<Double>> expressionVariables = new HashSet<>();
+    private final Set<DaggerKey<?>> neededKeys = new HashSet<>();
+    private final Map<String, VariablePath<Object, Double>> variablePaths = new HashMap<>();
     private String expression;
 
     private static final DoubleEvaluator evaluator = new DoubleEvaluator();
 
-    public void addKey(String key) throws ParseException {
+    public void addVariableKey(String key) throws ParseException {
         var daggerKey = DaggerKeys.get(key);
         if(daggerKey == null) {
             throw new ParseException("Key '" + key + "' does not exist");
@@ -31,7 +30,40 @@ public class DoubleExpression implements ComplexDataEntry
         if(daggerKey.type() != Double.class) {
             throw new ParseException("Key '" + key + "' is not of type Double");
         }
-        neededKeys.add((DaggerKey<Double>) daggerKey);
+        expressionVariables.add((DaggerKey<Double>) daggerKey);
+        neededKeys.add(daggerKey);
+    }
+
+    public void addVariablePath(String fullPath) throws ParseException {
+        if(!fullPath.contains("#")) {
+            throw new ParseException("Variable path must contain a '#' to separate key and path");
+        }
+        if(variablePaths.containsKey(fullPath)) {
+            return;
+        }
+        String[] parts = fullPath.split("#", 2);
+        var path = parts[1];
+        var key = parts[0];
+        VariablePath<Object, Double> variablePath;
+        var daggerKey = DaggerKeys.get(key);
+        if(daggerKey == null) {
+            throw new ParseException("Key '" + key + "' does not exist");
+        }
+        try {
+            variablePath = (VariablePath<Object, Double>) VariablePaths.getPath(path, daggerKey.type(), Double.class);
+        }
+        catch (NoSuchVariablePathException e) {
+            throw new ParseException("Variable path '" + path + "' of type double does not exist");
+        }
+        if(variablePath.getReturnType() != Double.class) {
+            throw new ParseException("Variable path return type must be Double");
+        }
+        if(!variablePath.getType().isAssignableFrom(daggerKey.type())) {
+            throw new ParseException("Variable path applied to illegal type: " + daggerKey.type().getSimpleName());
+        }
+        variablePath.setKey((DaggerKey<Object>) daggerKey);
+        variablePaths.put(fullPath, variablePath);
+        neededKeys.add(daggerKey);
     }
 
     public static DoubleExpression create(JsonElement jsonElement) throws ExpressionParseException {
@@ -71,10 +103,19 @@ public class DoubleExpression implements ComplexDataEntry
         }
 
         for (String variable : variables) {
-            try {
-                doubleExpression.addKey(variable);
-            } catch (ParseException e) {
-                badKeys.add(e);
+            if(variable.contains("#"))
+            {
+                try {
+                    doubleExpression.addVariablePath(variable);
+                } catch (ParseException e) {
+                    badKeys.add(e);
+                }
+            } else {
+                try {
+                    doubleExpression.addVariableKey(variable);
+                } catch (ParseException e) {
+                    badKeys.add(e);
+                }
             }
         }
 
@@ -87,8 +128,8 @@ public class DoubleExpression implements ComplexDataEntry
 
         try {
             var testSet = new StaticVariableSet<Double>();
-            for (DaggerKey<Double> key : doubleExpression.neededKeys)
-                testSet.set(key.key(), 1000.0);
+            for (String variable : variables)
+                testSet.set(variable, 1000.0);
             evaluator.evaluate(expression, testSet);
         } catch (IllegalArgumentException e) {
             throw new ExpressionParseException("Invalid expression: " + e.getMessage());
@@ -104,15 +145,18 @@ public class DoubleExpression implements ComplexDataEntry
     public Double evaluate(DaggerContext data)
     {
         var set = new StaticVariableSet<Double>();
-        for (DaggerKey<Double> key : neededKeys) {
+        for (DaggerKey<Double> key : expressionVariables) {
             Double value = data.getData(key);
             set.set(key.key(), value);
+        }
+        for(var variablePath : variablePaths.entrySet()) {
+            set.set(variablePath.getKey(), variablePath.getValue().get(data));
         }
         return evaluator.evaluate(expression, set);
     }
 
     @Override
-    public List<DaggerKey<Double>> getRequiredData() {
+    public Set<DaggerKey<?>> getRequiredData() {
         return neededKeys;
     }
 }

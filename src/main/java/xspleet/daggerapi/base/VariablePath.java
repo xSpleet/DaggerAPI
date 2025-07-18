@@ -7,13 +7,15 @@ import java.util.function.Function;
 
 public class VariablePath<T, U>
 {
-    private final DaggerKey<T> key;
+    private final Class<T> type;
+    private final Class<U> returnType;
     private final Function<T, U> function;
+    private DaggerKey<T> key;
 
-    public VariablePath(DaggerKey<T> key, Function<T, U> function)
-    {
-        this.key = key;
+    public VariablePath(Function<T, U> function, Class<T> type, Class<U> returnType){
         this.function = function;
+        this.type = type;
+        this.returnType = returnType;
     }
 
     public U get(DaggerContext context)
@@ -22,5 +24,17 @@ public class VariablePath<T, U>
         if(value == null)
             return null;
         return function.apply(value);
+    }
+
+    public void setKey(DaggerKey<T> key) {
+        this.key = key;
+    }
+
+    public Class<T> getType() {
+        return type;
+    }
+
+    public Class<U> getReturnType() {
+        return returnType;
     }
 }

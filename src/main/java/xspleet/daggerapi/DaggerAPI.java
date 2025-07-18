@@ -15,10 +15,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import xspleet.daggerapi.base.ArtifactPackParser;
-import xspleet.daggerapi.base.ArtifactPoolEntrySerializer;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
+import xspleet.daggerapi.base.*;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
@@ -48,6 +45,7 @@ public class DaggerAPI implements ModInitializer {
 	public void onInitialize() {
 		DaggerLogger.debug(LoggingContext.STARTUP, "Started DaggerAPI in debug mode");
 		Mapper.registerMapper();
+		VariablePaths.registerVariablePaths();
 		ArtifactPackParser.readPacks();
 
 		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {

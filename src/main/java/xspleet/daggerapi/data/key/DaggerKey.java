@@ -16,4 +16,8 @@ public record DaggerKey<T>(String key, Class<T> type) {
                 '}';
     }
 
+    @Override
+    public int hashCode() {
+        return key.hashCode() + type.hashCode();
+    }
 }
