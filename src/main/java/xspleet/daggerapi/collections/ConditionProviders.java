@@ -39,7 +39,7 @@ public class ConditionProviders
                     throw new WrongArgumentException("weather", weather);
 
                 return data -> {
-                    World world = data.getTestEntity(args.getOn()).getWorld();
+                    World world = data.getTestWorld(args.getOn());
 
                     return isRaining && world.isRaining()
                             || isThundering && world.isThundering()
@@ -54,7 +54,7 @@ public class ConditionProviders
                 String dimension = args.getData(DaggerKeys.Provider.DIMENSION);
 
                 return data -> {
-                    World world = data.getTestEntity(args.getOn()).getWorld();
+                    World world = data.getTestWorld(args.getOn());
 
                     return world.getRegistryKey()
                             .getValue()
@@ -74,6 +74,7 @@ public class ConditionProviders
                 };
             })
             .addArgument(DaggerKeys.Provider.ARTIFACT, JsonElement::getAsString)
+            .addRequiredData(DaggerKeys.ARTIFACT)
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
     public static final Provider<Condition> IF_SUCCESSFUL = Mapper
@@ -83,6 +84,7 @@ public class ConditionProviders
                     return data.getData(DaggerKeys.SUCCESSFUL);
                 };
             })
+            .addRequiredData(DaggerKeys.SUCCESSFUL)
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
     public static final Provider<Condition> IF_DAMAGE_SOURCE = Mapper
@@ -94,6 +96,7 @@ public class ConditionProviders
                     return data.getData(DaggerKeys.DAMAGE_SOURCE).getName().equalsIgnoreCase(damageSource);
                 };
             })
+            .addRequiredData(DaggerKeys.DAMAGE_SOURCE)
             .addArgument(DaggerKeys.Provider.DAMAGE_SOURCE, JsonElement::getAsString)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 

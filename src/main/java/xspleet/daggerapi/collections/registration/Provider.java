@@ -5,7 +5,6 @@ import xspleet.daggerapi.data.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.exceptions.BadArgumentException;
 import xspleet.daggerapi.exceptions.BadArgumentsException;
-import xspleet.daggerapi.models.On;
 import xspleet.daggerapi.trigger.Trigger;
 
 import java.util.*;
@@ -17,7 +16,7 @@ public class Provider<T> {
     protected final List<Trigger> associatedTriggers = new ArrayList<>();
     protected final Function<ProviderData, T> provider;
     protected boolean isModifier = false;
-    protected final List<DaggerKey<?>> requiredData = new ArrayList<>();
+    protected final Set<DaggerKey<?>> requiredData = new HashSet<>();
 
     public Provider(String name, Function<ProviderData, T> provider) {
         this.provider = provider;
@@ -36,16 +35,6 @@ public class Provider<T> {
 
     public String getName() {
         return name;
-    }
-
-    public T provide(On on, Map<String, JsonElement> args) throws BadArgumentsException {
-        var data = getArgs(args).setOn(on);
-        try {
-            return provider.apply(data);
-        }
-        catch (Exception e) {
-            throw new BadArgumentsException(List.of("Failed to provide data: " + e.getMessage()));
-        }
     }
 
     public T provide(ProviderData data) throws BadArgumentsException{
@@ -79,7 +68,7 @@ public class Provider<T> {
             );
     }
 
-    private ProviderData getArgs(Map<String, JsonElement> args) throws BadArgumentsException {
+    public ProviderData readArgs(Map<String, JsonElement> args) throws BadArgumentsException {
         ProviderData data = new ProviderData();
         List<BadArgumentException> errors = new ArrayList<>();
         for (var argument : arguments.entrySet()) {
@@ -92,7 +81,7 @@ public class Provider<T> {
                 }
 
                 var element = args.get(name);
-                var entry = providerArgument.addData(data, element);
+                providerArgument.addData(data, element);
             } catch (BadArgumentException e) {
                 errors.add(e);
             }
@@ -113,10 +102,9 @@ public class Provider<T> {
                 .anyMatch(t -> t.getName().equals(trigger.getName()));
     }
 
-    public void addRequiredData(DaggerKey<?> key) {
-        if (!requiredData.contains(key)) {
-            requiredData.add(key);
-        }
+    public Provider<T> addRequiredData(DaggerKey<?> key) {
+        requiredData.add(key);
+        return this;
     }
 
     public boolean isModifier() {
@@ -126,6 +114,10 @@ public class Provider<T> {
     public Provider<T> modifier() {
         this.isModifier = true;
         return this;
+    }
+
+    public Set<DaggerKey<?>> getRequiredData() {
+        return new HashSet<>(requiredData);
     }
 
     @Override

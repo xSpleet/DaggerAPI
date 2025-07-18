@@ -14,6 +14,7 @@ import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.attributes.ClientAttributeHolder;
 import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.networking.NetworkingConstants;
 
@@ -25,10 +26,14 @@ public class Trigger
     private final Set<PlayerEntity> listeners = new HashSet<>();
     private boolean worldful = false;
     private boolean hasTriggerer = false;
+    private final Set<DaggerKey<?>> providedData = new HashSet<>();
 
-    public Trigger(String name)
-    {
+    public Trigger(String name) {
         this.name = name;
+        providedData.addAll(Set.of(
+                DaggerKeys.TRIGGER,
+                DaggerKeys.TRIGGERED
+        ));
     }
 
     public String getName()
@@ -82,12 +87,23 @@ public class Trigger
 
     public Trigger setHasTriggerer() {
         hasTriggerer = true;
+        providedData.add(DaggerKeys.TRIGGERER);
         return this;
     }
 
     public Trigger setWorldful() {
         worldful = true;
+        providedData.add(DaggerKeys.WORLD);
         return this;
+    }
+
+    public Trigger addProvidedData(DaggerKey<?> key) {
+        providedData.add(key);
+        return this;
+    }
+
+    public Set<DaggerKey<?>> getProvidedData() {
+        return Collections.unmodifiableSet(providedData);
     }
 
     public boolean isWorldful() {

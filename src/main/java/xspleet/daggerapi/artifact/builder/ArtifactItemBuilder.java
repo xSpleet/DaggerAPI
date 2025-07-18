@@ -4,11 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
@@ -19,12 +14,15 @@ import xspleet.daggerapi.collections.ConditionProviders;
 import xspleet.daggerapi.collections.Triggers;
 import xspleet.daggerapi.collections.registration.Mapper;
 import xspleet.daggerapi.data.ProviderData;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.models.*;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
+
+import java.util.Set;
 
 public class ArtifactItemBuilder
 {
@@ -65,6 +63,7 @@ public class ArtifactItemBuilder
     private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)
     {
         var artifactModifierModels = itemModel.getAttributeModifiers();
+        Set<DaggerKey<?>> availableData = Set.of(DaggerKeys.PLAYER, DaggerKeys.WORLD);
         for(int i = 0 ; i < artifactModifierModels.size() ; i++)
         {
             var artifactModifierModel = artifactModifierModels.get(i);
@@ -80,7 +79,7 @@ public class ArtifactItemBuilder
                     if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
                 try {
-                    Condition conditionUnit = getCondition(conditionModel);
+                    Condition conditionUnit = getCondition(conditionModel, availableData);
                     artifactAttributeModifier.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
@@ -164,7 +163,7 @@ public class ArtifactItemBuilder
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
                 }
                 try {
-                    Condition conditionUnit = getCondition(conditionModel);
+                    Condition conditionUnit = getCondition(conditionModel, trigger.getProvidedData());
                     conditionalAction.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
@@ -190,7 +189,20 @@ public class ArtifactItemBuilder
                     if(!trigger.isWorldful() && actionModel.getOn() == On.WORLD) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on WORLD but the trigger is not worldful");
                     }
-                    var actionUnit = actionProvider.provide(actionModel.getOn(), actionModel.getArguments());
+                    var data = actionProvider.readArgs(actionModel.getArguments()).setOn(actionModel.getOn());
+
+                    var requiredData = actionProvider.getRequiredData();
+                    requiredData.addAll(data.getRequiredKeys());
+                    if(!trigger.getProvidedData().containsAll(requiredData)) {
+                        Trigger finalTrigger = trigger;
+                        throw new MissingRequiredDataException(
+                                requiredData.stream()
+                                        .filter(k -> !finalTrigger.getProvidedData().contains(k))
+                                        .map(DaggerKey::key)
+                                        .toList()
+                        );
+                    }
+                    var actionUnit = actionProvider.provide(data);
                     conditionalAction.addAction(actionUnit, actionModel.getAction());
                 }
                 catch (DaggerAPIException e) {
@@ -249,7 +261,7 @@ public class ArtifactItemBuilder
         );
     }
 
-    private static Condition getCondition(ConditionModel conditionModel) throws NoSuchConditionException, BadArgumentsException {
+    private static Condition getCondition(ConditionModel conditionModel, Set<DaggerKey<?>> availableData) throws NoSuchConditionException, BadArgumentsException, MissingRequiredDataException {
         String condition = conditionModel.getCondition();
         var splitCondition = condition.split(" ");
         boolean negate = false;
@@ -268,7 +280,17 @@ public class ArtifactItemBuilder
         }
 
         var conditionProvider = Mapper.getConditionProvider(conditionName);
-        var conditionUnit = conditionProvider.provide(conditionModel.getOn(), conditionModel.getArguments());
+        var data = conditionProvider.readArgs(conditionModel.getArguments()).setOn(conditionModel.getOn());
+        var requiredData = conditionProvider.getRequiredData();
+        requiredData.addAll(data.getRequiredKeys());
+        if(!availableData.containsAll(requiredData))
+            throw new MissingRequiredDataException(
+                    requiredData.stream()
+                            .filter(k -> !availableData.contains(k))
+                            .map(DaggerKey::key)
+                            .toList()
+            );
+        var conditionUnit = conditionProvider.provide(data);
         return negate ? conditionUnit.negate() : conditionUnit;
     }
 

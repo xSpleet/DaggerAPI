@@ -57,5 +57,6 @@ public class ActionProviders
             data.addData(DaggerKeys.AMOUNT, result);
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
+            .addRequiredData(DaggerKeys.AMOUNT)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 }
