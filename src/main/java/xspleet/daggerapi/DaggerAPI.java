@@ -19,6 +19,7 @@ import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.artifact.generation.ArtifactPoolEntrySerializer;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
+import xspleet.daggerapi.commands.ServerCommands;
 import xspleet.daggerapi.evaluation.VariablePaths;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.config.ServerDevModeConfig;
@@ -50,11 +51,10 @@ public class DaggerAPI implements ModInitializer {
 		VariablePaths.registerVariablePaths();
 		ArtifactPackParser.readPacks();
 
-		if(FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER) {
-			ActiveArtifactActivation.registerActivation();
-			ServerDevModeConfig.init();
-			ServerNetworking.init();
-		}
+		ActiveArtifactActivation.registerActivation();
+		ServerDevModeConfig.init();
+		ServerNetworking.init();
+		ServerCommands.registerCommands();
 
 		ArgumentTypeRegistry.registerArgumentType(
 				new Identifier(MOD_ID, "attribute"),

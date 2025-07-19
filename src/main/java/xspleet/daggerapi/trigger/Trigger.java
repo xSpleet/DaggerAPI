@@ -7,7 +7,7 @@ import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.data.collection.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKey;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 
 import java.util.*;
 

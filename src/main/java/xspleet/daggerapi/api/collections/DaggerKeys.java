@@ -1,10 +1,12 @@
-package xspleet.daggerapi.data.key;
+package xspleet.daggerapi.api.collections;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.artifact.ArtifactItem;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.trigger.Trigger;
 
@@ -41,7 +43,10 @@ public class DaggerKeys
         public static final DaggerKey<String> MESSAGE = new DaggerKey<>("message", String.class);
         public static final DaggerKey<String> WEATHER = new DaggerKey<>("weather", String.class);
         public static final DaggerKey<String> DIMENSION = new DaggerKey<>("dimension", String.class);
-        public static final DaggerKey<String> ARTIFACT = new DaggerKey<>("artifact", String.class);
+        public static final DaggerKey<Identifier> ARTIFACT = new DaggerKey<>("artifact", Identifier.class);
         public static final DaggerKey<String> DAMAGE_SOURCE = new DaggerKey<>("damageSource", String.class);
+        public static final DaggerKey<Identifier> STATUS_EFFECT = new DaggerKey<>("statusEffect", Identifier.class);
+        public static final DaggerKey<Integer> DURATION = new DaggerKey<>("duration", Integer.class);
+        public static final DaggerKey<Integer> AMPLIFIER = new DaggerKey<>("amplifier", Integer.class);
     }
 }

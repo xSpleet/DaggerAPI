@@ -3,7 +3,7 @@ package xspleet.daggerapi.data.collection;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import xspleet.daggerapi.data.key.DaggerKey;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 import xspleet.daggerapi.api.models.On;
 
 public class ActionData implements DaggerContext

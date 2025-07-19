@@ -2,7 +2,6 @@ package xspleet.daggerapi.api.collections;
 
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
-import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.trigger.Trigger;
 
 import static xspleet.daggerapi.api.registration.Mapper.*;

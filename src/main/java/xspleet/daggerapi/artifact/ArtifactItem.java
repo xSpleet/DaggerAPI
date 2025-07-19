@@ -21,7 +21,7 @@ import xspleet.daggerapi.artifact.modifiers.ArtifactAttributeModifier;
 import xspleet.daggerapi.util.*;
 import xspleet.daggerapi.data.collection.ConditionData;
 import xspleet.daggerapi.data.collection.TriggerData;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 import xspleet.daggerapi.exceptions.MissingDataException;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.Trigger;

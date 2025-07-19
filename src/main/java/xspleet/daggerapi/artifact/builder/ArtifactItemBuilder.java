@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.util.Identifier;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.artifact.ArtifactItem;
@@ -19,7 +20,7 @@ import xspleet.daggerapi.api.collections.Triggers;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.data.collection.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.api.models.*;
 import xspleet.daggerapi.trigger.Condition;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 public class ArtifactItemBuilder
 {
-    public static ArtifactItem build(ItemModel itemModel)
+    public static ArtifactItem build(ItemModel itemModel, Identifier id)
     {
         String name = itemModel.getName();
         if(name == null || name.isEmpty()) {
@@ -59,13 +60,13 @@ public class ArtifactItemBuilder
         }
 
         item.rarity(rarity);
-        buildArtifactAttributes(itemModel, item);
-        buildEvents(itemModel, item);
+        buildArtifactAttributes(itemModel, item, id);
+        buildEvents(itemModel, item, id);
 
         return item;
     }
 
-    private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item)
+    private static void buildArtifactAttributes(ItemModel itemModel, BuildableArtifactItem item, Identifier id)
     {
         var artifactModifierModels = itemModel.getAttributeModifiers();
         Set<DaggerKey<?>> availableData = Set.of(DaggerKeys.PLAYER, DaggerKeys.WORLD);
@@ -96,7 +97,7 @@ public class ArtifactItemBuilder
             {
                 var modifierModel = modifierModels.get(j);
                 try {
-                    String name = itemModel.getName() + "/" + modifierModel.getAttribute() + "/" + modifierModel.getModificationType() + "/" + modifierModel.getModificationValue().getAsString() + "/" + j + "/" + i;
+                    String name = id.toString() + "/" + modifierModel.getAttribute() + "/" + modifierModel.getModificationType() + "/" + modifierModel.getModificationValue().getAsString() + "/" + j + "/" + i;
                     artifactAttributeModifier.addAttributeModifier(
                             getModifier(name, itemModel.getName(), modifierModel)
                     );
@@ -110,7 +111,7 @@ public class ArtifactItemBuilder
         }
     }
 
-    private static void buildEvents(ItemModel itemModel, BuildableArtifactItem item)
+    private static void buildEvents(ItemModel itemModel, BuildableArtifactItem item, Identifier id)
     {
         var events = itemModel.getEvents();
         if(itemModel.isActive() && events.stream().noneMatch(e -> e.getTrigger().equalsIgnoreCase(Triggers.ACTIVATE.getName()))) {
@@ -223,7 +224,7 @@ public class ArtifactItemBuilder
                                 ConditionProviders.IF_ARTIFACT
                                         .provide(new ProviderData()
                                                 .setOn(On.TRIGGERER)
-                                                .addData(DaggerKeys.Provider.ARTIFACT, itemModel.getName())),
+                                                .addData(DaggerKeys.Provider.ARTIFACT, id)),
                                 "ifArtifact"
                         );
                         DaggerLogger.warn(LoggingContext.PARSING, "Artifact {} has no ifArtifact condition on activate event, adding it automatically.", itemModel.getName());

@@ -7,7 +7,7 @@ import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.data.ComplexDataEntry;
 import xspleet.daggerapi.data.collection.DaggerContext;
 import xspleet.daggerapi.data.key.DaggerKey;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 import xspleet.daggerapi.exceptions.*;
 
 import java.util.*;

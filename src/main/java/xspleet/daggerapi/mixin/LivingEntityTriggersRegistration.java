@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import xspleet.daggerapi.util.Self;
 import xspleet.daggerapi.api.collections.Triggers;
 import xspleet.daggerapi.data.collection.TriggerData;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityTriggersRegistration implements Self<LivingEntity> {

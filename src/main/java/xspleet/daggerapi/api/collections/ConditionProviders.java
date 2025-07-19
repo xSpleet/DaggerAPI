@@ -1,13 +1,15 @@
 package xspleet.daggerapi.api.collections;
 
 import com.google.gson.JsonElement;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.api.registration.Provider;
 import xspleet.daggerapi.trigger.Condition;
-import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 
 public class ConditionProviders
@@ -66,13 +68,13 @@ public class ConditionProviders
     public static final Provider<Condition> IF_ARTIFACT = Mapper
             .registerConditionProvider("ifArtifact", args ->
             {
-                String artifact = args.getData(DaggerKeys.Provider.ARTIFACT);
+                Identifier artifact = args.getData(DaggerKeys.Provider.ARTIFACT);
 
                 return data -> {
-                    return data.getData(DaggerKeys.ARTIFACT).getIdentifier().toString().equalsIgnoreCase(artifact);
+                    return data.getData(DaggerKeys.ARTIFACT).getIdentifier().equals(artifact);
                 };
             })
-            .addArgument(DaggerKeys.Provider.ARTIFACT, JsonElement::getAsString)
+            .addArgument(DaggerKeys.Provider.ARTIFACT, e -> new Identifier(e.getAsString()))
             .addRequiredData(DaggerKeys.ARTIFACT)
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
@@ -98,5 +100,23 @@ public class ConditionProviders
             .addRequiredData(DaggerKeys.DAMAGE_SOURCE)
             .addArgument(DaggerKeys.Provider.DAMAGE_SOURCE, JsonElement::getAsString)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
+
+    public static final Provider<Condition> HAS_STATUS_EFFECT = Mapper
+            .registerConditionProvider("hasStatusEffect", args ->
+            {
+                Identifier statusEffect = args.getData(DaggerKeys.Provider.STATUS_EFFECT);
+                var effect = Registries.STATUS_EFFECT.get(statusEffect);
+                return data -> {
+                    if (effect == null) {
+                        DaggerLogger.error(LoggingContext.GENERIC, "Status effect not found: " + statusEffect);
+                        return false;
+                    }
+                    if(data.getTestEntity(args.getOn()) instanceof LivingEntity living) {
+                        return living.hasStatusEffect(effect);
+                    }
+                    return false;
+                };
+            })
+            .addArgument(DaggerKeys.Provider.STATUS_EFFECT, e -> new Identifier(e.getAsString()));
 
 }

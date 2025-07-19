@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.trigger.Condition;
 import xspleet.daggerapi.data.collection.ConditionData;
-import xspleet.daggerapi.data.key.DaggerKeys;
+import xspleet.daggerapi.api.collections.DaggerKeys;
 
 import java.util.ArrayList;
 import java.util.List;
