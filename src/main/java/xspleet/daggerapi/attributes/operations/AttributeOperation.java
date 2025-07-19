@@ -4,9 +4,9 @@ import com.mojang.datafixers.util.Function3;
 
 public interface AttributeOperation<T>
 {
-    public String getName();
-    public int getPrecedence();
-    public Function3<T, T, T, T> getOperation();
-    public T apply(T prevResult, T resultFromPrevType, T value);
-    public Class<T> getType();
+    String getName();
+    int getPrecedence();
+    Function3<T, T, T, T> getOperation();
+    T apply(T prevResult, T resultFromPrevType, T value);
+    Class<T> getType();
 }

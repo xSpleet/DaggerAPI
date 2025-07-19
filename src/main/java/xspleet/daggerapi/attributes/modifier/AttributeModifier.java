@@ -3,19 +3,19 @@ package xspleet.daggerapi.attributes.modifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
-import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.api.registration.Mapper;
 
 import java.util.UUID;
 
 public interface AttributeModifier<T>
 {
-    public T getValue();
-    public AttributeOperation<T> getOperation();
-    public UUID getUUID();
-    public String getName();
-    public String getArtifactName();
+    T getValue();
+    AttributeOperation<T> getOperation();
+    UUID getUUID();
+    String getName();
+    String getArtifactName();
 
-    public default EntityAttributeModifier toMinecraftModifier() {
+    default EntityAttributeModifier toMinecraftModifier() {
         if(getValue() instanceof Double value) {
             return new EntityAttributeModifier(
                     getUUID(),
@@ -33,7 +33,7 @@ public interface AttributeModifier<T>
         throw new IllegalCallerException("Cannot convert non-double attribute modifier to Minecraft EntityAttributeModifier. Modifier: " + getName() + ", Value: " + getValue());
     }
 
-    public default void write(PacketByteBuf buf) {
+    default void write(PacketByteBuf buf) {
         buf.writeUuid(getUUID());
         buf.writeString(getName());
         buf.writeString(Mapper.getNameOf(getOperation()));

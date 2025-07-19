@@ -1,13 +1,12 @@
 package xspleet.daggerapi.attributes.instance;
 
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.instance.delta.AttributeInstanceDelta;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
-import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.exceptions.NoSuchOperationException;
 
 import java.util.*;
@@ -138,7 +137,7 @@ public class DaggerAttributeInstance<T> implements AttributeInstance<T>
                     String name = b.readString(32767);
                     String operationName = b.readString(32767);
                     String artifactName = b.readString(32767);
-                    AttributeOperation<?> operation = null;
+                    AttributeOperation<?> operation;
                     try {
                         operation = Mapper.getOperation(operationName);
                     } catch (NoSuchOperationException e) {

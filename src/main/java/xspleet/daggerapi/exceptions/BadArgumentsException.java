@@ -1,7 +1,5 @@
 package xspleet.daggerapi.exceptions;
 
-import net.minecraft.world.event.GameEvent;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

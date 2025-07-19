@@ -1,7 +1,5 @@
 package xspleet.daggerapi.exceptions;
 
-import xspleet.daggerapi.DaggerAPI;
-
 public class NoSuchVariablePathException extends DaggerAPIException
 {
     private final String name;

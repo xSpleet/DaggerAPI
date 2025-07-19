@@ -6,14 +6,13 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.text.Text;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
-import xspleet.daggerapi.attributes.ClientAttributeHolder;
+import xspleet.daggerapi.attributes.ClientAttributeTracker;
 import xspleet.daggerapi.config.ClientDevModeConfig;
 
 public class ClientCommands
 {
     public static final String COMMAND_PREFIX = "daggerclient";
     public static final String COMMAND_ATTRIBUTE = "attribute";
-    public static final String COMMAND_TRIGGER = "trigger";
     public static final String COMMAND_SNOOP = "snoop";
     public static final String COMMAND_SET = "set";
     public static final String COMMAND_PLAYER = "player";
@@ -39,7 +38,7 @@ public class ClientCommands
                                                                         return 0;
                                                                     }
 
-                                                                    if(!(player instanceof ClientAttributeHolder clientHolder)) {
+                                                                    if(!(player instanceof ClientAttributeTracker clientHolder)) {
                                                                         ctx.getSource().sendError(Text.literal("This command can only be used by players that are a AttributeHolder."));
                                                                         return 0;
                                                                     }

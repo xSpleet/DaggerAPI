@@ -9,54 +9,54 @@ import java.util.UUID;
 
 public interface MixinAttributeInstance<T> extends AttributeInstance<T>
 {
-    public String DaggerAPI$getAttributeName();
-    public boolean DaggerAPI$hasModifier(AttributeModifier<T> modifier);
-    public boolean DaggerAPI$hasModifier(java.util.UUID modifierId);
-    public void DaggerAPI$addTemporaryModifier(AttributeModifier<T> modifier);
-    public void DaggerAPI$removeModifier(AttributeModifier<T> modifier);
-    public T DaggerAPI$getValue();
-    public T DaggerAPI$getBaseValue();
-    public void DaggerAPI$removeModifier(UUID modifierId);
-    public void DaggerAPI$write(PacketByteBuf byteBuf);
-    public List<AttributeModifier<T>> DaggerAPI$getModifiers();
+    String DaggerAPI$getAttributeName();
+    boolean DaggerAPI$hasModifier(AttributeModifier<T> modifier);
+    boolean DaggerAPI$hasModifier(java.util.UUID modifierId);
+    void DaggerAPI$addTemporaryModifier(AttributeModifier<T> modifier);
+    void DaggerAPI$removeModifier(AttributeModifier<T> modifier);
+    T DaggerAPI$getValue();
+    T DaggerAPI$getBaseValue();
+    void DaggerAPI$removeModifier(UUID modifierId);
+    void DaggerAPI$write(PacketByteBuf byteBuf);
+    List<AttributeModifier<T>> DaggerAPI$getModifiers();
 
-    public default String getAttributeName() {
+    default String getAttributeName() {
         return DaggerAPI$getAttributeName();
     }
 
-    public default boolean hasModifier(AttributeModifier<T> modifier) {
+    default boolean hasModifier(AttributeModifier<T> modifier) {
         return DaggerAPI$hasModifier(modifier);
     }
 
-    public default boolean hasModifier(java.util.UUID modifierId) {
+    default boolean hasModifier(java.util.UUID modifierId) {
         return DaggerAPI$hasModifier(modifierId);
     }
 
-    public default void addTemporaryModifier(AttributeModifier<T> modifier) {
+    default void addTemporaryModifier(AttributeModifier<T> modifier) {
         DaggerAPI$addTemporaryModifier(modifier);
     }
 
-    public default void removeModifier(AttributeModifier<T> modifier) {
+    default void removeModifier(AttributeModifier<T> modifier) {
         DaggerAPI$removeModifier(modifier);
     }
 
-    public default T getValue() {
+    default T getValue() {
         return DaggerAPI$getValue();
     }
 
-    public default T getBaseValue() {
+    default T getBaseValue() {
         return DaggerAPI$getBaseValue();
     }
 
-    public default void write(PacketByteBuf byteBuf) {
+    default void write(PacketByteBuf byteBuf) {
         DaggerAPI$write(byteBuf);
     }
 
-    public default void removeModifier(UUID modifierId) {
+    default void removeModifier(UUID modifierId) {
         DaggerAPI$removeModifier(modifierId);
     }
 
-    public default List<AttributeModifier<T>> getModifiers() {
+    default List<AttributeModifier<T>> getModifiers() {
         return DaggerAPI$getModifiers();
     }
 }

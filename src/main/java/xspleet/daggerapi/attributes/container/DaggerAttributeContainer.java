@@ -6,8 +6,7 @@ import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.instance.DaggerAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
-import xspleet.daggerapi.collections.registration.Mapper;
-import xspleet.daggerapi.exceptions.DaggerAPIException;
+import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.exceptions.NoSuchAttributeException;
 
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class DaggerAttributeContainer
     {
         if(!attributeInstances.containsKey(attribute))
         {
-            var instance = new DaggerAttributeInstance<T>(attribute);
+            var instance = new DaggerAttributeInstance<>(attribute);
             attributeInstances.put(attribute, instance);
             return instance;
         }

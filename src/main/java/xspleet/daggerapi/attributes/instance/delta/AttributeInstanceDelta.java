@@ -11,12 +11,12 @@ public class AttributeInstanceDelta<T>
 
     public void addModifier(AttributeModifier<T> modifier)
     {
-        deltas.add(new AttributeInstanceDeltaUnit<T>(AttributeModifierChangeType.ADD, modifier));
+        deltas.add(new AttributeInstanceDeltaUnit<>(AttributeModifierChangeType.ADD, modifier));
     }
 
     public void removeModifier(AttributeModifier<T> modifier)
     {
-        deltas.add(new AttributeInstanceDeltaUnit<T>(AttributeModifierChangeType.REMOVE, modifier));
+        deltas.add(new AttributeInstanceDeltaUnit<>(AttributeModifierChangeType.REMOVE, modifier));
     }
 
     private void collapse()

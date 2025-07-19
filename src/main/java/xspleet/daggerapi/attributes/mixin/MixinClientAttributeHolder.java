@@ -1,20 +1,20 @@
 package xspleet.daggerapi.attributes.mixin;
 
 import xspleet.daggerapi.attributes.Attribute;
-import xspleet.daggerapi.attributes.ClientAttributeHolder;
+import xspleet.daggerapi.attributes.ClientAttributeTracker;
 
 import java.util.List;
 
-public interface MixinClientAttributeHolder extends ClientAttributeHolder
+public interface MixinClientAttributeHolder extends ClientAttributeTracker
 {
-    public void DaggerAPI$addAttributeToUpdate(Attribute<?> attribute);
-    public boolean DaggerAPI$updatesAttribute(Attribute<?> attribute);
-    public void DaggerAPI$removeAttributeToUpdate(Attribute<?> attribute);
-    public void DaggerAPI$updateAttribute(Attribute<?> attribute, long tick);
-    public long DaggerAPI$getAttributeUpdateTime(Attribute<?> attribute);
-    public List<Attribute<?>> DaggerAPI$getAttributesToUpdate();
-    public void DaggerAPI$reset(Attribute<?> attribute);
-    public void DaggerAPI$removeAllAttributesToUpdate();
+    void DaggerAPI$addAttributeToUpdate(Attribute<?> attribute);
+    boolean DaggerAPI$updatesAttribute(Attribute<?> attribute);
+    void DaggerAPI$removeAttributeToUpdate(Attribute<?> attribute);
+    void DaggerAPI$updateAttribute(Attribute<?> attribute, long tick);
+    long DaggerAPI$getAttributeUpdateTime(Attribute<?> attribute);
+    List<Attribute<?>> DaggerAPI$getAttributesToUpdate();
+    void DaggerAPI$reset(Attribute<?> attribute);
+    void DaggerAPI$removeAllAttributesToUpdate();
 
     default void updateAttribute(Attribute<?> attribute, long tick) {
         DaggerAPI$updateAttribute(attribute, tick);

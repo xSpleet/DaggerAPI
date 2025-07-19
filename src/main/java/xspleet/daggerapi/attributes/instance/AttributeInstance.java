@@ -8,17 +8,17 @@ import java.util.UUID;
 
 public interface AttributeInstance<T>
 {
-    public String getAttributeName();
-    public boolean hasModifier(AttributeModifier<T> modifier);
-    public boolean hasModifier(UUID modifierId);
-    public void addTemporaryModifier(AttributeModifier<T> modifier);
-    public void removeModifier(AttributeModifier<T> modifier);
-    public void removeModifier(UUID modifierId);
-    public T getValue();
-    public T getBaseValue();
-    public void write(PacketByteBuf buf);
-    public List<AttributeModifier<T>> getModifiers();
-    public default boolean isDirty()
+    String getAttributeName();
+    boolean hasModifier(AttributeModifier<T> modifier);
+    boolean hasModifier(UUID modifierId);
+    void addTemporaryModifier(AttributeModifier<T> modifier);
+    void removeModifier(AttributeModifier<T> modifier);
+    void removeModifier(UUID modifierId);
+    T getValue();
+    T getBaseValue();
+    void write(PacketByteBuf buf);
+    List<AttributeModifier<T>> getModifiers();
+    default boolean isDirty()
     {
         return false;
     }

@@ -20,9 +20,6 @@
 		],
 		"client": [
 			"xspleet.daggerapi.DaggerAPIClient"
-		],
-		"fabric-datagen": [
-			"xspleet.daggerapi.DaggerAPIDataGenerator"
 		]
 	},
 	"mixins": [

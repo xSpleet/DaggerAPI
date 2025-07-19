@@ -5,12 +5,8 @@ import com.mojang.datafixers.util.Function3;
 public enum DoubleOperation implements AttributeOperation<Double>
 {
     ADD("addition", 0, (prev, prevGroup, value) -> prev + value),
-    MIN_BASE("min_base", 10, (prev, prevGroup, value) -> Math.min(prev, value)),
-    MAX_BASE("max_base", 20, (prev, prevGroup, value) -> Math.max(prev, value)),
     MULTIPLY_BASE("multiply_base", 30, (prev, prevGroup, value) -> prev + prevGroup * value),
-    MULTIPLY_TOTAL("multiply_total", 40, (prev, prevGroup, value) -> prev * value),
-    MIN_TOTAL("min_total", 50, (prev, prevGroup, value) -> Math.min(prev, value)),
-    MAX_TOTAL("max_total", 60, (prev, prevGroup, value) -> Math.max(prev, value)),;
+    MULTIPLY_TOTAL("multiply_total", 40, (prev, prevGroup, value) -> prev * value),;
 
     private final String name;
     private final int precedence;

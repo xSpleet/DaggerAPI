@@ -5,7 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.base.DoubleExpression;
+import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.trigger.Trigger;
 
 import java.util.HashMap;

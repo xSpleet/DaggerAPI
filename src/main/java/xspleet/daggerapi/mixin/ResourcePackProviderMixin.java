@@ -2,21 +2,18 @@ package xspleet.daggerapi.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourceType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xspleet.daggerapi.base.DaggerResourcePackProvider;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.api.pack.DaggerResourcePackProvider;
+import xspleet.daggerapi.util.Self;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

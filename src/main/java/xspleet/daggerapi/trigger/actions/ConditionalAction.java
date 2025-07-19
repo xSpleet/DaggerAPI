@@ -2,13 +2,13 @@ package xspleet.daggerapi.trigger.actions;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import xspleet.daggerapi.base.Condition;
-import xspleet.daggerapi.data.ActionData;
-import xspleet.daggerapi.data.ConditionData;
+import xspleet.daggerapi.trigger.Condition;
+import xspleet.daggerapi.data.collection.ActionData;
+import xspleet.daggerapi.data.collection.ConditionData;
 import xspleet.daggerapi.data.key.DaggerKeys;
-import xspleet.daggerapi.models.TriggeredBy;
-import xspleet.daggerapi.models.TriggeredIn;
-import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.api.models.TriggeredBy;
+import xspleet.daggerapi.api.models.TriggeredIn;
+import xspleet.daggerapi.data.collection.TriggerData;
 
 import java.util.ArrayList;
 import java.util.List;

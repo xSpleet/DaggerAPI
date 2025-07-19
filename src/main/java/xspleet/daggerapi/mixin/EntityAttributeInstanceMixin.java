@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeInstance;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.util.Self;
 
 import java.util.ArrayList;
 import java.util.List;

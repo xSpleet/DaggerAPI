@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.AttributeHolder;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
@@ -26,12 +25,12 @@ import xspleet.daggerapi.attributes.container.SyncContainer;
 import xspleet.daggerapi.attributes.instance.AttributeInstance;
 import xspleet.daggerapi.attributes.mixin.MixinAttribute;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeHolder;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.Self;
-import xspleet.daggerapi.collections.Attributes;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.util.Self;
+import xspleet.daggerapi.api.collections.Attributes;
 import xspleet.daggerapi.networking.NetworkingConstants;
 
-import static xspleet.daggerapi.base.LoggingContext.SYNC;
+import static xspleet.daggerapi.api.logging.LoggingContext.SYNC;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityAttributeRegistration implements Self<LivingEntity>, MixinAttributeHolder {

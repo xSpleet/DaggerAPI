@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Unique;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 import xspleet.daggerapi.attributes.operations.DoubleOperation;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.util.Self;
 
 import java.util.UUID;
 
@@ -28,7 +28,6 @@ public class EntityAttributeModifierMixin implements Self<EntityAttributeModifie
             case ADDITION -> DoubleOperation.ADD;
             case MULTIPLY_BASE -> DoubleOperation.MULTIPLY_BASE;
             case MULTIPLY_TOTAL -> DoubleOperation.MULTIPLY_TOTAL;
-            default -> throw new IllegalArgumentException("Unknown operation: " + self().getOperation());
         };
     }
 

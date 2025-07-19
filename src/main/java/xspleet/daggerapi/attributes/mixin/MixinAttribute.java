@@ -4,40 +4,40 @@ import xspleet.daggerapi.attributes.Attribute;
 
 public interface MixinAttribute<T> extends Attribute<T>
 {
-    public String DaggerAPI$getName();
-    public T DaggerAPI$getDefaultValue();
-    public Class<T> DaggerAPI$getType();
-    public T DaggerAPI$clamp(T value);
+    String DaggerAPI$getName();
+    T DaggerAPI$getDefaultValue();
+    Class<T> DaggerAPI$getType();
+    T DaggerAPI$clamp(T value);
 
-    public default MixinAttribute<T> DaggerAPI$setTracked() {
+    default MixinAttribute<T> DaggerAPI$setTracked() {
         return this;
     }
 
-    public default boolean DaggerAPI$isTracked(){
+    default boolean DaggerAPI$isTracked(){
         return false;
     }
 
-    public default String getName() {
+    default String getName() {
         return DaggerAPI$getName();
     }
 
-    public default T getDefaultValue() {
+    default T getDefaultValue() {
         return DaggerAPI$getDefaultValue();
     }
 
-    public default Class<T> getType() {
+    default Class<T> getType() {
         return DaggerAPI$getType();
     }
 
-    public default T clamp(T value) {
+    default T clamp(T value) {
         return DaggerAPI$clamp(value);
     }
 
-    public default MixinAttribute<T> setUntracked() {
+    default MixinAttribute<T> setUntracked() {
         return DaggerAPI$setTracked();
     }
 
-    public default boolean isTracked() {
+    default boolean isTracked() {
         return DaggerAPI$isTracked();
     }
 }

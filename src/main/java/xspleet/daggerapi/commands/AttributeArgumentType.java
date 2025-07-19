@@ -7,11 +7,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import xspleet.daggerapi.attributes.Attribute;
-import xspleet.daggerapi.collections.registration.Mapper;
+import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.exceptions.NoSuchAttributeException;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class AttributeArgumentType implements ArgumentType<Attribute<?>> {
     @Override

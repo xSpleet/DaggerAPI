@@ -7,34 +7,34 @@ import java.util.UUID;
 
 public interface MixinAttributeModifier<T> extends AttributeModifier<T> {
 
-    public T DaggerAPI$getValue();
-    public AttributeOperation<T> DaggerAPI$getOperation();
-    public UUID DaggerAPI$getUUID();
-    public String DaggerAPI$getName();
-    public String DaggerAPI$getArtifactName();
-    public void DaggerAPI$setArtifactName(String artifactName);
+    T DaggerAPI$getValue();
+    AttributeOperation<T> DaggerAPI$getOperation();
+    UUID DaggerAPI$getUUID();
+    String DaggerAPI$getName();
+    String DaggerAPI$getArtifactName();
+    void DaggerAPI$setArtifactName(String artifactName);
 
-    public default T getValue() {
+    default T getValue() {
         return DaggerAPI$getValue();
     }
 
-    public default AttributeOperation<T> getOperation() {
+    default AttributeOperation<T> getOperation() {
         return DaggerAPI$getOperation();
     }
 
-    public default UUID getUUID() {
+    default UUID getUUID() {
         return DaggerAPI$getUUID();
     }
 
-    public default String getName() {
+    default String getName() {
         return DaggerAPI$getName();
     }
 
-    public default String getArtifactName() {
+    default String getArtifactName() {
         return DaggerAPI$getArtifactName();
     }
 
-    public default void setArtifactName(String artifactName) {
+    default void setArtifactName(String artifactName) {
         DaggerAPI$setArtifactName(artifactName);
     }
 

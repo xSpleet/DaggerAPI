@@ -4,20 +4,25 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.artifact.ArtifactItem;
+import xspleet.daggerapi.artifact.ArtifactRarity;
+import xspleet.daggerapi.artifact.modifiers.ArtifactAttributeModifier;
+import xspleet.daggerapi.artifact.modifiers.WrappedModifier;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.modifier.AttributeModifier;
 import xspleet.daggerapi.attributes.modifier.DaggerAttributeModifier;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
-import xspleet.daggerapi.base.*;
-import xspleet.daggerapi.collections.ConditionProviders;
-import xspleet.daggerapi.collections.Triggers;
-import xspleet.daggerapi.collections.registration.Mapper;
-import xspleet.daggerapi.data.ProviderData;
+import xspleet.daggerapi.api.collections.ConditionProviders;
+import xspleet.daggerapi.api.collections.Triggers;
+import xspleet.daggerapi.api.registration.Mapper;
+import xspleet.daggerapi.data.collection.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.*;
-import xspleet.daggerapi.models.*;
+import xspleet.daggerapi.api.models.*;
+import xspleet.daggerapi.trigger.Condition;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
@@ -120,7 +125,7 @@ public class ArtifactItemBuilder
                 conditionalAction = new WeightedConditionalAction(eventModel.getWeight());
             }
 
-            Trigger trigger = null;
+            Trigger trigger;
             try {
                 trigger = Mapper.getTrigger(eventModel.getTrigger());
             }
@@ -212,7 +217,7 @@ public class ArtifactItemBuilder
 
             if(trigger == Triggers.ACTIVATE)
             {
-                if(conditionsModels.stream().map(x -> x.getCondition()).noneMatch(n -> n.equalsIgnoreCase("isArtifact") || n.equalsIgnoreCase("not isArtifact"))) {
+                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("isArtifact") || n.equalsIgnoreCase("not isArtifact"))) {
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_ARTIFACT
@@ -227,7 +232,7 @@ public class ArtifactItemBuilder
                     }
                 }
 
-                if(conditionsModels.stream().map(x -> x.getCondition()).noneMatch(n -> n.equalsIgnoreCase("isSuccessful") || n.equalsIgnoreCase("not isSuccessful"))) {
+                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("isSuccessful") || n.equalsIgnoreCase("not isSuccessful"))) {
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_SUCCESSFUL
@@ -253,7 +258,7 @@ public class ArtifactItemBuilder
         AttributeOperation<?> operation = Mapper.getOperation(operationName);
         Attribute<?> attribute = Mapper.getAttribute(attributeName);
 
-        AttributeModifier<?> modifier = safeCreateModifier(name, attribute, value, operation, artifactName);
+        AttributeModifier<?> modifier = safeCreateModifier(name, value, operation, artifactName);
 
         return new WrappedModifier(
                 attribute,
@@ -296,7 +301,6 @@ public class ArtifactItemBuilder
 
     private static <T> AttributeModifier<T> safeCreateModifier(
             String name,
-            Attribute<?> attribute,
             JsonElement value,
             AttributeOperation<?> operation,
             String artifactName

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import xspleet.daggerapi.attributes.mixin.MixinAttributeOperation;
 import xspleet.daggerapi.attributes.operations.DoubleOperation;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.util.Self;
 
 @Mixin(EntityAttributeModifier.Operation.class)
 public class OperationMixin implements Self<EntityAttributeModifier.Operation>, MixinAttributeOperation<Double> {
@@ -42,7 +42,7 @@ public class OperationMixin implements Self<EntityAttributeModifier.Operation>, 
     }
 
     @Override
-    public Class<Double> getType() {
+    public Class<Double> DaggerAPI$getType() {
         return Double.class;
     }
 }

@@ -1,9 +1,8 @@
 package xspleet.daggerapi.networking;
 
 import net.minecraft.util.Identifier;
-import xspleet.daggerapi.DaggerAPI;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
 
 public class NetworkingConstants
 {

@@ -1,6 +1,5 @@
 package xspleet.daggerapi.networking;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
@@ -8,20 +7,15 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.attributes.AttributeHolder;
-import xspleet.daggerapi.attributes.ClientAttributeHolder;
+import xspleet.daggerapi.attributes.ClientAttributeTracker;
 import xspleet.daggerapi.attributes.container.DaggerAttributeContainer;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
-import xspleet.daggerapi.base.Tags;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
+import xspleet.daggerapi.api.pack.Tags;
 import xspleet.daggerapi.config.ClientDevModeConfig;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.Map;
-
-import static javax.xml.crypto.dsig.DigestMethod.SHA256;
 
 public class ClientNetworking
 {
@@ -33,7 +27,7 @@ public class ClientNetworking
                     client.execute(() -> {
                         var player = client.player;
                         if (player instanceof AttributeHolder holder) {
-                            if(player instanceof ClientAttributeHolder clientHolder) {
+                            if(player instanceof ClientAttributeTracker clientHolder) {
                                 for(var attribute : syncContainer.getSyncData().keySet()) {
                                     if(clientHolder.updatesAttribute(attribute)) {
                                         clientHolder.updateAttribute(attribute, player.getWorld().getTime());

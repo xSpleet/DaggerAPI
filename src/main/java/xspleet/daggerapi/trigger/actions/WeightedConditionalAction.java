@@ -1,8 +1,5 @@
 package xspleet.daggerapi.trigger.actions;
 
-import xspleet.daggerapi.base.Condition;
-import xspleet.daggerapi.data.TriggerData;
-
 public class WeightedConditionalAction extends ConditionalAction
 {
     private final int weight;

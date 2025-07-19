@@ -1,9 +1,9 @@
 package xspleet.daggerapi.config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
-import xspleet.daggerapi.models.ConfigModel;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
+import xspleet.daggerapi.api.models.ConfigModel;
 
 import java.io.*;
 

@@ -3,9 +3,9 @@ package xspleet.daggerapi.events;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import xspleet.daggerapi.attributes.AttributeHolder;
-import xspleet.daggerapi.attributes.ClientAttributeHolder;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
+import xspleet.daggerapi.attributes.ClientAttributeTracker;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
 
 public class HudEvents
 {
@@ -14,7 +14,7 @@ public class HudEvents
                 ((drawContext, v) -> {
                     var client = MinecraftClient.getInstance();
 
-                    if(client != null && client.player instanceof ClientAttributeHolder clientHolder && client.player instanceof AttributeHolder holder) {
+                    if(client != null && client.player instanceof ClientAttributeTracker clientHolder && client.player instanceof AttributeHolder holder) {
                         var attributes = clientHolder.getAttributesToUpdate();
                         if (attributes.isEmpty()) {
                             return; // No attributes to update

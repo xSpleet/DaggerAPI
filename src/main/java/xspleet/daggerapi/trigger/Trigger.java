@@ -1,22 +1,13 @@
 package xspleet.daggerapi.trigger;
 
-import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.attributes.ClientAttributeHolder;
-import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.data.collection.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.data.key.DaggerKeys;
-import xspleet.daggerapi.networking.NetworkingConstants;
 
 import java.util.*;
 
@@ -60,20 +51,16 @@ public class Trigger
             List<Pair<Integer, ArtifactItem>> artifacts = new ArrayList<>();
 
             //get all the equipped artifacts of the player in the order of the slots
-            TrinketComponent component = TrinketsApi.getTrinketComponent(player).orElse(null);
-            if (component != null) {
-                component.forEach(
-                        (slot, stack) -> {
-                            if (stack.getItem() instanceof ArtifactItem artifact) {
-                                if(artifact.hasTrigger(this))
-                                {
-                                    int slotIndex = slot.index();
-                                    artifacts.add(new Pair<>(slotIndex, artifact));
-                                }
+            TrinketsApi.getTrinketComponent(player).ifPresent(component -> component.forEach(
+                    (slot, stack) -> {
+                        if (stack.getItem() instanceof ArtifactItem artifact) {
+                            if (artifact.hasTrigger(this)) {
+                                int slotIndex = slot.index();
+                                artifacts.add(new Pair<>(slotIndex, artifact));
                             }
                         }
-                );
-            }
+                    }
+            ));
 
             artifacts.stream().sorted(Comparator.comparingInt(Pair::getLeft))
                     .map(Pair::getRight)

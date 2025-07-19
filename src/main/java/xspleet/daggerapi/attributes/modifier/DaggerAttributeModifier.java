@@ -1,6 +1,5 @@
 package xspleet.daggerapi.attributes.modifier;
 
-import net.minecraft.network.PacketByteBuf;
 import xspleet.daggerapi.attributes.operations.AttributeOperation;
 
 import java.util.Objects;

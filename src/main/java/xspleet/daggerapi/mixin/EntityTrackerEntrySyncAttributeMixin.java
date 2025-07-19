@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xspleet.daggerapi.attributes.AttributeHolder;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.util.Self;
 
 @Mixin(EntityTrackerEntry.class)
 public class EntityTrackerEntrySyncAttributeMixin implements Self<EntityTrackerEntry>

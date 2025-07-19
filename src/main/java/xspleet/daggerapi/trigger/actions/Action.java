@@ -1,6 +1,6 @@
 package xspleet.daggerapi.trigger.actions;
 
-import xspleet.daggerapi.data.ActionData;
+import xspleet.daggerapi.data.collection.ActionData;
 
 import java.util.function.Consumer;
 

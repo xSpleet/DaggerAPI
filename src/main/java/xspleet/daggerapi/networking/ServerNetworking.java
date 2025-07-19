@@ -1,6 +1,5 @@
 package xspleet.daggerapi.networking;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -10,7 +9,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.base.Tags;
+import xspleet.daggerapi.api.pack.Tags;
 import xspleet.daggerapi.config.ServerDevModeConfig;
 
 import java.util.HashMap;
@@ -93,10 +92,7 @@ public class ServerNetworking
                     UUID uuid = entry.getKey();
                     int timeout = entry.getValue();
                     if (timeout <= 0) {
-                        var player = server.getPlayerManager().getPlayerList().stream().filter(p -> p.getUuid().equals(uuid)).findAny().orElse(null);
-                        if(player != null) {
-                            player.networkHandler.disconnect(Text.literal("Artifact behavior check timed out. Please try to rejoin the server."));
-                        }
+                        server.getPlayerManager().getPlayerList().stream().filter(p -> p.getUuid().equals(uuid)).findAny().ifPresent(player -> player.networkHandler.disconnect(Text.literal("Artifact behavior check timed out. Please try to rejoin the server.")));
                         return true;
                     } else {
                         entry.setValue(timeout - 1);

@@ -1,7 +1,6 @@
 package xspleet.daggerapi.artifact;
 
-import xspleet.daggerapi.artifact.builder.ArtifactAttributeModifier;
-import xspleet.daggerapi.artifact.builder.ArtifactRarity;
+import xspleet.daggerapi.artifact.modifiers.ArtifactAttributeModifier;
 import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;

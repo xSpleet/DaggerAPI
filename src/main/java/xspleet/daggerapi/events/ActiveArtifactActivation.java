@@ -9,8 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import xspleet.daggerapi.artifact.ArtifactItem;
-import xspleet.daggerapi.collections.Triggers;
-import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.api.collections.Triggers;
+import xspleet.daggerapi.data.collection.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
 
 public class ActiveArtifactActivation

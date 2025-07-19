@@ -5,9 +5,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.mixin.MixinClientAttributeHolder;
-import xspleet.daggerapi.base.DaggerLogger;
-import xspleet.daggerapi.base.LoggingContext;
-import xspleet.daggerapi.base.Self;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
+import xspleet.daggerapi.util.Self;
 
 import java.util.ArrayList;
 import java.util.HashMap;

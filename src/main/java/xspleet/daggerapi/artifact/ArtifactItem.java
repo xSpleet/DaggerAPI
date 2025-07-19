@@ -7,7 +7,6 @@ import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,11 +15,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import xspleet.daggerapi.artifact.builder.ArtifactAttributeModifier;
-import xspleet.daggerapi.artifact.builder.ArtifactRarity;
-import xspleet.daggerapi.base.*;
-import xspleet.daggerapi.data.ConditionData;
-import xspleet.daggerapi.data.TriggerData;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
+import xspleet.daggerapi.artifact.modifiers.ArtifactAttributeModifier;
+import xspleet.daggerapi.util.*;
+import xspleet.daggerapi.data.collection.ConditionData;
+import xspleet.daggerapi.data.collection.TriggerData;
 import xspleet.daggerapi.data.key.DaggerKeys;
 import xspleet.daggerapi.exceptions.MissingDataException;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
@@ -234,19 +234,6 @@ public class ArtifactItem extends TrinketItem {
 
     public ArtifactBehavior getBehavior() {
         return new ArtifactBehavior(events, weightedEvents, triggers, attributeModifiers, artifactRarity, cooldown);
-    }
-
-    public void setBehavior(ArtifactBehavior behavior) {
-        this.events.clear();
-        this.events.putAll(behavior.events());
-        this.weightedEvents.clear();
-        this.weightedEvents.putAll(behavior.weightedEvents());
-        this.triggers.clear();
-        this.triggers.addAll(behavior.triggers());
-        this.attributeModifiers.clear();
-        this.attributeModifiers.addAll(behavior.attributeModifiers());
-        this.artifactRarity = behavior.artifactRarity();
-        this.cooldown = behavior.cooldown();
     }
 
     public Identifier getIdentifier() {
