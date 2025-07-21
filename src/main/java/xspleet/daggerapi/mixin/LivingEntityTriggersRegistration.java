@@ -19,15 +19,15 @@ public class LivingEntityTriggersRegistration implements Self<LivingEntity> {
 		LivingEntity entity = self();
 
 		var data = new TriggerData()
-				.addData(DaggerKeys.TRIGGERER, entity)
+				.addData(DaggerKeys.TRIGGER_SOURCE, entity)
 				.addData(DaggerKeys.WORLD, entity.getWorld())
-				.addData(DaggerKeys.AMOUNT, (double)amount)
+				.addData(DaggerKeys.DAMAGE_AMOUNT, (double)amount)
 				.addData(DaggerKeys.DAMAGE_SOURCE, source);
 
 		Triggers.BEFORE_DAMAGE.trigger(data);
 
 		source = data.getData(DaggerKeys.DAMAGE_SOURCE);
-		amount = data.getData(DaggerKeys.AMOUNT).floatValue();
+		amount = data.getData(DaggerKeys.DAMAGE_AMOUNT).floatValue();
 
 		return original.call(source, amount);
 	}

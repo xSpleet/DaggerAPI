@@ -1,9 +1,10 @@
-package xspleet.daggerapi.evaluation;
+package xspleet.daggerapi.api.collections;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
+import xspleet.daggerapi.evaluation.VariablePath;
 import xspleet.daggerapi.exceptions.NoSuchVariablePathException;
 
 import java.util.HashMap;

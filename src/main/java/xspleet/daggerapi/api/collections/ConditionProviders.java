@@ -3,6 +3,7 @@ package xspleet.daggerapi.api.collections;
 import com.google.gson.JsonElement;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
@@ -88,17 +89,21 @@ public class ConditionProviders
             .addRequiredData(DaggerKeys.SUCCESSFUL)
             .addAssociatedTrigger(Triggers.ACTIVATE);
 
-    public static final Provider<Condition> IF_DAMAGE_SOURCE = Mapper
-            .registerConditionProvider("ifDamageSource", args ->
+    public static final Provider<Condition> IF_DAMAGE_TYPE = Mapper
+            .registerConditionProvider("ifDamageType", args ->
             {
-                String damageSource = args.getData(DaggerKeys.Provider.DAMAGE_SOURCE);
+                var damageType = args.getData(DaggerKeys.Provider.DAMAGE_TYPE);
 
                 return data -> {
-                    return data.getData(DaggerKeys.DAMAGE_SOURCE).getName().equalsIgnoreCase(damageSource);
+                    var source = data.getData(DaggerKeys.DAMAGE_SOURCE);
+                    var world = data.getTestWorld(args.getOn());
+
+                    var key = source.getTypeRegistryEntry().getKey().orElseThrow().getValue();
+                    return key.equals(damageType);
                 };
             })
             .addRequiredData(DaggerKeys.DAMAGE_SOURCE)
-            .addArgument(DaggerKeys.Provider.DAMAGE_SOURCE, JsonElement::getAsString)
+            .addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()))
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE);
 
     public static final Provider<Condition> HAS_STATUS_EFFECT = Mapper

@@ -16,7 +16,7 @@ public class Trigger
     private final String name;
     private final Set<PlayerEntity> listeners = new HashSet<>();
     private boolean worldful = false;
-    private boolean hasTriggerer = false;
+    private boolean hasTriggerSource = false;
     private final Set<DaggerKey<?>> providedData = new HashSet<>();
 
     public Trigger(String name) {
@@ -72,9 +72,9 @@ public class Trigger
         }
     }
 
-    public Trigger setHasTriggerer() {
-        hasTriggerer = true;
-        providedData.add(DaggerKeys.TRIGGERER);
+    public Trigger setHasTriggerSource() {
+        hasTriggerSource = true;
+        providedData.add(DaggerKeys.TRIGGER_SOURCE);
         return this;
     }
 
@@ -97,7 +97,7 @@ public class Trigger
         return worldful;
     }
 
-    public boolean hasTriggerer() {
-        return hasTriggerer;
+    public boolean hasTriggerSource() {
+        return hasTriggerSource;
     }
 }

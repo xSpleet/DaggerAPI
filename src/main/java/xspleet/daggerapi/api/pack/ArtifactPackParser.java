@@ -44,7 +44,6 @@ public class ArtifactPackParser
         itemsByActivation.put(false, new ArrayList<>());
         itemsByActivation.put(true, new ArrayList<>());
 
-
         DaggerLogger.info(LoggingContext.PARSING, "Reading artifact packs from {}", packsDir.toString());
 
         for(var file : packsDir.toFile().listFiles()) {

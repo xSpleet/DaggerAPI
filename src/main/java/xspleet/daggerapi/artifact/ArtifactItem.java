@@ -137,7 +137,7 @@ public class ArtifactItem extends TrinketItem {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onEquip(stack, slot, entity);
         if (entity instanceof ServerPlayerEntity player) {
-            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
+            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player).addData(DaggerKeys.WORLD, player.getWorld()));
             for (Trigger trigger : triggers)
                 trigger.addListener(player);
         }
@@ -147,14 +147,15 @@ public class ArtifactItem extends TrinketItem {
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.tick(stack, slot, entity);
         if (entity instanceof ServerPlayerEntity player)
-            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
+            updatePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player)
+                    .addData(DaggerKeys.WORLD, player.getWorld()));
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         super.onUnequip(stack, slot, entity);
         if (entity instanceof ServerPlayerEntity player) {
-            cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player));
+            cleansePlayer(new ConditionData().addData(DaggerKeys.PLAYER, player).addData(DaggerKeys.WORLD, player.getWorld()));
             for (Trigger trigger : triggers)
                 trigger.removeListener(player);
         }

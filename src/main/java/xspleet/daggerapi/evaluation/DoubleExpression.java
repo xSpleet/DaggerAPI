@@ -2,6 +2,7 @@ package xspleet.daggerapi.evaluation;
 
 import com.fathzer.soft.javaluator.*;
 import com.google.gson.JsonElement;
+import xspleet.daggerapi.api.collections.VariablePaths;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.data.ComplexDataEntry;

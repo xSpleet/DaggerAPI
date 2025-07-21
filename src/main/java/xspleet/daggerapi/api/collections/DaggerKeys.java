@@ -27,12 +27,14 @@ public class DaggerKeys
         return KEYS.get(name);
     }
 
-    public static final DaggerKey<Double> AMOUNT = register("amount", Double.class);
+    public static final DaggerKey<Double> DAMAGE_AMOUNT = register("damage_amount", Double.class);
+    public static final DaggerKey<Double> FOOD_AMOUNT = register("food_amount", Double.class);
+    public static final DaggerKey<Double> SATURATION_AMOUNT = register("saturation_amount", Double.class);
     public static final DaggerKey<Trigger> TRIGGER = register("trigger", Trigger.class);
     public static final DaggerKey<World> WORLD = register("world", World.class);
     public static final DaggerKey<PlayerEntity> TRIGGERED = register("triggered", PlayerEntity.class);
     public static final DaggerKey<PlayerEntity> PLAYER = register("player", PlayerEntity.class);
-    public static final DaggerKey<Entity> TRIGGERER = register("triggerer", Entity.class);
+    public static final DaggerKey<Entity> TRIGGER_SOURCE = register("trigger_source", Entity.class);
     public static final DaggerKey<ArtifactItem> ARTIFACT = register("artifact", ArtifactItem.class);
     public static final DaggerKey<Boolean> SUCCESSFUL = register("successful", Boolean.class);
     public static final DaggerKey<DamageSource> DAMAGE_SOURCE = register("damage_source", DamageSource.class);
@@ -44,7 +46,7 @@ public class DaggerKeys
         public static final DaggerKey<String> WEATHER = new DaggerKey<>("weather", String.class);
         public static final DaggerKey<String> DIMENSION = new DaggerKey<>("dimension", String.class);
         public static final DaggerKey<Identifier> ARTIFACT = new DaggerKey<>("artifact", Identifier.class);
-        public static final DaggerKey<String> DAMAGE_SOURCE = new DaggerKey<>("damageSource", String.class);
+        public static final DaggerKey<Identifier> DAMAGE_TYPE = new DaggerKey<>("damageSource", Identifier.class);
         public static final DaggerKey<Identifier> STATUS_EFFECT = new DaggerKey<>("statusEffect", Identifier.class);
         public static final DaggerKey<Integer> DURATION = new DaggerKey<>("duration", Integer.class);
         public static final DaggerKey<Integer> AMPLIFIER = new DaggerKey<>("amplifier", Integer.class);

@@ -14,14 +14,20 @@ public class Triggers
     }
 
     public static final Trigger BEFORE_DAMAGE = registerTrigger("beforeDamage")
-            .setHasTriggerer()
+            .setHasTriggerSource()
             .setWorldful()
-            .addProvidedData(DaggerKeys.AMOUNT)
+            .addProvidedData(DaggerKeys.DAMAGE_AMOUNT)
             .addProvidedData(DaggerKeys.DAMAGE_SOURCE);
 
     public static final Trigger ACTIVATE = registerTrigger("activate")
-            .setHasTriggerer()
+            .setHasTriggerSource()
             .setWorldful()
             .addProvidedData(DaggerKeys.ARTIFACT)
             .addProvidedData(DaggerKeys.SUCCESSFUL);
+
+    public static final Trigger EAT = registerTrigger("onEat")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.FOOD_AMOUNT)
+            .addProvidedData(DaggerKeys.SATURATION_AMOUNT);
 }

@@ -53,7 +53,7 @@ public class ProviderData implements DaggerContext
         }
         switch(on) {
             case SELF -> requiredData.add(DaggerKeys.PLAYER);
-            case TRIGGERER -> requiredData.add(DaggerKeys.TRIGGERER);
+            case SOURCE -> requiredData.add(DaggerKeys.TRIGGER_SOURCE);
             case TRIGGERED -> requiredData.add(DaggerKeys.TRIGGERED);
             case WORLD -> requiredData.add(DaggerKeys.WORLD);
         }

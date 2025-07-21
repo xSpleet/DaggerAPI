@@ -6,8 +6,8 @@ public enum On {
     @SerializedName("self")
     SELF,
 
-    @SerializedName("triggerer")
-    TRIGGERER,
+    @SerializedName("source")
+    SOURCE,
 
     @SerializedName("triggered")
     TRIGGERED,

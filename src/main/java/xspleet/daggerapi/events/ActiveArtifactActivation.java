@@ -36,7 +36,7 @@ public class ActiveArtifactActivation
 
                     if(!cooldownManager.isCoolingDown(item)) {
                         Triggers.ACTIVATE.trigger(new TriggerData()
-                                .addData(DaggerKeys.TRIGGERER, player)
+                                .addData(DaggerKeys.TRIGGER_SOURCE, player)
                                 .addData(DaggerKeys.WORLD, player.getWorld())
                                 .addData(DaggerKeys.ARTIFACT, artifact)
                                 .addData(DaggerKeys.SUCCESSFUL, true));
@@ -46,7 +46,7 @@ public class ActiveArtifactActivation
                     else
                     {
                         Triggers.ACTIVATE.trigger(new TriggerData()
-                                .addData(DaggerKeys.TRIGGERER, player)
+                                .addData(DaggerKeys.TRIGGER_SOURCE, player)
                                 .addData(DaggerKeys.WORLD, player.getWorld())
                                 .addData(DaggerKeys.ARTIFACT, artifact)
                                 .addData(DaggerKeys.SUCCESSFUL, false));

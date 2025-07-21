@@ -21,7 +21,7 @@ public class ConditionData implements DaggerContext
 
     public Entity getTestEntity(On on) {
         return switch (on) {
-            case TRIGGERER -> getData(DaggerKeys.TRIGGERER);
+            case SOURCE -> getData(DaggerKeys.TRIGGER_SOURCE);
             case TRIGGERED -> getData(DaggerKeys.TRIGGERED);
             case SELF -> getData(DaggerKeys.PLAYER);
             case WORLD -> null;

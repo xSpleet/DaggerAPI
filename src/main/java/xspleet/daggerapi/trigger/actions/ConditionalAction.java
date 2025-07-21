@@ -85,17 +85,17 @@ public class ConditionalAction
 
         if(triggeredBy != null)
         {
-            var triggerer = data.getData(DaggerKeys.TRIGGERER);
+            var triggerSource = data.getData(DaggerKeys.TRIGGER_SOURCE);
 
             isTriggered &= switch (triggeredBy)
             {
-                case ONLY_SELF -> triggered.equals(triggerer);
-                case OTHER_PLAYER -> triggerer instanceof PlayerEntity && !triggered.equals(triggerer);
-                case OTHER_LIVING -> triggerer instanceof LivingEntity && !triggered.equals(triggerer);
-                case OTHER_ENTITY -> triggerer != null && !triggered.equals(triggerer);
-                case ANY_PLAYER -> triggerer instanceof PlayerEntity;
-                case ANY_LIVING -> triggerer instanceof LivingEntity;
-                case ANY_ENTITY -> triggerer != null;
+                case ONLY_SELF -> triggered.equals(triggerSource);
+                case OTHER_PLAYER -> triggerSource instanceof PlayerEntity && !triggered.equals(triggerSource);
+                case OTHER_LIVING -> triggerSource instanceof LivingEntity && !triggered.equals(triggerSource);
+                case OTHER_ENTITY -> triggerSource != null && !triggered.equals(triggerSource);
+                case ANY_PLAYER -> triggerSource instanceof PlayerEntity;
+                case ANY_LIVING -> triggerSource instanceof LivingEntity;
+                case ANY_ENTITY -> triggerSource != null;
                 case ANY -> true;
             };
         }

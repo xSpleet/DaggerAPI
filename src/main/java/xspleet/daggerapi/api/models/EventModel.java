@@ -9,7 +9,7 @@ public class EventModel extends JSONModel
     private String trigger;
     private Integer weight;
 
-    @SerializedName("triggerer")
+    @SerializedName("source")
     private TriggeredBy triggeredBy = null;
 
     @SerializedName("in-world")

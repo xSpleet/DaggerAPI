@@ -3,7 +3,6 @@ package xspleet.daggerapi;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -20,7 +19,7 @@ import xspleet.daggerapi.artifact.generation.ArtifactPoolEntrySerializer;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
 import xspleet.daggerapi.commands.ServerCommands;
-import xspleet.daggerapi.evaluation.VariablePaths;
+import xspleet.daggerapi.api.collections.VariablePaths;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.config.ServerDevModeConfig;
 import xspleet.daggerapi.networking.ServerNetworking;

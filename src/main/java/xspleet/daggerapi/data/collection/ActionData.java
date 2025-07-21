@@ -17,7 +17,7 @@ public class ActionData implements DaggerContext
 
     public Entity getActEntity(On on) {
         return switch (on) {
-            case TRIGGERER -> getData(DaggerKeys.TRIGGERER);
+            case SOURCE -> getData(DaggerKeys.TRIGGER_SOURCE);
             case TRIGGERED -> getData(DaggerKeys.TRIGGERED);
             default -> null;
         };
