@@ -2,6 +2,7 @@ package xspleet.daggerapi.api.collections;
 
 import com.google.gson.JsonElement;
 import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -25,6 +26,7 @@ import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.api.registration.Provider;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 import xspleet.daggerapi.trigger.actions.Action;
+import xspleet.daggerapi.util.DamageTypeUtil;
 
 public class ActionProviders
 {
@@ -234,16 +236,16 @@ public class ActionProviders
 
         return data -> {
             var world = data.getActWorld(args.getOn());
-            var damageType = world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).get(type);
 
+            var damageType = DamageTypeUtil.getDamageType(world, type);
             if (damageType == null) {
                 DaggerLogger.error(LoggingContext.GENERIC, "Damage type not found: " + type);
                 return;
             }
 
-            var damageTypeKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, type);
-
+            var damageTypeKey = DamageTypeUtil.getDamageTypeKey(type);
             var damageSource = world.getDamageSources().create(damageTypeKey);
+
             var result = amountExpression.evaluate(data);
             var entity = data.getActEntity(args.getOn());
             if (!(entity instanceof LivingEntity living)) {
@@ -254,6 +256,5 @@ public class ActionProviders
             living.damage(damageSource, result.floatValue());
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
-            .addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()))
-            .addRequiredData(DaggerKeys.DAMAGE_AMOUNT);
+            .addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()));
 }

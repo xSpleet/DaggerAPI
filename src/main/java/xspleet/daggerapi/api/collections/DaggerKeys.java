@@ -46,8 +46,8 @@ public class DaggerKeys
         public static final DaggerKey<String> WEATHER = new DaggerKey<>("weather", String.class);
         public static final DaggerKey<String> DIMENSION = new DaggerKey<>("dimension", String.class);
         public static final DaggerKey<Identifier> ARTIFACT = new DaggerKey<>("artifact", Identifier.class);
-        public static final DaggerKey<Identifier> DAMAGE_TYPE = new DaggerKey<>("damageSource", Identifier.class);
-        public static final DaggerKey<Identifier> STATUS_EFFECT = new DaggerKey<>("statusEffect", Identifier.class);
+        public static final DaggerKey<Identifier> DAMAGE_TYPE = new DaggerKey<>("damage_type", Identifier.class);
+        public static final DaggerKey<Identifier> STATUS_EFFECT = new DaggerKey<>("status_effect", Identifier.class);
         public static final DaggerKey<Integer> DURATION = new DaggerKey<>("duration", Integer.class);
         public static final DaggerKey<Integer> AMPLIFIER = new DaggerKey<>("amplifier", Integer.class);
     }

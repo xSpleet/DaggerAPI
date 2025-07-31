@@ -29,6 +29,10 @@ public class LivingEntityTriggersRegistration implements Self<LivingEntity> {
 		source = data.getData(DaggerKeys.DAMAGE_SOURCE);
 		amount = data.getData(DaggerKeys.DAMAGE_AMOUNT).floatValue();
 
+		if (amount <= 0) {
+			return false; // Prevents damage if amount is zero or negative
+		}
+
 		return original.call(source, amount);
 	}
 }

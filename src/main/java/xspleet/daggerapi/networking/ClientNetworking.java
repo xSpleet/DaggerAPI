@@ -54,7 +54,7 @@ public class ClientNetworking
         );
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkingConstants.JOIN_REQUEST_ARTIFACT_HASHES_PACKET_ID,
-                (client, handler, packet, sender) -> {
+                (client, handler, packet, sender) ->{
                     client.execute(() -> {
                         PacketByteBuf buf = PacketByteBufs.create();
                         Map<Identifier, Integer> hashes = new HashMap<>();

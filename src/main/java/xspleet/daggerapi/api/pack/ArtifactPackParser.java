@@ -84,6 +84,10 @@ public class ArtifactPackParser
                             var itemModel = DaggerAPI.JSON_PARSER.fromJson(Files.newBufferedReader(behaviorFile.toPath()), ItemModel.class);
                             var id = Identifier.of(DaggerAPI.MOD_ID, packName + "/" + itemModel.getName());
                             var item = ArtifactItemBuilder.build(itemModel, id);
+                            if(item == null) {
+                                DaggerLogger.error(LoggingContext.PARSING, "Failed to build artifact item from model: {}", itemModel.getName());
+                                continue;
+                            }
                             item = Registry.register(Registries.ITEM, id, item);
                             itemsByActivation.get(itemModel.isActive()).add(item);
                             DaggerLogger.debug(LoggingContext.PARSING, "Registered artifact item {} with ID {}", item.getName(), id);
