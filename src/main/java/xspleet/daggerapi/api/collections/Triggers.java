@@ -19,7 +19,7 @@ public class Triggers
             .addProvidedData(DaggerKeys.DAMAGE_AMOUNT)
             .addProvidedData(DaggerKeys.DAMAGE_SOURCE);
 
-    public static final Trigger ACTIVATE = registerTrigger("activate")
+    public static final Trigger ACTIVATE = registerTrigger("onActivate")
             .setHasTriggerSource()
             .setWorldful()
             .addProvidedData(DaggerKeys.ARTIFACT)

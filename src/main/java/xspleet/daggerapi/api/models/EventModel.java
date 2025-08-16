@@ -12,7 +12,7 @@ public class EventModel extends JSONModel
     @SerializedName("source")
     private TriggeredBy triggeredBy = null;
 
-    @SerializedName("in-world")
+    @SerializedName("inWorld")
     private TriggeredIn triggeredIn = null;
 
     private ArrayList<ConditionModel> conditions = new ArrayList<>();

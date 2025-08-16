@@ -38,7 +38,7 @@ public class ConditionProviders
                 boolean isThundering = weather.equalsIgnoreCase("thunder");
                 boolean isClear = weather.equalsIgnoreCase("clear");
                 if(!isRaining && !isThundering && !isClear)
-                    throw new WrongArgumentException("weather", weather);
+                    throw new WrongArgumentException(DaggerKeys.Provider.WEATHER.key(), weather);
 
                 return data -> {
                     World world = data.getTestWorld(args.getOn());

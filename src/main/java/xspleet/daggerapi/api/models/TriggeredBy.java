@@ -7,22 +7,22 @@ public enum TriggeredBy
     @SerializedName("self")
     ONLY_SELF,
 
-    @SerializedName("other-player")
+    @SerializedName("other_player")
     OTHER_PLAYER,
 
-    @SerializedName("other-living")
+    @SerializedName("other_living")
     OTHER_LIVING,
 
-    @SerializedName("other-entity")
+    @SerializedName("other_entity")
     OTHER_ENTITY,
 
-    @SerializedName("any-player")
+    @SerializedName("any_player")
     ANY_PLAYER,
 
-    @SerializedName("any-living")
+    @SerializedName("any_living")
     ANY_LIVING,
 
-    @SerializedName("any-entity")
+    @SerializedName("any_entity")
     ANY_ENTITY,
 
     @SerializedName("any")

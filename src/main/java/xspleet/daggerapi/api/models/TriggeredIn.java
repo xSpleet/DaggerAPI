@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public enum TriggeredIn
 {
-    @SerializedName("same-world")
+    @SerializedName("same_world")
     SAME_WORLD,
 
-    @SerializedName("other-world")
+    @SerializedName("other_world")
     OTHER_WORLD,
 
     @SerializedName("any")

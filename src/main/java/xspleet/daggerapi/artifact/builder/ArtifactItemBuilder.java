@@ -115,7 +115,7 @@ public class ArtifactItemBuilder
     {
         var events = itemModel.getEvents();
         if(itemModel.isActive() && events.stream().noneMatch(e -> e.getTrigger().equalsIgnoreCase(Triggers.ACTIVATE.getName()))) {
-            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), "Events", "Active artifact must have an activate event");
+            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), "Events", "Active artifact must have an onActivate event");
         }
         for(int i = 0 ; i < events.size() ; i++)
         {
@@ -227,7 +227,7 @@ public class ArtifactItemBuilder
                                                 .addData(DaggerKeys.Provider.ARTIFACT, id)),
                                 "ifArtifact"
                         );
-                        DaggerLogger.warn(LoggingContext.PARSING, "Artifact {} has no ifArtifact condition on activate event, adding it automatically.", itemModel.getName());
+                        DaggerLogger.warn(LoggingContext.PARSING, "Artifact {} has no ifArtifact condition on onActivate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "Missing ifArtifact condition on active artifact.");
                     }
@@ -240,7 +240,7 @@ public class ArtifactItemBuilder
                                         .provide(new ProviderData().setOn(On.SOURCE)),
                                 "isSuccessful"
                         );
-                        DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on activate event, adding it automatically.", itemModel.getName());
+                        DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on onActivate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "Missing isSuccessful condition on active artifact.");
                     }

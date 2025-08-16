@@ -212,7 +212,7 @@ public class ActionProviders
 
         if (!isClear && !isRain && !isThunder) {
             throw new WrongArgumentException(
-                    "weather", args.getData(DaggerKeys.Provider.WEATHER)
+                    DaggerKeys.Provider.WEATHER.key(), args.getData(DaggerKeys.Provider.WEATHER)
             );
         }
 
