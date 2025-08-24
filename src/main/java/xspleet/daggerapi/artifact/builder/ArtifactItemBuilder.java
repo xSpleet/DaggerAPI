@@ -146,10 +146,17 @@ public class ArtifactItemBuilder
             TriggeredIn triggeredIn = eventModel.getTriggeredIn();
 
             if(triggeredBy != null && !trigger.hasTriggerSource()) {
-                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "TriggeredBy is set on event " + eventModel.getTrigger() + " but the trigger does not provide a trigger source");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'source' is set on event " + eventModel.getTrigger() + " but the trigger does not provide a trigger source");
             }
             if(triggeredIn != null && !trigger.isWorldful()) {
-                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "TriggeredIn is set on event " + eventModel.getTrigger() + " but the trigger is not worldful");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'inWorld' is set on event " + eventModel.getTrigger() + " but the trigger is not worldful");
+            }
+
+            if(triggeredBy == null && trigger.hasTriggerSource()) {
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'source' is not set on event " + eventModel.getTrigger() + ", but the trigger has a source");
+            }
+            if(triggeredIn == null && trigger.isWorldful()) {
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'inWorld' is not set on event " + eventModel.getTrigger() + ", but the trigger has a world");
             }
 
             conditionalAction

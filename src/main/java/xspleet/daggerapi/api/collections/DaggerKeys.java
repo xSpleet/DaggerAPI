@@ -50,5 +50,9 @@ public class DaggerKeys
         public static final DaggerKey<Identifier> STATUS_EFFECT = new DaggerKey<>("status_effect", Identifier.class);
         public static final DaggerKey<Integer> DURATION = new DaggerKey<>("duration", Integer.class);
         public static final DaggerKey<Integer> AMPLIFIER = new DaggerKey<>("amplifier", Integer.class);
+        public static final DaggerKey<DoubleExpression> VALUE = new DaggerKey<>("value", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> COMPARE_VALUE = new DaggerKey<>("compare_value", DoubleExpression.class);
+        public static final DaggerKey<String> OPERATOR = new DaggerKey<>("operator", String.class);
+        public static final DaggerKey<DoubleExpression> CHANCE = new DaggerKey<>("chance", DoubleExpression.class);
     }
 }

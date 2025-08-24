@@ -35,9 +35,9 @@ public class ActionProviders
         DaggerLogger.info(LoggingContext.STARTUP, "Registering action providers...");
     }
 
-    public static Provider<Action> DO_NOTHING = Mapper.registerActionProvider("doNothing", (args) -> data -> {});
+    public static final Provider<Action> DO_NOTHING = Mapper.registerActionProvider("doNothing", (args) -> data -> {});
 
-    public static Provider<Action> HEAL = Mapper.registerActionProvider("heal", (args) -> {
+    public static final Provider<Action> HEAL = Mapper.registerActionProvider("heal", (args) -> {
         var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
 
         return data -> {
@@ -50,13 +50,13 @@ public class ActionProviders
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create);
 
-    public static Provider<Action> SEND_MESSAGE = Mapper.registerActionProvider("sendMessage", (args) -> {
+    public static final Provider<Action> SEND_MESSAGE = Mapper.registerActionProvider("sendMessage", (args) -> {
         String message = args.getData(DaggerKeys.Provider.MESSAGE);
 
         return data -> data.getActEntity(args.getOn()).sendMessage(Text.literal(message));
     }).addArgument(DaggerKeys.Provider.MESSAGE, JsonElement::getAsString);
 
-    public static Provider<Action> KILL = Mapper.registerActionProvider("kill", (args) -> data -> {
+    public static final Provider<Action> KILL = Mapper.registerActionProvider("kill", (args) -> data -> {
         if(!(data.getActEntity(args.getOn()) instanceof LivingEntity living)) {
             DaggerLogger.error(LoggingContext.GENERIC, "Living entity not found for action 'kill'");
             return;
@@ -64,7 +64,7 @@ public class ActionProviders
         living.kill();
     });
 
-    public static Provider<Action> CHANGE_DAMAGE_AMOUNT = Mapper.registerActionProvider("changeDamageAmount", (args) -> {
+    public static final Provider<Action> CHANGE_DAMAGE_AMOUNT = Mapper.registerActionProvider("changeDamageAmount", (args) -> {
         var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
 
         return data -> {
@@ -76,7 +76,7 @@ public class ActionProviders
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
             .modifier();
 
-    public static Provider<Action> ADD_STATUS_EFFECT = Mapper.registerActionProvider("addStatusEffect", (args) -> {
+    public static final Provider<Action> ADD_STATUS_EFFECT = Mapper.registerActionProvider("addStatusEffect", (args) -> {
         Identifier statusEffectId = args.getData(DaggerKeys.Provider.STATUS_EFFECT);
         int duration = args.getData(DaggerKeys.Provider.DURATION);
         int amplifier = args.getData(DaggerKeys.Provider.AMPLIFIER);
@@ -97,7 +97,7 @@ public class ActionProviders
             .addArgument(DaggerKeys.Provider.DURATION, JsonElement::getAsInt)
             .addArgument(DaggerKeys.Provider.AMPLIFIER, JsonElement::getAsInt);
 
-    public static Provider<Action> REMOVE_STATUS_EFFECT = Mapper.registerActionProvider("removeStatusEffect", (args) -> {
+    public static final Provider<Action> REMOVE_STATUS_EFFECT = Mapper.registerActionProvider("removeStatusEffect", (args) -> {
         Identifier statusEffectId = args.getData(DaggerKeys.Provider.STATUS_EFFECT);
 
         return data -> {
@@ -115,7 +115,7 @@ public class ActionProviders
         };
     }).addArgument(DaggerKeys.Provider.STATUS_EFFECT, e -> new Identifier(e.getAsString()));
 
-    public static Provider<Action> REPLENISH_AIR = Mapper.registerActionProvider("replenishAir", (args) -> {
+    public static final Provider<Action> REPLENISH_AIR = Mapper.registerActionProvider("replenishAir", (args) -> {
         return data -> {
             if(!(data.getActEntity(args.getOn()) instanceof LivingEntity living)) {
                 DaggerLogger.error(LoggingContext.GENERIC, "Living entity not found for action 'replenishAir'");
@@ -128,7 +128,7 @@ public class ActionProviders
         };
     });
 
-    public static Provider<Action> REPLENISH_FOOD = Mapper.registerActionProvider("replenishFood", (args) -> {
+    public static final Provider<Action> REPLENISH_FOOD = Mapper.registerActionProvider("replenishFood", (args) -> {
         return data -> {
             if(!(data.getActEntity(args.getOn()) instanceof PlayerEntity player)) {
                 DaggerLogger.error(LoggingContext.GENERIC, "Player entity not found for action 'replenishFood'");
@@ -141,7 +141,7 @@ public class ActionProviders
         };
     });
 
-    public static Provider<Action> CHANGE_FOOD_AMOUNT = Mapper.registerActionProvider("changeFoodAmount", (args) -> {
+    public static final Provider<Action> CHANGE_FOOD_AMOUNT = Mapper.registerActionProvider("changeFoodAmount", (args) -> {
         var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
 
         return data -> {
@@ -157,7 +157,7 @@ public class ActionProviders
             .addAssociatedTrigger(Triggers.EAT)
             .modifier();
 
-    public static Provider<Action> CHANGE_SATURATION_AMOUNT = Mapper.registerActionProvider("changeSaturationAmount", (args) -> {
+    public static final Provider<Action> CHANGE_SATURATION_AMOUNT = Mapper.registerActionProvider("changeSaturationAmount", (args) -> {
         var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
 
         return data -> {
@@ -173,7 +173,7 @@ public class ActionProviders
             .addAssociatedTrigger(Triggers.EAT)
             .modifier();
 
-    public static Provider<Action> STRIKE_LIGHTNING = Mapper.registerActionProvider("strikeLightning", (args) -> {
+    public static final Provider<Action> STRIKE_LIGHTNING = Mapper.registerActionProvider("strikeLightning", (args) -> {
         return data -> {
             var entity = data.getActEntity(args.getOn());
             var lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, entity.getWorld());
@@ -183,7 +183,7 @@ public class ActionProviders
         };
     });
 
-    public static Provider<Action> RECHARGE_ACTIVE_ARTIFACTS = Mapper.registerActionProvider("rechargeActiveArtifacts", (args) -> {
+    public static final Provider<Action> RECHARGE_ACTIVE_ARTIFACTS = Mapper.registerActionProvider("rechargeActiveArtifacts", (args) -> {
         return data -> {
             var entity = data.getActEntity(args.getOn());
             if (!(entity instanceof PlayerEntity player)) {
@@ -203,7 +203,7 @@ public class ActionProviders
         };
     });
 
-    public static Provider<Action> SET_WEATHER = Mapper.registerActionProvider("setWeather", (args) -> {
+    public static final Provider<Action> SET_WEATHER = Mapper.registerActionProvider("setWeather", (args) -> {
         String weather = args.getData(DaggerKeys.Provider.WEATHER);
 
         boolean isClear = "clear".equalsIgnoreCase(weather);
@@ -230,7 +230,7 @@ public class ActionProviders
         };
     }).addArgument(DaggerKeys.Provider.WEATHER, JsonElement::getAsString);
 
-    public static Provider<Action> DAMAGE = Mapper.registerActionProvider("damage", (args) -> {
+    public static final Provider<Action> DAMAGE = Mapper.registerActionProvider("damage", (args) -> {
         var amountExpression = args.getData(DaggerKeys.Provider.AMOUNT);
         var type = args.getData(DaggerKeys.Provider.DAMAGE_TYPE);
 
@@ -257,4 +257,46 @@ public class ActionProviders
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
             .addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()));
+
+    public static final Provider<Action> CHANGE_DAMAGE_TYPE = Mapper.registerActionProvider("changeDamageType", (args) -> {
+        var type = args.getData(DaggerKeys.Provider.DAMAGE_TYPE);
+
+        return data -> {
+            var world = data.getActWorld(args.getOn());
+            var damageType = DamageTypeUtil.getDamageType(world, type);
+            if (damageType == null) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Damage type not found: " + type);
+                return;
+            }
+
+            var damageTypeKey = DamageTypeUtil.getDamageTypeKey(type);
+            var damageSource = data.getData(DaggerKeys.DAMAGE_SOURCE);
+
+            var newDamageSource = world.getDamageSources().create(damageTypeKey, damageSource.getSource(), damageSource.getAttacker());
+            data.addData(DaggerKeys.DAMAGE_SOURCE, newDamageSource);
+        };
+    }).addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()))
+            .addRequiredData(DaggerKeys.DAMAGE_SOURCE)
+            .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
+            .modifier();
+
+    public static final Provider<Action> RECHARGE_ACTIVE = Mapper.registerActionProvider("rechargeActive", (args) -> {
+        return data -> {
+            var entity = data.getActEntity(args.getOn());
+            if (!(entity instanceof PlayerEntity player)) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Player entity not found for action 'rechargeActive'");
+                return;
+            }
+            TrinketsApi.getTrinketComponent(player).ifPresent(trinketComponent -> {
+                trinketComponent.getAllEquipped().forEach(
+                        slotRef -> {
+                            var itemStack = slotRef.getRight();
+                            if (itemStack.getItem() instanceof ArtifactItem artifactItem && artifactItem.isActive()) {
+                                player.getItemCooldownManager().remove(artifactItem);
+                            }
+                        }
+                );
+            });
+        };
+    });
 }
