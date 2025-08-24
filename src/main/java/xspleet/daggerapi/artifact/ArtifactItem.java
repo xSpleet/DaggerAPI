@@ -199,23 +199,23 @@ public class ArtifactItem extends TrinketItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         addArtifactRarity(tooltip);
+        var item = stack.getItem();
+
+        if(!(item instanceof ArtifactItem artifact)) {
+            DaggerLogger.error(LoggingContext.GENERIC, "ArtifactItem: Item {} is not an instance of ArtifactItem", Registries.ITEM.getId(item));
+            return;
+        }
+
         if (Screen.hasShiftDown()) {
-            if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive()) {
+            if (artifact.isActive())
                 tooltip.add(Text.translatable("item.daggerapi.tooltip.recharge", artifact.getCooldown() / 20 + " "));
-            }
-            var artifactItem = stack.getItem();
-            if(artifactItem instanceof ArtifactItem artifact)
-                TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
-            else
-                TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip." + stack.getItem()), tooltip);
+
+            TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
         } else {
-            if (stack.getItem() instanceof ArtifactItem artifact && artifact.isActive())
+            if (artifact.isActive())
                 TextFormatter.addTooltips(Text.translatable("item.daggerapi.tooltip.active"), tooltip);
-            var artifactItem = stack.getItem();
-            if(artifactItem instanceof ArtifactItem artifact)
-                TextFormatter.addTooltips(Text.translatable("item.daggerapi.description." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
-            else
-                TextFormatter.addTooltips(Text.translatable("item.daggerapi.description." + stack.getItem()), tooltip);
+
+            TextFormatter.addTooltips(Text.translatable("item.daggerapi.description." + artifact.getIdentifier().getPath().replace('/', '.')), tooltip);
             tooltip.add(Text.translatable("item.daggerapi.tooltip.shiftmoreinfo"));
         }
     }

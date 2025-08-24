@@ -82,8 +82,8 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                    if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
-                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
+                if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
                 try {
                     Condition conditionUnit = getCondition(conditionModel, availableData);
                     artifactAttributeModifier.addCondition(conditionUnit, conditionModel.getCondition());
@@ -186,6 +186,8 @@ public class ArtifactItemBuilder
                     if(actionProvider.isModifier() && actionModel.getOn() != On.SOURCE) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is a modifier but is not on SOURCE, which is not supported");
                     }
+                    if(actionModel.getOn() == On.SELF)
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Action on SELF is not supported for events.");
                     if(!actionProvider.canBeOnTrigger(trigger)) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " cannot be used on trigger " + trigger.getName());
                     }

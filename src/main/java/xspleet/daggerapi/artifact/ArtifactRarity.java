@@ -4,16 +4,16 @@ import com.google.gson.annotations.SerializedName;
 
 public enum ArtifactRarity {
     @SerializedName("common")
-    COMMON(5),
+    COMMON(15),
 
     @SerializedName("rare")
-    RARE(80),
+    RARE(9),
 
     @SerializedName("epic")
-    EPIC(2),
+    EPIC(6),
 
     @SerializedName("legendary")
-    LEGENDARY(1);
+    LEGENDARY(3);
 
     private final int weight;
 

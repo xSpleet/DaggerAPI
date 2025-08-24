@@ -55,7 +55,7 @@ dependencies {
 	modImplementation include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
 	modImplementation include("maven.modrinth:AdditionalEntityAttributes:${project.aea_version}")
 
-	implementation 'com.fathzer:javaluator:3.0.6'
+	implementation include('com.fathzer:javaluator:3.0.6')
 }
 
 processResources {
