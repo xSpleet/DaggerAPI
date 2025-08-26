@@ -1,16 +1,23 @@
 package xspleet.daggerapi.api.collections;
 
 import com.google.gson.JsonElement;
+import dev.emi.trinkets.api.TrinketsApi;
 import io.netty.handler.logging.LogLevel;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.api.registration.Provider;
+import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.trigger.Condition;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
@@ -162,4 +169,68 @@ public class ConditionProviders
                 };
             })
             .addArgument(DaggerKeys.Provider.CHANCE, DoubleExpression::create);
+
+    public static final Provider<Condition> IF_HAS_ARTIFACT = Mapper.registerConditionProvider("ifHasArtifact", args -> {
+                Identifier artifactId = args.getData(DaggerKeys.Provider.ARTIFACT);
+                Item item = Registries.ITEM.get(artifactId);
+                if(!(item instanceof ArtifactItem artifactItem)) {
+                    throw new WrongArgumentException(DaggerKeys.Provider.ARTIFACT.key(), artifactId.toString());
+                }
+
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+                    if (!(entity instanceof PlayerEntity player))
+                    {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Entity is not a Player for ifHasArtifact condition: " + entity.getEntityName());
+                        return false;
+                    }
+
+                    return TrinketsApi.getTrinketComponent(player)
+                            .orElseThrow()
+                            .getAllEquipped()
+                            .stream().anyMatch(s -> s.getRight().getItem().equals(artifactItem) && s.getRight().getCount() != 0);
+                };
+            })
+            .addArgument(DaggerKeys.Provider.ARTIFACT, e -> new Identifier(e.getAsString()));
+
+    public static final Provider<Condition> IF_IN_LIQUID = Mapper.registerConditionProvider("ifInLiquid", args -> {
+                var liquid = args.getData(DaggerKeys.Provider.LIQUID);
+                var fluid = Registries.FLUID.get(liquid);
+
+                if(fluid == Fluids.EMPTY) {
+                    throw new WrongArgumentException(DaggerKeys.Provider.LIQUID.key(), liquid.toString());
+                }
+
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+
+                    return entity.getFluidHeight(TagKey.of(RegistryKeys.FLUID, liquid)) > 0;
+                };
+            })
+            .addArgument(DaggerKeys.Provider.LIQUID, e -> new Identifier(e.getAsString()));
+
+    public static final Provider<Condition> IF_LIGHT_LEVEL_ABOVE = Mapper.registerConditionProvider("ifLightLevelAbove", args -> {
+                var value = args.getData(DaggerKeys.Provider.LIGHT_LEVEL);
+
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+                    var world = data.getTestWorld(args.getOn());
+
+                    return world.getLightLevel(entity.getBlockPos()) > value;
+                };
+            })
+            .addArgument(DaggerKeys.Provider.LIGHT_LEVEL, JsonElement::getAsInt);
+
+    public static final Provider<Condition> IF_DAY = Mapper.registerConditionProvider("ifDay", args -> {
+                return data -> {
+                    World world = data.getTestWorld(args.getOn());
+                    return world.isDay();
+                };
+            });
+    public static final Provider<Condition> IF_NIGHT = Mapper.registerConditionProvider("ifNight", args -> {
+                return data -> {
+                    World world = data.getTestWorld(args.getOn());
+                    return world.isNight();
+                };
+            });
 }

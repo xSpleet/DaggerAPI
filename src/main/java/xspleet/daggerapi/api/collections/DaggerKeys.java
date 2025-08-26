@@ -54,5 +54,7 @@ public class DaggerKeys
         public static final DaggerKey<DoubleExpression> COMPARE_VALUE = new DaggerKey<>("compare_value", DoubleExpression.class);
         public static final DaggerKey<String> OPERATOR = new DaggerKey<>("operator", String.class);
         public static final DaggerKey<DoubleExpression> CHANCE = new DaggerKey<>("chance", DoubleExpression.class);
+        public static final DaggerKey<Identifier> LIQUID = new DaggerKey<>("liquid", Identifier.class);
+        public static final DaggerKey<Integer> LIGHT_LEVEL = new DaggerKey<>("light_level", Integer.class);
     }
 }
