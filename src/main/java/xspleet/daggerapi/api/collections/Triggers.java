@@ -29,5 +29,11 @@ public class Triggers
             .setHasTriggerSource()
             .setWorldful()
             .addProvidedData(DaggerKeys.FOOD_AMOUNT)
-            .addProvidedData(DaggerKeys.SATURATION_AMOUNT);
+            .addProvidedData(DaggerKeys.SATURATION_AMOUNT)
+            .addProvidedData(DaggerKeys.ITEM_STACK)
+            .addProvidedData(DaggerKeys.ITEM);
+
+    public static final Trigger TICK = registerTrigger("tick")
+            .setHasTriggerSource()
+            .setWorldful();
 }

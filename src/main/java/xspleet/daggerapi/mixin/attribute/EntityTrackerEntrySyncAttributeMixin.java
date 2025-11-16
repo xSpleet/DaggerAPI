@@ -1,4 +1,4 @@
-package xspleet.daggerapi.mixin;
+package xspleet.daggerapi.mixin.attribute;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.EntityTrackerEntry;

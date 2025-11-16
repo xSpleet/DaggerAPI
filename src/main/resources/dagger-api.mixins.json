@@ -3,20 +3,23 @@
   "package": "xspleet.daggerapi.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "EntityAttributeInstanceMixin",
-    "EntityAttributeMixin",
-    "EntityAttributeModifierMixin",
-    "EntityTrackerEntrySyncAttributeMixin",
-    "LivingEntityAttributeRegistration",
-    "LivingEntityTriggersRegistration",
-    "OperationMixin",
+    "HungerManagerPlayerOwned",
     "ResourcePackManagerAccessor",
-    "ResourcePackProviderMixin"
+    "ResourcePackProviderMixin",
+    "attribute.EntityAttributeInstanceMixin",
+    "attribute.EntityAttributeMixin",
+    "attribute.EntityAttributeModifierMixin",
+    "attribute.EntityTrackerEntrySyncAttributeMixin",
+    "attribute.OperationMixin",
+    "attribute.registration.LivingEntityAttributeRegistration",
+    "trigger.registration.EntityTriggerRegistration",
+    "trigger.registration.HungerManagerTriggerRegistration",
+    "trigger.registration.LivingEntityTriggersRegistration"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "ClientPlayerEntityAttributeUpdatesMixin"
+    "attribute.ClientPlayerEntityAttributeUpdatesMixin"
   ]
 }

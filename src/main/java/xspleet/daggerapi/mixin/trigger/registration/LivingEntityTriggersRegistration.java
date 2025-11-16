@@ -1,4 +1,4 @@
-package xspleet.daggerapi.mixin;
+package xspleet.daggerapi.mixin.trigger.registration;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

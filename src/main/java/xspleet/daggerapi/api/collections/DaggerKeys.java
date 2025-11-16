@@ -3,6 +3,8 @@ package xspleet.daggerapi.api.collections;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.artifact.ArtifactItem;
@@ -28,8 +30,8 @@ public class DaggerKeys
     }
 
     public static final DaggerKey<Double> DAMAGE_AMOUNT = register("damage_amount", Double.class);
-    public static final DaggerKey<Double> FOOD_AMOUNT = register("food_amount", Double.class);
-    public static final DaggerKey<Double> SATURATION_AMOUNT = register("saturation_amount", Double.class);
+    public static final DaggerKey<Integer> FOOD_AMOUNT = register("food_amount", Integer.class);
+    public static final DaggerKey<Float> SATURATION_AMOUNT = register("saturation_amount", Float.class);
     public static final DaggerKey<Trigger> TRIGGER = register("trigger", Trigger.class);
     public static final DaggerKey<World> WORLD = register("world", World.class);
     public static final DaggerKey<PlayerEntity> TRIGGERED = register("triggered", PlayerEntity.class);
@@ -38,6 +40,8 @@ public class DaggerKeys
     public static final DaggerKey<ArtifactItem> ARTIFACT = register("artifact", ArtifactItem.class);
     public static final DaggerKey<Boolean> SUCCESSFUL = register("successful", Boolean.class);
     public static final DaggerKey<DamageSource> DAMAGE_SOURCE = register("damage_source", DamageSource.class);
+    public static final DaggerKey<Item> ITEM = register("item", Item.class);
+    public static final DaggerKey<ItemStack> ITEM_STACK = register("item_stack", ItemStack.class);
 
     public static class Provider
     {

@@ -1,4 +1,4 @@
-package xspleet.daggerapi.mixin;
+package xspleet.daggerapi.mixin.attribute;
 
 import com.mojang.datafixers.util.Function3;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
