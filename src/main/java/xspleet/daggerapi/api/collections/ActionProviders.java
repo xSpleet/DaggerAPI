@@ -12,6 +12,9 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -280,23 +283,77 @@ public class ActionProviders
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
             .modifier();
 
-    public static final Provider<Action> RECHARGE_ACTIVE = Mapper.registerActionProvider("rechargeActive", (args) -> {
+    public static final Provider<Action> GIVE_ITEM = Mapper.registerActionProvider("giveItem", (args) -> {
+        Identifier itemId = args.getData(DaggerKeys.Provider.ITEM);
+        int countFinal = args.getData(DaggerKeys.Provider.COUNT);
+
         return data -> {
+            int count = countFinal;
             var entity = data.getActEntity(args.getOn());
             if (!(entity instanceof PlayerEntity player)) {
-                DaggerLogger.error(LoggingContext.GENERIC, "Player entity not found for action 'rechargeActive'");
+                DaggerLogger.error(LoggingContext.GENERIC, "Player entity not found for action 'giveItem'");
                 return;
             }
-            TrinketsApi.getTrinketComponent(player).ifPresent(trinketComponent -> {
-                trinketComponent.getAllEquipped().forEach(
-                        slotRef -> {
-                            var itemStack = slotRef.getRight();
-                            if (itemStack.getItem() instanceof ArtifactItem artifactItem && artifactItem.isActive()) {
-                                player.getItemCooldownManager().remove(artifactItem);
-                            }
-                        }
-                );
-            });
+
+            var item = Registries.ITEM.get(itemId);
+
+            if (item == Items.AIR) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Item not found: " + itemId);
+                return;
+            }
+
+            while(count > item.getMaxCount()) {
+                var itemStack = new ItemStack(item, item.getMaxCount());
+                count -= item.getMaxCount();
+                if (!player.getInventory().insertStack(itemStack)) {
+                    player.dropItem(itemStack, false);
+                }
+            }
+            var itemStack = new ItemStack(item, count);
+            if (!player.getInventory().insertStack(itemStack)) {
+                player.dropItem(itemStack, false);
+            }
         };
-    });
+    })
+            .addArgument(DaggerKeys.Provider.ITEM, e -> new Identifier(e.getAsString()))
+            .addArgument(DaggerKeys.Provider.COUNT, JsonElement::getAsInt);
+
+    public static final Provider<Action> REMOVE_ITEM = Mapper.registerActionProvider("removeItem", (args) -> {
+        Identifier itemId = args.getData(DaggerKeys.Provider.ITEM);
+        int countFinal = args.getData(DaggerKeys.Provider.COUNT);
+
+        return data -> {
+            int count = countFinal;
+            var entity = data.getActEntity(args.getOn());
+            if (!(entity instanceof PlayerEntity player)) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Player entity not found for action 'removeItem'");
+                return;
+            }
+
+            var item = Registries.ITEM.get(itemId);
+
+            if (item == Items.AIR) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Item not found: " + itemId);
+                return;
+            }
+
+            for (int i = 0; i < player.getInventory().size(); i++) {
+                var itemStack = player.getInventory().getStack(i);
+                if (itemStack.getItem() == item) {
+                    int stackCount = itemStack.getCount();
+                    if (stackCount <= count) {
+                        player.getInventory().setStack(i, ItemStack.EMPTY);
+                        count -= stackCount;
+                    } else {
+                        itemStack.decrement(count);
+                        player.getInventory().setStack(i, itemStack);
+                        count = 0;
+                    }
+                    if (count == 0) break;
+                }
+            }
+        };
+    })
+            .addArgument(DaggerKeys.Provider.ITEM, e -> new Identifier(e.getAsString()))
+            .addArgument(DaggerKeys.Provider.COUNT, JsonElement::getAsInt);
 }

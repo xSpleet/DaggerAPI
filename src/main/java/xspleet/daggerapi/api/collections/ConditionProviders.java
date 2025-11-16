@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.FluidTags;
@@ -22,6 +23,7 @@ import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.trigger.Condition;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class ConditionProviders
@@ -227,10 +229,35 @@ public class ConditionProviders
                     return world.isDay();
                 };
             });
+
     public static final Provider<Condition> IF_NIGHT = Mapper.registerConditionProvider("ifNight", args -> {
                 return data -> {
                     World world = data.getTestWorld(args.getOn());
                     return world.isNight();
                 };
             });
+
+    public static final Provider<Condition> IF_HAS_ITEM = Mapper.registerConditionProvider("ifHasItem", args -> {
+                var itemId = args.getData(DaggerKeys.Provider.ITEM);
+                var count = args.getData(DaggerKeys.Provider.COUNT);
+
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+                    if (!(entity instanceof PlayerEntity player))
+                    {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Entity is not a Player for ifHasItem condition: " + entity.getEntityName());
+                        return false;
+                    }
+
+                    var item = Registries.ITEM.get(itemId);
+                    if(item == Items.AIR) {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Item not found for ifHasItem condition: " + itemId);
+                        return false;
+                    }
+
+                    return player.getInventory().count(item) >= count;
+                };
+            })
+            .addArgument(DaggerKeys.Provider.ITEM, e -> new Identifier(e.getAsString()))
+            .addArgument(DaggerKeys.Provider.COUNT, JsonElement::getAsInt);
 }
