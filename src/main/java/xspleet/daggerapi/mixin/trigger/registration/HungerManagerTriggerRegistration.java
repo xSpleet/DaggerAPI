@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import xspleet.daggerapi.api.collections.DaggerKeys;
 import xspleet.daggerapi.api.collections.Triggers;
 import xspleet.daggerapi.data.collection.TriggerData;
-import xspleet.daggerapi.mixin.PlayerOwned;
+import xspleet.daggerapi.util.PlayerOwned;
 import xspleet.daggerapi.util.Self;
 
 @Mixin(HungerManager.class)

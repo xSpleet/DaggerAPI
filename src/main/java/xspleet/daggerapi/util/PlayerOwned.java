@@ -1,4 +1,4 @@
-package xspleet.daggerapi.mixin;
+package xspleet.daggerapi.util;
 
 import net.minecraft.entity.player.PlayerEntity;
 

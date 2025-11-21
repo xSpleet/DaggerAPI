@@ -6,6 +6,8 @@ import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.loot.entry.LootPoolEntryType;
@@ -23,6 +25,7 @@ import xspleet.daggerapi.api.collections.VariablePaths;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.config.ServerDevModeConfig;
 import xspleet.daggerapi.networking.ServerNetworking;
+import xspleet.daggerapi.trigger.PlayerEntityAllowSleepingHandler;
 
 public class DaggerAPI implements ModInitializer {
 	public static final String MOD_ID = "daggerapi";
@@ -60,5 +63,8 @@ public class DaggerAPI implements ModInitializer {
 				AttributeArgumentType.class,
 				ConstantArgumentSerializer.of(AttributeArgumentType::new)
 		);
-    }
+
+		EntitySleepEvents.ALLOW_NEARBY_MONSTERS.register(new PlayerEntityAllowSleepingHandler());
+		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> true);
+	}
 }

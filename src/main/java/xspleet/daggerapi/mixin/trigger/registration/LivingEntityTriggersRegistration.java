@@ -35,4 +35,6 @@ public class LivingEntityTriggersRegistration implements Self<LivingEntity> {
 
 		return original.call(source, amount);
 	}
+
+
 }
