@@ -136,7 +136,7 @@ public class ConditionProviders
                 DoubleExpression compareValueExpression = args.getData(DaggerKeys.Provider.COMPARE_VALUE);
 
                 //check if operator is a valid operator
-                if (!operator.matches("[<>!=]=?|==")) {
+                if (!operator.matches("<=|>=|!=|==|<|>")) {
                     throw new WrongArgumentException(DaggerKeys.Provider.OPERATOR.key(), operator);
                 }
 

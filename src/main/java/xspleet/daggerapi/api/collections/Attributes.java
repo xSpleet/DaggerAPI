@@ -4,6 +4,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import xspleet.daggerapi.attributes.Attribute;
 import xspleet.daggerapi.attributes.ClampedAttribute;
+import xspleet.daggerapi.attributes.StaticEnchantmentAttribute;
 import xspleet.daggerapi.attributes.UnclampedAttribute;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
@@ -28,4 +29,15 @@ public class Attributes
 
     public static final Attribute<Double> JUMP_HEIGHT = Mapper.registerAttribute("jump_height", new ClampedAttribute<>("daggerapi:jump_height", Double.class, 0.42, 0.01, 2.0));
     public static final Attribute<Boolean> CAN_WALK_ON_WATER = Mapper.registerAttribute("can_walk_on_water", new UnclampedAttribute<>("daggerapi:can_walk_on_water", Boolean.class, false));
+
+    public static final Attribute<Integer> STATIC_SWIFT_SNEAK = Mapper.registerAttribute("static_swift_sneak", new StaticEnchantmentAttribute("daggerapi:static_swift_sneak"));
+    public static final Attribute<Integer> STATIC_KNOCKBACK = Mapper.registerAttribute("static_knockback", new StaticEnchantmentAttribute("daggerapi:static_knockback"));
+    public static final Attribute<Integer> STATIC_FIRE_ASPECT = Mapper.registerAttribute("static_fire_aspect", new StaticEnchantmentAttribute("daggerapi:static_fire_aspect"));
+    public static final Attribute<Integer> STATIC_RESPIRATION = Mapper.registerAttribute("static_respiration", new StaticEnchantmentAttribute("daggerapi:static_respiration"));
+    public static final Attribute<Integer> STATIC_DEPTH_STRIDER = Mapper.registerAttribute("static_depth_strider", new StaticEnchantmentAttribute("daggerapi:static_depth_strider"));
+    public static final Attribute<Integer> STATIC_EFFICIENCY = Mapper.registerAttribute("static_efficiency", new StaticEnchantmentAttribute("daggerapi:static_efficiency"));
+    public static final Attribute<Integer> STATIC_LOOTING = Mapper.registerAttribute("static_looting", new StaticEnchantmentAttribute("daggerapi:static_looting"));
+    public static final Attribute<Integer> STATIC_AQUA_AFFINITY = Mapper.registerAttribute("static_aqua_affinity", new StaticEnchantmentAttribute("daggerapi:static_aqua_affinity"));
+    public static final Attribute<Integer> STATIC_FROST_WALKING = Mapper.registerAttribute("static_frost_walking", new StaticEnchantmentAttribute("daggerapi:static_frost_walking"));
+    public static final Attribute<Integer> STATIC_SOUL_SPEED= Mapper.registerAttribute("static_soul_speed", new StaticEnchantmentAttribute("daggerapi:static_soul_speed"));
 }
