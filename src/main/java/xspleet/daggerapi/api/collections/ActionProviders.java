@@ -281,6 +281,7 @@ public class ActionProviders
     }).addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()))
             .addRequiredData(DaggerKeys.DAMAGE_SOURCE)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
+            .addAssociatedTrigger(Triggers.BEFORE_DEATH)
             .modifier();
 
     public static final Provider<Action> GIVE_ITEM = Mapper.registerActionProvider("giveItem", (args) -> {
@@ -356,4 +357,13 @@ public class ActionProviders
     })
             .addArgument(DaggerKeys.Provider.ITEM, e -> new Identifier(e.getAsString()))
             .addArgument(DaggerKeys.Provider.COUNT, JsonElement::getAsInt);
+
+    public static final Provider<Action> FORBID_DEATH = Mapper.registerActionProvider("forbidDeath", (args) -> {
+                return data -> {
+                    data.addData(DaggerKeys.ALLOW_DEATH, false);
+                };
+            })
+            .addRequiredData(DaggerKeys.ALLOW_DEATH)
+            .addAssociatedTrigger(Triggers.BEFORE_DEATH)
+            .modifier();
 }

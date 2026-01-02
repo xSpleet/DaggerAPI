@@ -1,0 +1,14 @@
+{
+  "item.daggerapi.rarity.common": "COMMON",
+  "item.daggerapi.rarity.rare": "RARE",
+  "item.daggerapi.rarity.epic": "EPIC",
+  "item.daggerapi.rarity.legendary": "LEGENDARY",
+
+  "item.daggerapi.tooltip.shiftmoreinfo": "Press Shift for details",
+  "item.daggerapi.tooltip.active": "<AQUA>ACTIVE",
+  "item.daggerapi.tooltip.recharge": "Recharge time: %dseconds",
+
+  "trinkets.slot.artifacts.artifact": "Artifact",
+  "trinkets.slot.active_artifacts.active_artifact": "Active Artifact",
+  "daggerapi.itemgroup.artifacts": "Artifacts"
+}

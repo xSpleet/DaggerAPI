@@ -33,7 +33,32 @@ public class Triggers
             .addProvidedData(DaggerKeys.ITEM_STACK)
             .addProvidedData(DaggerKeys.ITEM);
 
-    public static final Trigger TICK = registerTrigger("tick")
+    public static final Trigger TICK = registerTrigger("onTick")
             .setHasTriggerSource()
             .setWorldful();
+
+    public static final Trigger BEFORE_DEATH = registerTrigger("beforeDeath")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.DAMAGE_AMOUNT)
+            .addProvidedData(DaggerKeys.DAMAGE_SOURCE)
+            .addProvidedData(DaggerKeys.ALLOW_DEATH);
+
+    public static final Trigger KILL = registerTrigger("onKill")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.DAMAGE_SOURCE)
+            .addProvidedData(DaggerKeys.VICTIM);
+
+    public static final Trigger DEATH = registerTrigger("onDeath")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.DAMAGE_SOURCE);
+
+    public static final Trigger ATTACK = registerTrigger("onAttack")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.DAMAGE_SOURCE)
+            .addProvidedData(DaggerKeys.DAMAGE_AMOUNT)
+            .addProvidedData(DaggerKeys.VICTIM);
 }

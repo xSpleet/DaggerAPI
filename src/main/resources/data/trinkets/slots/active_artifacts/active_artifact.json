@@ -1,4 +1,5 @@
 {
   "amount": 1,
+  "icon": "daggerapi:slots/active_artifact_icon",
   "tooltips_predicates": "trinkets:none"
 }

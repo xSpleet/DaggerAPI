@@ -33,7 +33,21 @@ public class LivingEntityTriggersRegistration implements Self<LivingEntity> {
 			return false; // Prevents damage if amount is zero or negative
 		}
 
-		return original.call(source, amount);
+		var result = original.call(source, amount);
+
+		if(result && source.getAttacker() != null)
+		{
+			var attackData = new TriggerData()
+					.addData(DaggerKeys.TRIGGER_SOURCE, source.getAttacker())
+					.addData(DaggerKeys.WORLD, source.getAttacker().getWorld())
+					.addData(DaggerKeys.DAMAGE_AMOUNT, (double)amount)
+					.addData(DaggerKeys.DAMAGE_SOURCE, source)
+					.addData(DaggerKeys.VICTIM, entity);
+
+			Triggers.ATTACK.trigger(attackData);
+		}
+
+		return result;
 	}
 
 

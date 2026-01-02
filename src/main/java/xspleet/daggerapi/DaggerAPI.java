@@ -8,11 +8,17 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.api.pack.ArtifactPackParser;
 import xspleet.daggerapi.api.logging.DaggerLogger;
@@ -45,6 +51,12 @@ public class DaggerAPI implements ModInitializer {
 	);
 
 	public static final boolean DEBUG_MODE = FabricLoader.getInstance().isDevelopmentEnvironment();
+
+	public static final RegistryKey<ItemGroup> ARTIFACT_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), new Identifier(DaggerAPI.MOD_ID, "item_group"));
+	public static final ItemGroup ARTIFACT_GROUP = FabricItemGroup.builder()
+			.icon(() -> new ItemStack(Items.NETHER_STAR))
+			.displayName(Text.translatable("daggerapi.itemgroup.artifacts"))
+			.build();
 
 	@Override
 	public void onInitialize() {

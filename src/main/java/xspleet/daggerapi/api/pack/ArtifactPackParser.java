@@ -1,6 +1,7 @@
 package xspleet.daggerapi.api.pack;
 
 import io.netty.handler.logging.LogLevel;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.loot.LootPool;
@@ -19,10 +20,7 @@ import xspleet.daggerapi.api.models.ItemModel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArtifactPackParser
 {
@@ -173,8 +171,17 @@ public class ArtifactPackParser
                 }
         );
 
-        TagFileCreator.createTags(itemsByActivation);
         //create new data pack with the tags active_artifacts and artifact
+        TagFileCreator.createTags(itemsByActivation);
+
+        // Register the group.
+        Registry.register(Registries.ITEM_GROUP, DaggerAPI.ARTIFACT_GROUP_KEY, DaggerAPI.ARTIFACT_GROUP);
+
+        // Register items to the custom item group.
+        ItemGroupEvents.modifyEntriesEvent(DaggerAPI.ARTIFACT_GROUP_KEY).register(itemGroup -> {
+            itemsByActivation.get(false).stream().sorted(Comparator.comparing(ArtifactItem::getArtifactRarity)).forEach((itemGroup::add));
+            itemsByActivation.get(true).stream().sorted(Comparator.comparing(ArtifactItem::getArtifactRarity)).forEach((itemGroup::add));
+        });
 
         DaggerLogger.info(LoggingContext.STARTUP, "Registered {} artifact items", itemsByActivation.get(true).size() + itemsByActivation.get(false).size());
         DaggerLogger.info(LoggingContext.STARTUP, "Registered {} loottables with artifact items.", loottablesToModify.size());

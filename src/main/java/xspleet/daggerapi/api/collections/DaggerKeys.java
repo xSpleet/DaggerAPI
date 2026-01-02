@@ -1,6 +1,7 @@
 package xspleet.daggerapi.api.collections;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -42,6 +43,9 @@ public class DaggerKeys
     public static final DaggerKey<DamageSource> DAMAGE_SOURCE = register("damage_source", DamageSource.class);
     public static final DaggerKey<Item> ITEM = register("item", Item.class);
     public static final DaggerKey<ItemStack> ITEM_STACK = register("item_stack", ItemStack.class);
+    public static final DaggerKey<Entity> KILLER = register("killer", Entity.class);
+    public static final DaggerKey<LivingEntity> VICTIM = register("victim", LivingEntity.class);
+    public static final DaggerKey<Boolean> ALLOW_DEATH = register("allow_death", Boolean.class);
 
     public static class Provider
     {

@@ -82,7 +82,17 @@ public class LivingEntityAttributeRegistration implements Self<LivingEntity>, Mi
     private void daggerAPI$init(EntityType<? extends LivingEntity> entityType, World world, CallbackInfo ci) {
         var container = new DaggerAttributeContainer.Builder()
                 .addAttribute(Attributes.JUMP_HEIGHT)
-                .addAttribute(Attributes.CAN_WALK_ON_WATER);
+                .addAttribute(Attributes.CAN_WALK_ON_WATER)
+                .addAttribute(Attributes.STATIC_AQUA_AFFINITY)
+                .addAttribute(Attributes.STATIC_EFFICIENCY)
+                .addAttribute(Attributes.STATIC_DEPTH_STRIDER)
+                .addAttribute(Attributes.STATIC_LOOTING)
+                .addAttribute(Attributes.STATIC_RESPIRATION)
+                .addAttribute(Attributes.STATIC_FIRE_ASPECT)
+                .addAttribute(Attributes.STATIC_SWIFT_SNEAK)
+                .addAttribute(Attributes.STATIC_KNOCKBACK)
+                .addAttribute(Attributes.VILLAGER_DISCOUNT)
+                .addAttribute(Attributes.EXTRA_JUMPS);
         daggerAPI$attributeContainer = container.build();
     }
 
