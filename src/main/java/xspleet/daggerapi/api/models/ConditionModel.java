@@ -9,7 +9,7 @@ public class ConditionModel extends JSONModel
 {
     private String condition;
     private Map<String, JsonElement> arguments = new HashMap<>();
-    private On on = On.SELF;
+    private OnModel on = OnModel.SELF;
 
     public String getCondition() {
         return condition;
@@ -19,7 +19,7 @@ public class ConditionModel extends JSONModel
         return arguments;
     }
 
-    public On getOn() {
+    public OnModel getOn() {
         return on;
     }
 

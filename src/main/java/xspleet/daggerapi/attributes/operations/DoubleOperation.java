@@ -6,7 +6,7 @@ public enum DoubleOperation implements AttributeOperation<Double>
 {
     ADD("addition", 0, (prev, prevGroup, value) -> prev + value),
     MULTIPLY_BASE("multiply_base", 30, (prev, prevGroup, value) -> prev + prevGroup * value),
-    MULTIPLY_TOTAL("multiply_total", 40, (prev, prevGroup, value) -> prev * value),;
+    MULTIPLY_TOTAL("multiply_total", 40, (prev, prevGroup, value) -> prev * (1 + value)),;
 
     private final String name;
     private final int precedence;

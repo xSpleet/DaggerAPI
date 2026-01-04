@@ -82,7 +82,7 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                if(conditionModel.getOn() != On.SELF && conditionModel.getOn() != On.WORLD)
+                if(conditionModel.getOn() != OnModel.SELF && conditionModel.getOn() != OnModel.WORLD)
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
                 try {
                     Condition conditionUnit = getCondition(conditionModel, availableData);
@@ -167,12 +167,12 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                if(conditionModel.getOn() == On.SELF)
+                if(conditionModel.getOn() == OnModel.SELF)
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on SELF is not supported for events. If on is missing, it defaults to SELF!");
-                if(!trigger.hasTriggerSource() && conditionModel.getOn() == On.SOURCE) {
+                if(!trigger.hasTriggerSource() && conditionModel.getOn() == OnModel.SOURCE) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on SOURCE but the trigger does not provide a trigger source");
                 }
-                if(!trigger.isWorldful() && conditionModel.getOn() == On.WORLD) {
+                if(!trigger.isWorldful() && conditionModel.getOn() == OnModel.WORLD) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
                 }
                 try {
@@ -190,18 +190,18 @@ public class ArtifactItemBuilder
                 var actionModel = actionsModels.get(j);
                 try {
                     var actionProvider = Mapper.getActionProvider(actionModel.getAction());
-                    if(actionProvider.isModifier() && actionModel.getOn() != On.SOURCE) {
+                    if(actionProvider.isModifier() && actionModel.getOn() != OnModel.SOURCE) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is a modifier but is not on SOURCE, which is not supported");
                     }
-                    if(actionModel.getOn() == On.SELF)
+                    if(actionModel.getOn() == OnModel.SELF)
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Action on SELF is not supported for events.");
                     if(!actionProvider.canBeOnTrigger(trigger)) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " cannot be used on trigger " + trigger.getName());
                     }
-                    if(!trigger.hasTriggerSource() && actionModel.getOn() == On.SOURCE) {
+                    if(!trigger.hasTriggerSource() && actionModel.getOn() == OnModel.SOURCE) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on SOURCE but the trigger does not provide a trigger source");
                     }
-                    if(!trigger.isWorldful() && actionModel.getOn() == On.WORLD) {
+                    if(!trigger.isWorldful() && actionModel.getOn() == OnModel.WORLD) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on WORLD but the trigger is not worldful");
                     }
                     var data = actionProvider.readArgs(actionModel.getArguments()).setOn(actionModel.getOn());
@@ -232,7 +232,7 @@ public class ArtifactItemBuilder
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_ARTIFACT
                                         .provide(new ProviderData()
-                                                .setOn(On.SOURCE)
+                                                .setOn(OnModel.SOURCE)
                                                 .addData(DaggerKeys.Provider.ARTIFACT, id)),
                                 "ifArtifact"
                         );
@@ -246,7 +246,7 @@ public class ArtifactItemBuilder
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_SUCCESSFUL
-                                        .provide(new ProviderData().setOn(On.SOURCE)),
+                                        .provide(new ProviderData().setOn(OnModel.SOURCE)),
                                 "isSuccessful"
                         );
                         DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on onActivate event, adding it automatically.", itemModel.getName());

@@ -1,9 +1,9 @@
 package xspleet.daggerapi.data.collection;
 
+import xspleet.daggerapi.api.models.OnModel;
 import xspleet.daggerapi.data.ComplexDataEntry;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.api.collections.DaggerKeys;
-import xspleet.daggerapi.api.models.On;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,17 +13,17 @@ import java.util.Set;
 public class ProviderData implements DaggerContext
 {
     private final Map<DaggerKey<?>, Object> arguments;
-    private On on = On.WORLD;
+    private OnModel on = OnModel.WORLD;
 
     public ProviderData() {
         this.arguments = new HashMap<>();
     }
 
-    public On getOn() {
+    public OnModel getOn() {
         return on;
     }
 
-    public ProviderData setOn(On on) {
+    public ProviderData setOn(OnModel on) {
         this.on = on;
         return this;
     }

@@ -13,8 +13,6 @@ public class DaggerResourcePackProvider implements ResourcePackProvider {
 
     public DaggerResourcePackProvider(ResourceType type) {
         this.packDir = FabricLoader.getInstance().getGameDir().resolve("daggerapi/packs");
-        if(!packDir.toFile().exists() || !packDir.toFile().isDirectory())
-            throw new IllegalArgumentException("Provided path is not a directory: " + packDir);
         this.type = type;
     }
 

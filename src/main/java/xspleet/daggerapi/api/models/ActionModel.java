@@ -9,7 +9,7 @@ public class ActionModel extends JSONModel
 {
     private String action;
     private Map<String, JsonElement> arguments = new HashMap<>();
-    private On on = On.TRIGGERED;
+    private OnModel on = OnModel.TRIGGERED;
 
     public String getAction() {
         return action;
@@ -19,7 +19,7 @@ public class ActionModel extends JSONModel
         return arguments;
     }
 
-    public On getOn() {
+    public OnModel getOn() {
         return on;
     }
 
