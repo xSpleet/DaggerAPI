@@ -61,4 +61,8 @@ public class Triggers
             .addProvidedData(DaggerKeys.DAMAGE_SOURCE)
             .addProvidedData(DaggerKeys.DAMAGE_AMOUNT)
             .addProvidedData(DaggerKeys.VICTIM);
+
+    public static final Trigger JUMP = registerTrigger("onJump")
+            .setHasTriggerSource()
+            .setWorldful();
 }

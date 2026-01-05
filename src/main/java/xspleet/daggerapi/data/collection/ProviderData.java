@@ -1,6 +1,5 @@
 package xspleet.daggerapi.data.collection;
 
-import xspleet.daggerapi.api.models.OnModel;
 import xspleet.daggerapi.data.ComplexDataEntry;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.api.collections.DaggerKeys;
@@ -13,17 +12,17 @@ import java.util.Set;
 public class ProviderData implements DaggerContext
 {
     private final Map<DaggerKey<?>, Object> arguments;
-    private OnModel on = OnModel.WORLD;
+    private DaggerKey<?> on;
 
     public ProviderData() {
         this.arguments = new HashMap<>();
     }
 
-    public OnModel getOn() {
+    public DaggerKey<?> getOn() {
         return on;
     }
 
-    public ProviderData setOn(OnModel on) {
+    public ProviderData setOn(DaggerKey<?> on) {
         this.on = on;
         return this;
     }
@@ -51,12 +50,8 @@ public class ProviderData implements DaggerContext
                 requiredData.addAll(complexDataEntry.getRequiredData());
             }
         }
-        switch(on) {
-            case SELF -> requiredData.add(DaggerKeys.PLAYER);
-            case SOURCE -> requiredData.add(DaggerKeys.TRIGGER_SOURCE);
-            case TRIGGERED -> requiredData.add(DaggerKeys.TRIGGERED);
-            case WORLD -> requiredData.add(DaggerKeys.WORLD);
-        }
+        if(on != null)
+            requiredData.add(on);
         return requiredData;
     }
 }

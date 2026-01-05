@@ -2,7 +2,6 @@ package xspleet.daggerapi.data.collection;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import xspleet.daggerapi.api.models.OnModel;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.api.collections.DaggerKeys;
 
@@ -15,17 +14,13 @@ public class ActionData implements DaggerContext
         this.data = data;
     }
 
-    public Entity getActEntity(OnModel on) {
-        return switch (on) {
-            case SOURCE -> getData(DaggerKeys.TRIGGER_SOURCE);
-            case TRIGGERED -> getData(DaggerKeys.TRIGGERED);
-            default -> null;
-        };
+    public Entity getActEntity(DaggerKey<?> on) {
+        return Entity.class.isAssignableFrom(on.type()) ? (Entity) data.getData(on) : null;
     }
 
-    public World getActWorld(OnModel on) {
-        return on == OnModel.WORLD
-                ? getData(DaggerKeys.WORLD)
+    public World getActWorld(DaggerKey<?> on) {
+        return World.class.isAssignableFrom(on.type())
+                ? (World) data.getData(on)
                 : getActEntity(on) != null
                     ? getActEntity(on).getWorld()
                     : null;

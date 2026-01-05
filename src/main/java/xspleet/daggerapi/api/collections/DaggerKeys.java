@@ -66,5 +66,15 @@ public class DaggerKeys
         public static final DaggerKey<Integer> LIGHT_LEVEL = new DaggerKey<>("light_level", Integer.class);
         public static final DaggerKey<Identifier> ITEM = new DaggerKey<>("item", Identifier.class);
         public static final DaggerKey<Integer> COUNT = new DaggerKey<>("count", Integer.class);
+        public static final DaggerKey<DoubleExpression> X = new DaggerKey<>("x", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> Y = new DaggerKey<>("x", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> Z = new DaggerKey<>("x", DoubleExpression.class);
+        public static final DaggerKey<Identifier> ENTITY = new DaggerKey<>("entity", Identifier.class);
+        public static final DaggerKey<DoubleExpression> STRENGTH = new DaggerKey<>("strength", DoubleExpression.class);
+        public static final DaggerKey<Boolean> BREAK_BLOCKS = new DaggerKey<>("break_blocks", Boolean.class);
+        public static final DaggerKey<Boolean> FIRE = new DaggerKey<>("fire", Boolean.class);
+        public static final DaggerKey<Identifier> SOUND = new DaggerKey<>("sound", Identifier.class);
+        public static final DaggerKey<DoubleExpression> PITCH = new DaggerKey<>("pitch", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> VOLUME = new DaggerKey<>("volume", DoubleExpression.class);
     }
 }

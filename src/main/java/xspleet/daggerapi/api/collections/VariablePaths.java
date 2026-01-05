@@ -72,7 +72,39 @@ public class VariablePaths
         return 0.0;
     }, Entity.class, Double.class);
 
+    public static VariablePath<Entity, Double> X = register("x", Entity::getX, Entity.class, Double.class);
     public static VariablePath<Entity, Double> Y = register("y", Entity::getY, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> Z = register("z", Entity::getZ, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> YAW = register("yaw", (e) -> (double) e.getYaw(), Entity.class, Double.class);
+    public static VariablePath<Entity, Double> PITCH = register("pitch", (e) -> (double) e.getPitch(), Entity.class, Double.class);
+    public static VariablePath<Entity, Double> HEAD_YAW = register("head_yaw", (e) -> (double) e.getHeadYaw(), Entity.class, Double.class);
+    public static VariablePath<Entity, Double> Y_VELOCITY = register("y_velocity", (e) -> e.getVelocity().y, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> X_VELOCITY = register("x_velocity", (e) -> e.getVelocity().x, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> Z_VELOCITY = register("z_velocity", (e) -> e.getVelocity().z, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> SPEED = register("speed", (e) -> e.getVelocity().length(), Entity.class, Double.class);
+    public static VariablePath<Entity, Double> DISTANCE_TO_GROUND = register("distance_to_ground", (e) -> {
+        double y = e.getY();
+        int blockY = (int) Math.floor(y) - 1;
+        World world = e.getWorld();
+        while (blockY >= 0) {
+            if (!world.isAir(e.getBlockPos().withY(blockY))) {
+                break;
+            }
+            blockY--;
+        }
+        return y - (blockY + 1);
+    }, Entity.class, Double.class);
+    public static VariablePath<Entity, Double> DISTANCE_TO_WORLD_SPAWN = register("distance_to_world_spawn", (e) -> {
+        double dx = e.getX() - e.getWorld().getSpawnPos().getX();
+        double dy = e.getY() - e.getWorld().getSpawnPos().getY();
+        double dz = e.getZ() - e.getWorld().getSpawnPos().getZ();
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }, Entity.class, Double.class);
+
+    public static VariablePath<Entity, Double> EXPERIENCE_LEVEL = register("experience_level", (e) -> e instanceof PlayerEntity playerEntity? playerEntity.experienceLevel * 1.0 : 0.0, Entity.class, Double.class);
+    public static VariablePath<World, Double> TIME_OF_DAY = register("time_of_day", (w) -> w.getTimeOfDay() * 1.0, World.class, Double.class);
+    public static VariablePath<World, Double> TIME = register("time", (w) -> w.getTime() * 1.0, World.class, Double.class);
+    public static VariablePath<World, Double> MOON_PHASE = register("moon_phase", (w) -> w.getMoonPhase() * 1.0, World.class, Double.class);
 
     public static <T, U> VariablePath<T, U> getPath(String path, Class<T> type, Class<U> returnType) throws NoSuchVariablePathException {
         VariablePath<?, ?> variablePath = paths.get(path);

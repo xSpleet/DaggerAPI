@@ -2,6 +2,7 @@ package xspleet.daggerapi.api.collections;
 
 import com.google.gson.JsonElement;
 import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -15,14 +16,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
+import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.artifact.ArtifactItem;
+import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.api.registration.Mapper;
@@ -30,6 +39,8 @@ import xspleet.daggerapi.api.registration.Provider;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
 import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.util.DamageTypeUtil;
+
+import java.util.Map;
 
 public class ActionProviders
 {
@@ -366,4 +377,138 @@ public class ActionProviders
             .addRequiredData(DaggerKeys.ALLOW_DEATH)
             .addAssociatedTrigger(Triggers.BEFORE_DEATH)
             .modifier();
+
+    public static final Provider<Action> SET_FIRE = Mapper.registerActionProvider("setFire", (args) -> {
+        int count = args.getData(DaggerKeys.Provider.COUNT);
+
+        return data -> {
+            data.getActEntity(args.getOn()).setOnFireFor(count / 20);
+        };
+    })
+            .addArgument(DaggerKeys.Provider.DURATION, JsonElement::getAsInt);
+
+    public static final Provider<Action> ADD_VELOCITY = Mapper.registerActionProvider("addVelocity", (args) -> {
+        var xExpression = args.getData(DaggerKeys.Provider.X);
+        var yExpression = args.getData(DaggerKeys.Provider.Y);
+        var zExpression = args.getData(DaggerKeys.Provider.Z);
+
+        return data -> {
+            var x = xExpression.evaluate(data);
+            var y = yExpression.evaluate(data);
+            var z = zExpression.evaluate(data);
+
+            data.getActEntity(args.getOn()).addVelocity(x, y, z);
+        };
+    })
+            .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Z, DoubleExpression::create);
+
+    public static final Provider<Action> SUMMON = Mapper.registerActionProvider("summon", (args) -> {
+                var xExpression = args.getData(DaggerKeys.Provider.X);
+                var yExpression = args.getData(DaggerKeys.Provider.Y);
+                var zExpression = args.getData(DaggerKeys.Provider.Z);
+                var entityId = args.getData(DaggerKeys.Provider.ENTITY);
+
+                return data -> {
+                    var x = xExpression.evaluate(data);
+                    var y = yExpression.evaluate(data);
+                    var z = zExpression.evaluate(data);
+
+                    var entity = Registries.ENTITY_TYPE.get(entityId);
+                    if (entity == EntityType.PIG && !entityId.equals(new Identifier("minecraft", "pig"))) {
+                        DaggerLogger.error(LoggingContext.GENERIC, "Entity type not found: " + entityId);
+                        return;
+                    }
+                    if (entity == EntityType.PLAYER) {
+                        DaggerLogger.error(LoggingContext.GENERIC, "Cannot summon player entity: " + entityId);
+                        return;
+                    }
+
+                    var world = data.getActWorld(args.getOn());
+                    var summonedEntity = entity.create(world);
+                    if (summonedEntity == null) {
+                        DaggerLogger.error(LoggingContext.GENERIC, "Failed to create entity: " + entityId);
+                        return;
+                    }
+                    summonedEntity.refreshPositionAndAngles(x, y, z, 0.0f, 0.0f);
+                    world.spawnEntity(summonedEntity);
+                };
+            })
+            .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Z, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.ENTITY, e -> new Identifier(e.getAsString()));
+
+    public static final Provider<Action> SUMMON_EXPLOSION = Mapper.registerActionProvider("summonExplosion", (args) -> {
+                var xExpression = args.getData(DaggerKeys.Provider.X);
+                var yExpression = args.getData(DaggerKeys.Provider.Y);
+                var zExpression = args.getData(DaggerKeys.Provider.Z);
+                var strengthExpression = args.getData(DaggerKeys.Provider.STRENGTH);
+                var breakBlocks = args.getData(DaggerKeys.Provider.BREAK_BLOCKS);
+                var fire = args.getData(DaggerKeys.Provider.FIRE);
+
+                return data -> {
+                    var x = xExpression.evaluate(data);
+                    var y = yExpression.evaluate(data);
+                    var z = zExpression.evaluate(data);
+
+                    var strength = strengthExpression.evaluate(data);
+                    var world = data.getActWorld(args.getOn());
+                    ExplosionBehavior explosionBehavior = new ExplosionBehavior() {
+                        @Override
+                        public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+                            return breakBlocks;
+                        }
+                    };
+                    world.createExplosion(null, null, explosionBehavior, x, y, z, strength.floatValue(), fire, World.ExplosionSourceType.NONE);
+                };
+            })
+            .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Z, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.STRENGTH, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.BREAK_BLOCKS, JsonElement::getAsBoolean)
+            .addArgument(DaggerKeys.Provider.FIRE, JsonElement::getAsBoolean);
+
+    public static final Provider<Action> PLAY_SOUND = Mapper.registerActionProvider("playSound", (args) -> {
+        var xExpression = args.getData(DaggerKeys.Provider.X);
+        var yExpression = args.getData(DaggerKeys.Provider.Y);
+        var zExpression = args.getData(DaggerKeys.Provider.Z);
+        Identifier soundId = args.getData(DaggerKeys.Provider.SOUND);
+        var volume = args.getData(DaggerKeys.Provider.VOLUME);
+        var pitch = args.getData(DaggerKeys.Provider.PITCH);
+
+        return data -> {
+            var x = xExpression.evaluate(data);
+            var y = yExpression.evaluate(data);
+            var z = zExpression.evaluate(data);
+            var volumeValue = volume.evaluate(data);
+            var pitchValue = pitch.evaluate(data);
+
+            var sound = Registries.SOUND_EVENT.get(soundId);
+            if (sound == null) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Sound event not found: " + soundId);
+                return;
+            }
+
+            data.getActWorld(args.getOn())
+                    .playSound(
+                            x,
+                            y,
+                            z,
+                            sound,
+                            net.minecraft.sound.SoundCategory.PLAYERS,
+                            volumeValue.floatValue(),
+                            pitchValue.floatValue(),
+                            false
+                    );
+        };
+    })
+            .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Z, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.SOUND, e -> new Identifier(e.getAsString()))
+            .addArgument(DaggerKeys.Provider.VOLUME, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.PITCH, DoubleExpression::create);
 }

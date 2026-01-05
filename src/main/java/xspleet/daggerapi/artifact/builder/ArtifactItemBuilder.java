@@ -4,7 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.artifact.ArtifactItem;
@@ -28,6 +30,7 @@ import xspleet.daggerapi.trigger.Trigger;
 import xspleet.daggerapi.trigger.actions.ConditionalAction;
 import xspleet.daggerapi.trigger.actions.WeightedConditionalAction;
 
+import java.util.List;
 import java.util.Set;
 
 public class ArtifactItemBuilder
@@ -82,10 +85,14 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                if(conditionModel.getOn() != OnModel.SELF && conditionModel.getOn() != OnModel.WORLD)
-                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), "Condition on " + conditionModel.getOn() + " is not supported for artifact modifiers");
+                DaggerKey<?> onKey = null;
                 try {
-                    Condition conditionUnit = getCondition(conditionModel, availableData);
+                    onKey = translateOn(conditionModel.getOn(), availableData);
+                } catch (DaggerAPIException e) {
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), e.getMessage());
+                }
+                try {
+                    Condition conditionUnit = getCondition(conditionModel, availableData, onKey);
                     artifactAttributeModifier.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
@@ -167,16 +174,14 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < conditionsModels.size() ; j++)
             {
                 var conditionModel = conditionsModels.get(j);
-                if(conditionModel.getOn() == OnModel.SELF)
-                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on SELF is not supported for events. If on is missing, it defaults to SELF!");
-                if(!trigger.hasTriggerSource() && conditionModel.getOn() == OnModel.SOURCE) {
-                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on SOURCE but the trigger does not provide a trigger source");
-                }
-                if(!trigger.isWorldful() && conditionModel.getOn() == OnModel.WORLD) {
-                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Condition on WORLD but the trigger is not worldful");
+                DaggerKey<?> onKey = null;
+                try {
+                    onKey = translateOn(conditionModel.getOn(), trigger.getProvidedData());
+                } catch (DaggerAPIException e) {
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
                 }
                 try {
-                    Condition conditionUnit = getCondition(conditionModel, trigger.getProvidedData());
+                    Condition conditionUnit = getCondition(conditionModel, trigger.getProvidedData(), onKey);
                     conditionalAction.addCondition(conditionUnit, conditionModel.getCondition());
                 }
                 catch (DaggerAPIException e) {
@@ -188,31 +193,25 @@ public class ArtifactItemBuilder
             for(int j = 0 ; j < actionsModels.size() ; j++)
             {
                 var actionModel = actionsModels.get(j);
+                DaggerKey<?> onKey = null;
+                try {
+                    onKey = translateOn(actionModel.getOn(), trigger.getProvidedData());
+                } catch (DaggerAPIException e) {
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());
+                }
                 try {
                     var actionProvider = Mapper.getActionProvider(actionModel.getAction());
-                    if(actionProvider.isModifier() && actionModel.getOn() != OnModel.SOURCE) {
-                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is a modifier but is not on SOURCE, which is not supported");
-                    }
-                    if(actionModel.getOn() == OnModel.SELF)
-                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), "Action on SELF is not supported for events.");
                     if(!actionProvider.canBeOnTrigger(trigger)) {
                         DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " cannot be used on trigger " + trigger.getName());
                     }
-                    if(!trigger.hasTriggerSource() && actionModel.getOn() == OnModel.SOURCE) {
-                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on SOURCE but the trigger does not provide a trigger source");
-                    }
-                    if(!trigger.isWorldful() && actionModel.getOn() == OnModel.WORLD) {
-                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "Action " + actionModel.getAction() + " is on WORLD but the trigger is not worldful");
-                    }
-                    var data = actionProvider.readArgs(actionModel.getArguments()).setOn(actionModel.getOn());
+                    var data = actionProvider.readArgs(actionModel.getArguments()).setOn(onKey);
 
                     var requiredData = actionProvider.getRequiredData();
                     requiredData.addAll(data.getRequiredKeys());
                     if(!trigger.getProvidedData().containsAll(requiredData)) {
-                        Trigger finalTrigger = trigger;
                         throw new MissingRequiredDataException(
                                 requiredData.stream()
-                                        .filter(k -> !finalTrigger.getProvidedData().contains(k))
+                                        .filter(k -> !trigger.getProvidedData().contains(k))
                                         .map(DaggerKey::key)
                                         .toList()
                         );
@@ -232,7 +231,7 @@ public class ArtifactItemBuilder
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_ARTIFACT
                                         .provide(new ProviderData()
-                                                .setOn(OnModel.SOURCE)
+                                                .setOn(DaggerKeys.TRIGGER_SOURCE)
                                                 .addData(DaggerKeys.Provider.ARTIFACT, id)),
                                 "ifArtifact"
                         );
@@ -246,7 +245,7 @@ public class ArtifactItemBuilder
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_SUCCESSFUL
-                                        .provide(new ProviderData().setOn(OnModel.SOURCE)),
+                                        .provide(new ProviderData().setOn(DaggerKeys.TRIGGER_SOURCE)),
                                 "isSuccessful"
                         );
                         DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on onActivate event, adding it automatically.", itemModel.getName());
@@ -276,7 +275,7 @@ public class ArtifactItemBuilder
         );
     }
 
-    private static Condition getCondition(ConditionModel conditionModel, Set<DaggerKey<?>> availableData) throws NoSuchConditionException, BadArgumentsException, MissingRequiredDataException {
+    private static Condition getCondition(ConditionModel conditionModel, Set<DaggerKey<?>> availableData, DaggerKey<?> onKey) throws NoSuchConditionException, BadArgumentsException, MissingRequiredDataException {
         String condition = conditionModel.getCondition();
         var splitCondition = condition.split(" ");
         boolean negate = false;
@@ -295,7 +294,7 @@ public class ArtifactItemBuilder
         }
 
         var conditionProvider = Mapper.getConditionProvider(conditionName);
-        var data = conditionProvider.readArgs(conditionModel.getArguments()).setOn(conditionModel.getOn());
+        var data = conditionProvider.readArgs(conditionModel.getArguments()).setOn(onKey);
         var requiredData = conditionProvider.getRequiredData();
         requiredData.addAll(data.getRequiredKeys());
         if(!availableData.containsAll(requiredData))
@@ -352,5 +351,16 @@ public class ArtifactItemBuilder
                 castOperation,
                 artifactName
         );
+    }
+
+    private static DaggerKey<?> translateOn(String on, Set<DaggerKey<?>> availableKeys) throws MissingRequiredDataException, BadArgumentException {
+        var optionalKey = availableKeys.stream().filter((key) -> key.key().equals(on)).findFirst();
+        var candidateKey = optionalKey.orElseThrow(() -> new MissingRequiredDataException(List.of(on)));
+        if(Entity.class.isAssignableFrom(candidateKey.type()) || World.class.isAssignableFrom(candidateKey.type())) {
+            return candidateKey;
+        }
+        else {
+            throw new BadArgumentException("The 'on' argument should be either a world or an entity, but was: " + candidateKey.type().getSimpleName());
+        }
     }
 }
