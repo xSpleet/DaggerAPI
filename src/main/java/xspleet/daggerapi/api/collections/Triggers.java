@@ -71,4 +71,17 @@ public class Triggers
             .setWorldful()
             .addProvidedData(DaggerKeys.ORIGIN)
             .addProvidedData(DaggerKeys.DESTINATION);
+
+    public static final Trigger BEFORE_ENDER_PEARL_TELEPORT = registerTrigger("beforeEnderPearlTeleport")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.X)
+            .addProvidedData(DaggerKeys.Y)
+            .addProvidedData(DaggerKeys.Z)
+            .addProvidedData(DaggerKeys.ALLOW_TELEPORT)
+            .addProvidedData(DaggerKeys.ALLOW_FALL_DAMAGE);
+
+    public static final Trigger ENDER_PEARL_TELEPORT = registerTrigger("onEnderPearlTeleport")
+            .setHasTriggerSource()
+            .setWorldful();
 }

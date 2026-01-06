@@ -47,6 +47,11 @@ public class DaggerKeys
     public static final DaggerKey<Boolean> ALLOW_DEATH = register("allow_death", Boolean.class);
     public static final DaggerKey<World> ORIGIN = register("origin", World.class);
     public static final DaggerKey<World> DESTINATION = register("destination", World.class);
+    public static final DaggerKey<Double> X = register("x", Double.class);
+    public static final DaggerKey<Double> Y = register("y", Double.class);
+    public static final DaggerKey<Double> Z = register("z", Double.class);
+    public static final DaggerKey<Boolean> ALLOW_TELEPORT = register("allow_teleport", Boolean.class);
+    public static final DaggerKey<Boolean> ALLOW_FALL_DAMAGE = register("allow_fall_damage", Boolean.class);
 
     public static class Provider
     {

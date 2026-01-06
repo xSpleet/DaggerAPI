@@ -15,6 +15,7 @@
     "attribute.registration.EnchantmentHelperStaticEnchantmentAttributesRegistration",
     "attribute.registration.LivingEntityAttributeRegistration",
     "attribute.registration.VillagerDiscountRegistrationMixin",
+    "trigger.registration.EnderPearlEntityTeleportTriggerRegistration",
     "trigger.registration.EntityTriggerRegistration",
     "trigger.registration.HungerManagerTriggerRegistration",
     "trigger.registration.LivingEntityTriggersRegistration"
