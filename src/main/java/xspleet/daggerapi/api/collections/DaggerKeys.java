@@ -43,9 +43,10 @@ public class DaggerKeys
     public static final DaggerKey<DamageSource> DAMAGE_SOURCE = register("damage_source", DamageSource.class);
     public static final DaggerKey<Item> ITEM = register("item", Item.class);
     public static final DaggerKey<ItemStack> ITEM_STACK = register("item_stack", ItemStack.class);
-    public static final DaggerKey<Entity> KILLER = register("killer", Entity.class);
     public static final DaggerKey<LivingEntity> VICTIM = register("victim", LivingEntity.class);
     public static final DaggerKey<Boolean> ALLOW_DEATH = register("allow_death", Boolean.class);
+    public static final DaggerKey<World> ORIGIN = register("origin", World.class);
+    public static final DaggerKey<World> DESTINATION = register("destination", World.class);
 
     public static class Provider
     {
@@ -76,5 +77,7 @@ public class DaggerKeys
         public static final DaggerKey<Identifier> SOUND = new DaggerKey<>("sound", Identifier.class);
         public static final DaggerKey<DoubleExpression> PITCH = new DaggerKey<>("pitch", DoubleExpression.class);
         public static final DaggerKey<DoubleExpression> VOLUME = new DaggerKey<>("volume", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> FIRE_DURATION = new DaggerKey<>("fire_duration", DoubleExpression.class);
+        public static final DaggerKey<Identifier> BIOME = new DaggerKey<>("biome", Identifier.class);
     }
 }

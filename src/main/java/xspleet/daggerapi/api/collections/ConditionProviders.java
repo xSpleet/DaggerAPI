@@ -13,6 +13,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
@@ -260,4 +261,23 @@ public class ConditionProviders
             })
             .addArgument(DaggerKeys.Provider.ITEM, e -> new Identifier(e.getAsString()))
             .addArgument(DaggerKeys.Provider.COUNT, JsonElement::getAsInt);
+
+    public static final Provider<Condition> IF_BIOME = Mapper.registerConditionProvider("ifBiome", args -> {
+                var biomeId = args.getData(DaggerKeys.Provider.BIOME);
+
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+                    var world = data.getTestWorld(args.getOn());
+
+                    var key = world.getBiome(BlockPos.ofFloored(entity.getPos())).getKey().orElse(null);
+
+                    if(key == null) {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Biome key not found for ifBiome condition at position: " + entity.getBlockPos());
+                        return false;
+                    }
+
+                    return Objects.equals(key.getValue(), biomeId);
+                };
+            })
+            .addArgument(DaggerKeys.Provider.BIOME, e -> new Identifier(e.getAsString()));
 }

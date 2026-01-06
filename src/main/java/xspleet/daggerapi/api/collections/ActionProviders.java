@@ -379,13 +379,14 @@ public class ActionProviders
             .modifier();
 
     public static final Provider<Action> SET_FIRE = Mapper.registerActionProvider("setFire", (args) -> {
-        int count = args.getData(DaggerKeys.Provider.COUNT);
+        var durationExpression = args.getData(DaggerKeys.Provider.FIRE_DURATION);
 
         return data -> {
+            var count = durationExpression.evaluate(data).intValue();
             data.getActEntity(args.getOn()).setOnFireFor(count / 20);
         };
     })
-            .addArgument(DaggerKeys.Provider.DURATION, JsonElement::getAsInt);
+            .addArgument(DaggerKeys.Provider.FIRE_DURATION, DoubleExpression::create);
 
     public static final Provider<Action> ADD_VELOCITY = Mapper.registerActionProvider("addVelocity", (args) -> {
         var xExpression = args.getData(DaggerKeys.Provider.X);

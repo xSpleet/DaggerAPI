@@ -65,4 +65,10 @@ public class Triggers
     public static final Trigger JUMP = registerTrigger("onJump")
             .setHasTriggerSource()
             .setWorldful();
+
+    public static final Trigger ON_CHANGE_DIMENSION = registerTrigger("onChangeDimension")
+            .setHasTriggerSource()
+            .setWorldful()
+            .addProvidedData(DaggerKeys.ORIGIN)
+            .addProvidedData(DaggerKeys.DESTINATION);
 }
