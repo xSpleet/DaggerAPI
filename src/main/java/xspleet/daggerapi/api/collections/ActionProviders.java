@@ -13,6 +13,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -41,6 +42,7 @@ import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.util.DamageTypeUtil;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class ActionProviders
 {
@@ -456,13 +458,22 @@ public class ActionProviders
 
                     var strength = strengthExpression.evaluate(data);
                     var world = data.getActWorld(args.getOn());
-                    ExplosionBehavior explosionBehavior = new ExplosionBehavior() {
-                        @Override
-                        public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-                            return breakBlocks;
-                        }
-                    };
-                    world.createExplosion(null, null, explosionBehavior, x, y, z, strength.floatValue(), fire, World.ExplosionSourceType.NONE);
+                    Explosion.DestructionType destructionType =
+                            breakBlocks
+                                    ? Explosion.DestructionType.DESTROY
+                                    : Explosion.DestructionType.KEEP;
+
+                    Explosion explosion = new Explosion(
+                            world,
+                            null,
+                            x, y, z,
+                            strength.floatValue(),
+                            fire,
+                            destructionType
+                    );
+
+                    explosion.collectBlocksAndDamageEntities();
+                    explosion.affectWorld(true);
                 };
             })
             .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
@@ -512,4 +523,22 @@ public class ActionProviders
             .addArgument(DaggerKeys.Provider.SOUND, e -> new Identifier(e.getAsString()))
             .addArgument(DaggerKeys.Provider.VOLUME, DoubleExpression::create)
             .addArgument(DaggerKeys.Provider.PITCH, DoubleExpression::create);
+
+    public static final Provider<Action> FORBID_TELEPORT = Mapper.registerActionProvider("forbidTeleport", (args) -> {
+                return data -> {
+                    data.addData(DaggerKeys.ALLOW_TELEPORT, false);
+                };
+            })
+            .addRequiredData(DaggerKeys.ALLOW_TELEPORT)
+            .addAssociatedTrigger(Triggers.BEFORE_ENDER_PEARL_TELEPORT)
+            .modifier();
+
+    public static final Provider<Action> FORBID_FALL_DAMAGE = Mapper.registerActionProvider("forbidFallDamage", (args) -> {
+                return data -> {
+                    data.addData(DaggerKeys.ALLOW_FALL_DAMAGE, false);
+                };
+            })
+            .addRequiredData(DaggerKeys.ALLOW_FALL_DAMAGE)
+            .addAssociatedTrigger(Triggers.BEFORE_ENDER_PEARL_TELEPORT)
+            .modifier();
 }
