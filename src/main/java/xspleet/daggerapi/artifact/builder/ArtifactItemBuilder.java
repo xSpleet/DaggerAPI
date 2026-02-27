@@ -226,7 +226,7 @@ public class ArtifactItemBuilder
 
             if(trigger == Triggers.ACTIVATE)
             {
-                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("isArtifact") || n.equalsIgnoreCase("not isArtifact"))) {
+                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("ifArtifact") || n.equalsIgnoreCase("not ifArtifact"))) {
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_ARTIFACT
@@ -241,7 +241,7 @@ public class ArtifactItemBuilder
                     }
                 }
 
-                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("isSuccessful") || n.equalsIgnoreCase("not isSuccessful"))) {
+                if(conditionsModels.stream().map(ConditionModel::getCondition).noneMatch(n -> n.equalsIgnoreCase("ifSuccessful") || n.equalsIgnoreCase("not ifSuccessful"))) {
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_SUCCESSFUL
