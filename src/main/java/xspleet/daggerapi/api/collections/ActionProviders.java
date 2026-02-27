@@ -22,6 +22,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -506,14 +507,12 @@ public class ActionProviders
 
             data.getActWorld(args.getOn())
                     .playSound(
-                            x,
-                            y,
-                            z,
+                            null,
+                            x, y, z,
                             sound,
-                            net.minecraft.sound.SoundCategory.PLAYERS,
+                            SoundCategory.MASTER,
                             volumeValue.floatValue(),
-                            pitchValue.floatValue(),
-                            false
+                            pitchValue.floatValue()
                     );
         };
     })
