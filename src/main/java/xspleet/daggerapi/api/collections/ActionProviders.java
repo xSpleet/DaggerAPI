@@ -3,10 +3,7 @@ package xspleet.daggerapi.api.collections;
 import com.google.gson.JsonElement;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.DamageUtil;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.damage.DamageType;
@@ -401,7 +398,9 @@ public class ActionProviders
             var y = yExpression.evaluate(data);
             var z = zExpression.evaluate(data);
 
-            data.getActEntity(args.getOn()).addVelocity(x, y, z);
+            Entity entity = data.getActEntity(args.getOn());
+            entity.addVelocity(x, y, z);
+            entity.velocityModified = true;
         };
     })
             .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
