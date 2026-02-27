@@ -164,7 +164,7 @@ public class ActionProviders
                 return;
             }
             var result = amountExpression.evaluate(data);
-            data.addData(DaggerKeys.FOOD_AMOUNT, result.intValue());
+            data.addData(DaggerKeys.FOOD_AMOUNT, result);
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
             .addRequiredData(DaggerKeys.FOOD_AMOUNT)
@@ -180,7 +180,7 @@ public class ActionProviders
                 return;
             }
             var result = amountExpression.evaluate(data);
-            data.addData(DaggerKeys.SATURATION_AMOUNT, result.floatValue());
+            data.addData(DaggerKeys.SATURATION_AMOUNT, result);
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
             .addRequiredData(DaggerKeys.SATURATION_AMOUNT)

@@ -31,8 +31,8 @@ public class DaggerKeys
     }
 
     public static final DaggerKey<Double> DAMAGE_AMOUNT = register("damage_amount", Double.class);
-    public static final DaggerKey<Integer> FOOD_AMOUNT = register("food_amount", Integer.class);
-    public static final DaggerKey<Float> SATURATION_AMOUNT = register("saturation_amount", Float.class);
+    public static final DaggerKey<Double> FOOD_AMOUNT = register("food_amount", Double.class);
+    public static final DaggerKey<Double> SATURATION_AMOUNT = register("saturation_amount", Double.class);
     public static final DaggerKey<Trigger> TRIGGER = register("trigger", Trigger.class);
     public static final DaggerKey<World> WORLD = register("world", World.class);
     public static final DaggerKey<PlayerEntity> TRIGGERED = register("triggered", PlayerEntity.class);

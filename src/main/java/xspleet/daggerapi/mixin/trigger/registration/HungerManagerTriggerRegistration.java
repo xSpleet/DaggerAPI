@@ -40,13 +40,13 @@ public class HungerManagerTriggerRegistration implements Self<HungerManager>
         var data = new TriggerData()
                 .addData(DaggerKeys.TRIGGER_SOURCE, playerOwned.daggerapi$getOwner())
                 .addData(DaggerKeys.WORLD, playerOwned.daggerapi$getOwner().getWorld())
-                .addData(DaggerKeys.FOOD_AMOUNT, food)
-                .addData(DaggerKeys.SATURATION_AMOUNT, saturationModifier)
+                .addData(DaggerKeys.FOOD_AMOUNT, (double) food)
+                .addData(DaggerKeys.SATURATION_AMOUNT, (double) saturationModifier)
                 .addData(DaggerKeys.ITEM_STACK, stack)
                 .addData(DaggerKeys.ITEM, item);
 
         Triggers.EAT.trigger(data);
 
-        self().add(data.getData(DaggerKeys.FOOD_AMOUNT), data.getData(DaggerKeys.SATURATION_AMOUNT));
+        self().add(data.getData(DaggerKeys.FOOD_AMOUNT).intValue(), data.getData(DaggerKeys.SATURATION_AMOUNT).floatValue());
     }
 }
