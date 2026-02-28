@@ -84,4 +84,8 @@ public class Triggers
     public static final Trigger ENDER_PEARL_TELEPORT = registerTrigger("onEnderPearlTeleport")
             .setHasTriggerSource()
             .setWorldful();
+
+    public static final Trigger ON_WAKE_UP = registerTrigger("onWakeUp")
+            .setHasTriggerSource()
+            .setWorldful();
 }

@@ -30,6 +30,7 @@ import xspleet.daggerapi.commands.ServerCommands;
 import xspleet.daggerapi.api.collections.VariablePaths;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.config.ServerDevModeConfig;
+import xspleet.daggerapi.events.WakeUpEventTriggerRegistration;
 import xspleet.daggerapi.networking.ServerNetworking;
 import xspleet.daggerapi.trigger.PlayerEntityAllowSleepingHandler;
 
@@ -77,6 +78,7 @@ public class DaggerAPI implements ModInitializer {
 		);
 
 		EntitySleepEvents.ALLOW_NEARBY_MONSTERS.register(new PlayerEntityAllowSleepingHandler());
+		EntitySleepEvents.STOP_SLEEPING.register(new WakeUpEventTriggerRegistration());
 		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> true);
 	}
 }
