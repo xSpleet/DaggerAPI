@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -36,6 +37,7 @@ import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.api.registration.Provider;
 import xspleet.daggerapi.exceptions.WrongArgumentException;
+import xspleet.daggerapi.networking.ServerNetworking;
 import xspleet.daggerapi.trigger.actions.Action;
 import xspleet.daggerapi.util.DamageTypeUtil;
 
@@ -539,4 +541,38 @@ public class ActionProviders
             .addRequiredData(DaggerKeys.ALLOW_FALL_DAMAGE)
             .addAssociatedTrigger(Triggers.BEFORE_ENDER_PEARL_TELEPORT)
             .modifier();
+
+    public static final Provider<Action> SPAWN_PARTICLES = Mapper.registerActionProvider("spawnParticles", (args) -> {
+        var xExpression = args.getData(DaggerKeys.Provider.X);
+        var yExpression = args.getData(DaggerKeys.Provider.Y);
+        var zExpression = args.getData(DaggerKeys.Provider.Z);
+        var xVelocityExpression = args.getData(DaggerKeys.Provider.VELOCITY_X);
+        var yVelocityExpression = args.getData(DaggerKeys.Provider.VELOCITY_Y);
+        var zVelocityExpression = args.getData(DaggerKeys.Provider.VELOCITY_Z);
+        Identifier particleId = args.getData(DaggerKeys.Provider.PARTICLE);
+
+        return data -> {
+            var x = xExpression.evaluate(data);
+            var y = yExpression.evaluate(data);
+            var z = zExpression.evaluate(data);
+            var xVelocity = xVelocityExpression.evaluate(data);
+            var yVelocity = yVelocityExpression.evaluate(data);
+            var zVelocity = zVelocityExpression.evaluate(data);
+
+            var particleType = Registries.PARTICLE_TYPE.get(particleId);
+            if (particleType == null) {
+                DaggerLogger.error(LoggingContext.GENERIC, "Particle type not found: " + particleId);
+                return;
+            }
+
+            ServerNetworking.sendParticlePacket(data.getActWorld(args.getOn()), particleId, x, y, z, xVelocity, yVelocity, zVelocity);
+        };
+    })
+            .addArgument(DaggerKeys.Provider.X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.Z, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.VELOCITY_X, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.VELOCITY_Y, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.VELOCITY_Z, DoubleExpression::create)
+            .addArgument(DaggerKeys.Provider.PARTICLE, e -> new Identifier(e.getAsString()));
 }

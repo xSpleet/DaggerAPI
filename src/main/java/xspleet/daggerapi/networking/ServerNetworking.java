@@ -2,15 +2,20 @@ package xspleet.daggerapi.networking;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.api.pack.Tags;
 import xspleet.daggerapi.config.ServerDevModeConfig;
+import xspleet.daggerapi.util.PlayerOwned;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -100,5 +105,21 @@ public class ServerNetworking
                     }
                 })
         );
+    }
+
+    public static void sendParticlePacket(World world, Identifier particleTypeId, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        PacketByteBuf buf = PacketByteBufs.create();
+
+        buf.writeIdentifier(particleTypeId);
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
+        buf.writeDouble(velocityX);
+        buf.writeDouble(velocityY);
+        buf.writeDouble(velocityZ);
+
+        for(var player : PlayerLookup.tracking((ServerWorld) world, new BlockPos((int) x, (int) y, (int) z))) {
+            ServerPlayNetworking.send(player, NetworkingConstants.SEND_PARTICLE_PACKET_ID, buf);
+        }
     }
 }

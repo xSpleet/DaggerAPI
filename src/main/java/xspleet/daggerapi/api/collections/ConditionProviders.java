@@ -280,4 +280,11 @@ public class ConditionProviders
                 };
             })
             .addArgument(DaggerKeys.Provider.BIOME, e -> new Identifier(e.getAsString()));
+
+    public static final Provider<Condition> IF_SNEAKING = Mapper.registerConditionProvider("ifSneaking", args -> {
+                return data -> {
+                    var entity = data.getTestEntity(args.getOn());
+                    return entity.isSneaking();
+                };
+            });
 }

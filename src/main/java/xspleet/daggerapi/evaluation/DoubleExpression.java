@@ -2,7 +2,7 @@ package xspleet.daggerapi.evaluation;
 
 import com.fathzer.soft.javaluator.*;
 import com.google.gson.JsonElement;
-import xspleet.daggerapi.api.collections.VariablePaths;
+import xspleet.daggerapi.api.collections.VariablePathTemplates;
 import xspleet.daggerapi.api.logging.DaggerLogger;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.data.ComplexDataEntry;
@@ -53,7 +53,7 @@ public class DoubleExpression implements ComplexDataEntry
             throw new ParseException("Key '" + key + "' does not exist");
         }
         try {
-            variablePath = (VariablePath<Object, Double>) VariablePaths.getPath(path, daggerKey.type(), Double.class);
+            variablePath = (VariablePath<Object, Double>) VariablePathTemplates.getPathTemplate(path, daggerKey.type(), Double.class).getPath();
         }
         catch (NoSuchVariablePathException e) {
             throw new ParseException("Variable path '" + path + "' of type double does not exist");

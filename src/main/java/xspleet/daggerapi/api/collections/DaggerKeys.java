@@ -75,6 +75,9 @@ public class DaggerKeys
         public static final DaggerKey<DoubleExpression> X = new DaggerKey<>("x", DoubleExpression.class);
         public static final DaggerKey<DoubleExpression> Y = new DaggerKey<>("y", DoubleExpression.class);
         public static final DaggerKey<DoubleExpression> Z = new DaggerKey<>("z", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> VELOCITY_X = new DaggerKey<>("velocity_x", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> VELOCITY_Y = new DaggerKey<>("velocity_y", DoubleExpression.class);
+        public static final DaggerKey<DoubleExpression> VELOCITY_Z = new DaggerKey<>("velocity_z", DoubleExpression.class);
         public static final DaggerKey<Identifier> ENTITY = new DaggerKey<>("entity", Identifier.class);
         public static final DaggerKey<DoubleExpression> STRENGTH = new DaggerKey<>("strength", DoubleExpression.class);
         public static final DaggerKey<Boolean> BREAK_BLOCKS = new DaggerKey<>("break_blocks", Boolean.class);
@@ -84,5 +87,6 @@ public class DaggerKeys
         public static final DaggerKey<DoubleExpression> VOLUME = new DaggerKey<>("volume", DoubleExpression.class);
         public static final DaggerKey<DoubleExpression> FIRE_DURATION = new DaggerKey<>("fire_duration", DoubleExpression.class);
         public static final DaggerKey<Identifier> BIOME = new DaggerKey<>("biome", Identifier.class);
+        public static final DaggerKey<Identifier> PARTICLE = new DaggerKey<>("particle", Identifier.class);
     }
 }

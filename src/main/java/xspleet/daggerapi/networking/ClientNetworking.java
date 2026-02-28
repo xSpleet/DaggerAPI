@@ -3,6 +3,10 @@ package xspleet.daggerapi.networking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.artifact.ArtifactItem;
@@ -105,6 +109,32 @@ public class ClientNetworking
                                 NetworkingConstants.JOIN_CHECK_ARTIFACTS_PACKET_ID,
                                 buf
                         );
+                    });
+                }
+        );
+
+        ClientPlayNetworking.registerGlobalReceiver(NetworkingConstants.SEND_PARTICLE_PACKET_ID,
+                (client, handler, packet, sender) -> {
+                    client.execute(() -> {
+                        assert client.player != null;
+
+                        var particleTypeId = packet.readIdentifier();
+                        var particleEffect = Registries.PARTICLE_TYPE.get(particleTypeId);
+
+                        if(particleEffect == null) {
+                            return;
+                        }
+
+                        client.player.getWorld()
+                                .addParticle(
+                                        (ParticleEffect) particleEffect,
+                                        packet.readDouble(),
+                                        packet.readDouble(),
+                                        packet.readDouble(),
+                                        packet.readDouble(),
+                                        packet.readDouble(),
+                                        packet.readDouble()
+                                );
                     });
                 }
         );

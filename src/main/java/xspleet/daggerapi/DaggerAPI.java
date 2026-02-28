@@ -7,6 +7,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.loader.api.FabricLoader;
@@ -27,9 +28,12 @@ import xspleet.daggerapi.artifact.generation.ArtifactPoolEntrySerializer;
 import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.commands.AttributeArgumentType;
 import xspleet.daggerapi.commands.ServerCommands;
-import xspleet.daggerapi.api.collections.VariablePaths;
+import xspleet.daggerapi.api.collections.VariablePathTemplates;
 import xspleet.daggerapi.events.ActiveArtifactActivation;
 import xspleet.daggerapi.config.ServerDevModeConfig;
+import xspleet.daggerapi.events.AfterDeathEventTriggerRegistration;
+import xspleet.daggerapi.events.AllowDeathEventTriggerRegistration;
+import xspleet.daggerapi.events.ChangeWorldTriggerRegistration;
 import xspleet.daggerapi.events.WakeUpEventTriggerRegistration;
 import xspleet.daggerapi.networking.ServerNetworking;
 import xspleet.daggerapi.trigger.PlayerEntityAllowSleepingHandler;
@@ -63,7 +67,7 @@ public class DaggerAPI implements ModInitializer {
 	public void onInitialize() {
 		DaggerLogger.debug(LoggingContext.STARTUP, "Started DaggerAPI in debug mode");
 		Mapper.registerMapper();
-		VariablePaths.registerVariablePaths();
+		VariablePathTemplates.registerVariablePaths();
 		ArtifactPackParser.readPacks();
 
 		ActiveArtifactActivation.registerActivation();
@@ -79,6 +83,8 @@ public class DaggerAPI implements ModInitializer {
 
 		EntitySleepEvents.ALLOW_NEARBY_MONSTERS.register(new PlayerEntityAllowSleepingHandler());
 		EntitySleepEvents.STOP_SLEEPING.register(new WakeUpEventTriggerRegistration());
-		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, damageSource, damageAmount) -> true);
+		ServerLivingEntityEvents.ALLOW_DEATH.register(new AllowDeathEventTriggerRegistration());
+		ServerLivingEntityEvents.AFTER_DEATH.register(new AfterDeathEventTriggerRegistration());
+		ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(new ChangeWorldTriggerRegistration());
 	}
 }
