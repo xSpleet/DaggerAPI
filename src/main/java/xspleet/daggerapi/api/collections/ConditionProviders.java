@@ -98,7 +98,6 @@ public class ConditionProviders
 
                 return data -> {
                     var source = data.getData(DaggerKeys.DAMAGE_SOURCE);
-                    var world = data.getTestWorld(args.getOn());
 
                     var key = source.getTypeRegistryEntry().getKey().orElseThrow().getValue();
                     return key.equals(damageType);
@@ -110,8 +109,10 @@ public class ConditionProviders
 
     public static final Provider<Condition> HAS_STATUS_EFFECT = Mapper.registerConditionProvider("hasStatusEffect", args -> {
                 Identifier statusEffect = args.getData(DaggerKeys.Provider.STATUS_EFFECT);
-                var effect = Registries.STATUS_EFFECT.get(statusEffect);
+
                 return data -> {
+                    var effect = Registries.STATUS_EFFECT.get(statusEffect);
+
                     if (effect == null) {
                         DaggerLogger.error(LoggingContext.GENERIC, "Status effect not found: " + statusEffect);
                         return false;
@@ -175,13 +176,16 @@ public class ConditionProviders
 
     public static final Provider<Condition> IF_HAS_ARTIFACT = Mapper.registerConditionProvider("ifHasArtifact", args -> {
                 Identifier artifactId = args.getData(DaggerKeys.Provider.ARTIFACT);
-                Item item = Registries.ITEM.get(artifactId);
-                if(!(item instanceof ArtifactItem artifactItem)) {
-                    throw new WrongArgumentException(DaggerKeys.Provider.ARTIFACT.key(), artifactId.toString());
-                }
 
                 return data -> {
                     var entity = data.getTestEntity(args.getOn());
+
+                    Item item = Registries.ITEM.get(artifactId);
+                    if(item == Items.AIR || !(item instanceof ArtifactItem artifactItem)) {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Artifact not found for ifHasArtifact condition: " + artifactId);
+                        return false;
+                    }
+
                     if (!(entity instanceof PlayerEntity player))
                     {
                         DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Entity is not a Player for ifHasArtifact condition: " + entity.getEntityName());
@@ -198,14 +202,16 @@ public class ConditionProviders
 
     public static final Provider<Condition> IF_IN_LIQUID = Mapper.registerConditionProvider("ifInLiquid", args -> {
                 var liquid = args.getData(DaggerKeys.Provider.LIQUID);
-                var fluid = Registries.FLUID.get(liquid);
-
-                if(fluid == Fluids.EMPTY) {
-                    throw new WrongArgumentException(DaggerKeys.Provider.LIQUID.key(), liquid.toString());
-                }
 
                 return data -> {
                     var entity = data.getTestEntity(args.getOn());
+
+                    var fluid = Registries.FLUID.get(liquid);
+
+                    if(fluid == Fluids.EMPTY) {
+                        DaggerLogger.report(LoggingContext.GENERIC, LogLevel.ERROR, "Liquid not found for ifInLiquid: " + entity.getEntityName());
+                        return false;
+                    }
 
                     return entity.getFluidHeight(TagKey.of(RegistryKeys.FLUID, liquid)) > 0;
                 };
