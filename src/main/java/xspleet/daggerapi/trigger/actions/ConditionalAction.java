@@ -10,22 +10,17 @@ import xspleet.daggerapi.api.models.TriggeredBy;
 import xspleet.daggerapi.api.models.TriggeredIn;
 import xspleet.daggerapi.data.collection.TriggerData;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ConditionalAction
 {
     protected Condition condition;
-    protected final List<String> conditions = new ArrayList<>();
-    protected final List<Action> actions;
-    protected final List<String> actionNames = new ArrayList<>();
+    protected Action action;
     protected TriggeredBy triggeredBy;
     protected TriggeredIn triggeredIn;
 
     public ConditionalAction()
     {
         condition = conditionData -> true;
-        actions = new ArrayList<>();
+        action = actionData -> {};
     }
 
     public Condition getCondition()
@@ -33,16 +28,14 @@ public class ConditionalAction
         return condition;
     }
 
-    public void addCondition(Condition condition, String name)
+    public void addCondition(Condition condition)
     {
-        conditions.add(name);
         this.condition = this.condition.and(condition);
     }
 
-    public void addAction(Action action, String name)
+    public void addAction(Action action)
     {
-        actions.add(action);
-        actionNames.add(name);
+        this.action = action.andThen(action);
     }
 
     public ConditionalAction triggeredBy(TriggeredBy triggeredBy) {
@@ -61,8 +54,7 @@ public class ConditionalAction
         {
             ActionData actionData = new ActionData(data);
             if (condition.test(new ConditionData(actionData)))
-                for (Action action : actions)
-                    action.accept(actionData);
+                action.accept(actionData);
         }
     }
 

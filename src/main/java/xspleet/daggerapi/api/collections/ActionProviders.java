@@ -88,6 +88,7 @@ public class ActionProviders
             data.addData(DaggerKeys.DAMAGE_AMOUNT, result);
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
+            .addDefaultValue(DaggerKeys.Provider.AMOUNT, DoubleExpression.create(1.0))
             .addRequiredData(DaggerKeys.DAMAGE_AMOUNT)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
             .modifier();
@@ -111,7 +112,9 @@ public class ActionProviders
         };
     }).addArgument(DaggerKeys.Provider.STATUS_EFFECT, e -> new Identifier(e.getAsString()))
             .addArgument(DaggerKeys.Provider.DURATION, JsonElement::getAsInt)
-            .addArgument(DaggerKeys.Provider.AMPLIFIER, JsonElement::getAsInt);
+            .addDefaultValue(DaggerKeys.Provider.DURATION, 20)
+            .addArgument(DaggerKeys.Provider.AMPLIFIER, JsonElement::getAsInt)
+            .addDefaultValue(DaggerKeys.Provider.AMPLIFIER, 0);
 
     public static final Provider<Action> REMOVE_STATUS_EFFECT = Mapper.registerActionProvider("removeStatusEffect", (args) -> {
         Identifier statusEffectId = args.getData(DaggerKeys.Provider.STATUS_EFFECT);

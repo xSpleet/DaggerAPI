@@ -1,6 +1,8 @@
 package xspleet.daggerapi.api.registration;
 
 import com.google.gson.JsonElement;
+import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.data.collection.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.exceptions.BadArgumentException;
@@ -15,6 +17,7 @@ public class Provider<T> {
     protected final Map<String, ProviderArgument<?>> arguments = new HashMap<>();
     protected final List<Trigger> associatedTriggers = new ArrayList<>();
     protected final Function<ProviderData, T> provider;
+    protected final Map<DaggerKey<?>, DefaultArgumentValue<?>> defaultValues = new HashMap<>();
     protected boolean isModifier = false;
     protected final Set<DaggerKey<?>> requiredData = new HashSet<>();
 
@@ -30,6 +33,11 @@ public class Provider<T> {
 
     public Provider<T> addAssociatedTrigger(Trigger trigger) {
         associatedTriggers.add(trigger);
+        return this;
+    }
+
+    public <U> Provider<T> addDefaultValue(DaggerKey<U> key, U value) {
+        defaultValues.put(key, new DefaultArgumentValue<>(key, value));
         return this;
     }
 
@@ -53,8 +61,11 @@ public class Provider<T> {
             try {
                 ProviderArgument<?> providerArgument = argument.getValue();
                 var key = providerArgument.key();
-                if (!data.hasData(key)) {
+                if (!data.hasData(key) && !defaultValues.containsKey(key)) {
                     throw new BadArgumentException("Missing argument: " + key.key());
+                }
+                if (!data.hasData(key) && defaultValues.containsKey(key)) {
+                    DaggerLogger.warn(LoggingContext.GENERIC, "Using default value for argument '" + key.key() + "': " + defaultValues.get(key));
                 }
             } catch (BadArgumentException e) {
                 errors.add(e);
@@ -75,13 +86,19 @@ public class Provider<T> {
             try {
                 String name = argument.getKey();
                 ProviderArgument<?> providerArgument = argument.getValue();
+                var key = providerArgument.key();
 
-                if (!args.containsKey(name)) {
+                if (args.containsKey(name)) {
+                    providerArgument.addData(data, args.get(name));
+                }
+                else if (defaultValues.containsKey(key)) {
+                    DaggerLogger.warn(LoggingContext.GENERIC, "Using default value for argument '" + key.key() + "': " + defaultValues.get(key));
+                    var defaultValue = defaultValues.get(key);
+                    defaultValue.addData(data);
+                }
+                else {
                     throw new BadArgumentException("Missing argument: " + name);
                 }
-
-                var element = args.get(name);
-                providerArgument.addData(data, element);
             } catch (BadArgumentException e) {
                 errors.add(e);
             }
@@ -124,8 +141,8 @@ public class Provider<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Provider<?> provider1 = (Provider<?>) o;
-        return Objects.equals(name, provider1.name) && Objects.equals(provider, provider1.provider);
+        var other = (Provider<?>) o;
+        return Objects.equals(name, other.name) && Objects.equals(provider, other.provider);
     }
 
     @Override

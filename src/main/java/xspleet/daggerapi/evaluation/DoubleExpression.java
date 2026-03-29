@@ -25,59 +25,15 @@ public class DoubleExpression implements ComplexDataEntry
 
     private static final DoubleEvaluator evaluator = new DoubleEvaluator();
 
-    public void addVariableKey(String key) throws ParseException {
-        var daggerKey = DaggerKeys.get(key);
-        if(daggerKey == null) {
-            throw new ParseException("Key '" + key + "' does not exist");
-        }
-        if(daggerKey.type() != Double.class) {
-            throw new ParseException("Key '" + key + "' is not of type Double");
-        }
-        expressionVariables.add((DaggerKey<Double>) daggerKey);
-        neededKeys.add(daggerKey);
+    public static DoubleExpression create(double value) {
+        var doubleExpression = new DoubleExpression();
+        doubleExpression.expression = Double.toString(value);
+        return doubleExpression;
     }
 
-    public void addVariablePath(String fullPath) throws ParseException {
-        if(!fullPath.contains("#")) {
-            throw new ParseException("Variable path must contain a '#' to separate key and path");
-        }
-        if(variablePaths.containsKey(fullPath)) {
-            return;
-        }
-        String[] parts = fullPath.split("#", 2);
-        var path = parts[1];
-        var key = parts[0];
-        VariablePath<Object, Double> variablePath;
-        var daggerKey = DaggerKeys.get(key);
-        if(daggerKey == null) {
-            throw new ParseException("Key '" + key + "' does not exist");
-        }
-        try {
-            variablePath = (VariablePath<Object, Double>) VariablePathTemplates.getPathTemplate(path, daggerKey.type(), Double.class).getPath();
-        }
-        catch (NoSuchVariablePathException e) {
-            throw new ParseException("Variable path '" + path + "' of type double does not exist");
-        }
-        if(variablePath.getReturnType() != Double.class) {
-            throw new ParseException("Variable path return type must be Double");
-        }
-        if(!variablePath.getType().isAssignableFrom(daggerKey.type())) {
-            throw new ParseException("Variable path applied to illegal type: " + daggerKey.type().getSimpleName());
-        }
-        variablePath.setKey((DaggerKey<Object>) daggerKey);
-        variablePaths.put(fullPath, variablePath);
-        neededKeys.add(daggerKey);
-    }
-
-    public static DoubleExpression create(JsonElement jsonElement) throws ExpressionParseException {
+    public static DoubleExpression create(String expression) throws ExpressionParseException {
         var doubleExpression = new DoubleExpression();
         List<ParseException> badKeys = new ArrayList<>();
-
-        if(jsonElement == null || !jsonElement.isJsonPrimitive() || !jsonElement.getAsJsonPrimitive().isString()) {
-            throw new ExpressionParseException("Expected an expression string");
-        }
-
-        var expression = jsonElement.getAsString();
 
         Set<String> functions = evaluator.getFunctions().stream()
                 .map(Function::getName)
@@ -145,6 +101,14 @@ public class DoubleExpression implements ComplexDataEntry
         return doubleExpression;
     }
 
+    public static DoubleExpression create(JsonElement jsonElement) throws ExpressionParseException {
+        if(jsonElement == null || !jsonElement.isJsonPrimitive() || !jsonElement.getAsJsonPrimitive().isString()) {
+            throw new ExpressionParseException("Expected an expression string");
+        }
+
+        return create(jsonElement.getAsString());
+    }
+
     public Double evaluate(DaggerContext data)
     {
         var set = new StaticVariableSet<Double>();
@@ -161,5 +125,49 @@ public class DoubleExpression implements ComplexDataEntry
     @Override
     public Set<DaggerKey<?>> getRequiredData() {
         return neededKeys;
+    }
+
+    private void addVariableKey(String key) throws ParseException {
+        var daggerKey = DaggerKeys.get(key);
+        if(daggerKey == null) {
+            throw new ParseException("Key '" + key + "' does not exist");
+        }
+        if(daggerKey.type() != Double.class) {
+            throw new ParseException("Key '" + key + "' is not of type Double");
+        }
+        expressionVariables.add((DaggerKey<Double>) daggerKey);
+        neededKeys.add(daggerKey);
+    }
+
+    private void addVariablePath(String fullPath) throws ParseException {
+        if(!fullPath.contains("#")) {
+            throw new ParseException("Variable path must contain a '#' to separate key and path");
+        }
+        if(variablePaths.containsKey(fullPath)) {
+            return;
+        }
+        String[] parts = fullPath.split("#", 2);
+        var path = parts[1];
+        var key = parts[0];
+        VariablePath<Object, Double> variablePath;
+        var daggerKey = DaggerKeys.get(key);
+        if(daggerKey == null) {
+            throw new ParseException("Key '" + key + "' does not exist");
+        }
+        try {
+            variablePath = (VariablePath<Object, Double>) VariablePathTemplates.getPathTemplate(path, daggerKey.type(), Double.class).getPath();
+        }
+        catch (NoSuchVariablePathException e) {
+            throw new ParseException("Variable path '" + path + "' of type double does not exist");
+        }
+        if(variablePath.getReturnType() != Double.class) {
+            throw new ParseException("Variable path return type must be Double");
+        }
+        if(!variablePath.getType().isAssignableFrom(daggerKey.type())) {
+            throw new ParseException("Variable path applied to illegal type: " + daggerKey.type().getSimpleName());
+        }
+        variablePath.setKey((DaggerKey<Object>) daggerKey);
+        variablePaths.put(fullPath, variablePath);
+        neededKeys.add(daggerKey);
     }
 }

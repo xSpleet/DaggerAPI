@@ -182,7 +182,7 @@ public class ArtifactItemBuilder
                 }
                 try {
                     Condition conditionUnit = getCondition(conditionModel, trigger.getProvidedData(), onKey);
-                    conditionalAction.addCondition(conditionUnit, conditionModel.getCondition());
+                    conditionalAction.addCondition(conditionUnit);
                 }
                 catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
@@ -217,7 +217,7 @@ public class ArtifactItemBuilder
                         );
                     }
                     var actionUnit = actionProvider.provide(data);
-                    conditionalAction.addAction(actionUnit, actionModel.getAction());
+                    conditionalAction.addAction(actionUnit);
                 }
                 catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());
@@ -232,8 +232,7 @@ public class ArtifactItemBuilder
                                 ConditionProviders.IF_ARTIFACT
                                         .provide(new ProviderData()
                                                 .setOn(DaggerKeys.TRIGGER_SOURCE)
-                                                .addData(DaggerKeys.Provider.ARTIFACT, id)),
-                                "ifArtifact"
+                                                .addData(DaggerKeys.Provider.ARTIFACT, id))
                         );
                         DaggerLogger.warn(LoggingContext.PARSING, "Artifact {} has no ifArtifact condition on onActivate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
@@ -245,8 +244,7 @@ public class ArtifactItemBuilder
                     try {
                         conditionalAction.addCondition(
                                 ConditionProviders.IF_SUCCESSFUL
-                                        .provide(new ProviderData().setOn(DaggerKeys.TRIGGER_SOURCE)),
-                                "isSuccessful"
+                                        .provide(new ProviderData().setOn(DaggerKeys.TRIGGER_SOURCE))
                         );
                         DaggerLogger.warn(LoggingContext.PARSING,"Artifact {} has no isSuccessful condition on onActivate event, adding it automatically.", itemModel.getName());
                     } catch (BadArgumentsException e) {
