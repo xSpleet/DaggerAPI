@@ -96,9 +96,10 @@ public class DaggerLogger
     }
 
     public static void dump(String packName, LogLevel level) {
-        if (packMessages.containsKey(packName)) {
+        List<LoggerMessage> packMsgs = packMessages.get(packName);
+        if (packMsgs != null) {
             logger.info("=== DaggerAPI Log Dump ===");
-            printPack(packName, level);
+            printPack(packName, packMsgs, level);
             logger.info("=========================");
 
             Path logFile = createLogFile(
@@ -107,7 +108,7 @@ public class DaggerLogger
             );
             try (var writer = Files.newBufferedWriter(logFile)) {
                 writer.write("Logs for pack: " + packName + "\n");
-                for (LoggerMessage message : packMessages.get(packName)) {
+                for (LoggerMessage message : packMsgs) {
                     if (message.level().compareTo(level) >= 0) {
                         writer.write(String.format("[%s]<%s>|%s| %s\n", message.level(), message.context().name(), packName, message.message()));
                     }
@@ -116,7 +117,7 @@ public class DaggerLogger
                 logger.error("Failed to write log message to file", e);
             }
 
-            packMessages.get(packName).removeIf(msg -> msg.level().compareTo(level) >= 0);
+            packMsgs.removeIf(msg -> msg.level().compareTo(level) >= 0);
         }
     }
 
@@ -154,7 +155,7 @@ public class DaggerLogger
     public static void printAll(LogLevel minLevel) {
         logger.info("=== DaggerAPI Log Dump ===");
         for (Map.Entry<String, List<LoggerMessage>> entry : packMessages.entrySet()) {
-            printPack(entry.getKey(), minLevel);
+            printPack(entry.getKey(), entry.getValue(), minLevel);
         }
         if (!messages.isEmpty()) {
             logger.info("--- General ---");
@@ -167,9 +168,9 @@ public class DaggerLogger
         logger.info("=========================");
     }
 
-    private static void printPack(String packName, LogLevel minLevel) {
+    private static void printPack(String packName, List<LoggerMessage> packMsgs, LogLevel minLevel) {
         logger.info("--- Pack: {} ---", packName);
-        for (LoggerMessage message : packMessages.get(packName)) {
+        for (LoggerMessage message : packMsgs) {
             if (message.level().compareTo(minLevel) >= 0) {
                 logToConsole(message);
             }
