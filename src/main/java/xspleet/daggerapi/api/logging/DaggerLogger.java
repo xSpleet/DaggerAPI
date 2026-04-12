@@ -54,7 +54,7 @@ public class DaggerLogger
         saveMessage(context, level, message);
         switch (level)
         {
-            case DEBUG -> logger.info("[DEBUG] " + message);
+            case DEBUG -> { if (DaggerAPI.DEBUG_MODE) logger.info("[DEBUG] " + message); }
             case INFO -> logger.info("[INFO] " + message);
             case WARN -> logger.warn("[WARN] " + message);
             case ERROR -> logger.error("[ERROR] " + message);
@@ -119,11 +119,11 @@ public class DaggerLogger
     }
 
     private static void logToConsole(LoggerMessage message) {
-        String line = String.format("[%s] <%s>: %s", message.level(), message.context().getPrefix(), message.message());
+        String line = String.format("[%s] %s", message.level(), message.message());
         switch (message.level()) {
             case ERROR -> logger.error(line);
             case WARN -> logger.warn(line);
-            case DEBUG -> logger.info(line);
+            case DEBUG -> { if (DaggerAPI.DEBUG_MODE) logger.info(line); }
             default -> logger.info(line);
         }
     }
