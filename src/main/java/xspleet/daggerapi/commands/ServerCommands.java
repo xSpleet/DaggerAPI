@@ -1,11 +1,10 @@
 package xspleet.daggerapi.commands;
 
-import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
-import xspleet.daggerapi.DaggerAPI;
 import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LogLevel;
 import xspleet.daggerapi.config.ServerDevModeConfig;
 
 public class ServerCommands

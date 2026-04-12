@@ -88,7 +88,6 @@ public class ActionProviders
             data.addData(DaggerKeys.DAMAGE_AMOUNT, result);
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
-            .addDefaultValue(DaggerKeys.Provider.AMOUNT, DoubleExpression.create(1.0))
             .addRequiredData(DaggerKeys.DAMAGE_AMOUNT)
             .addAssociatedTrigger(Triggers.BEFORE_DAMAGE)
             .modifier();
@@ -275,6 +274,7 @@ public class ActionProviders
             living.damage(damageSource, result.floatValue());
         };
     }).addArgument(DaggerKeys.Provider.AMOUNT, DoubleExpression::create)
+            .addDefaultValue(DaggerKeys.Provider.AMOUNT, DoubleExpression.create(1.0))
             .addArgument(DaggerKeys.Provider.DAMAGE_TYPE, e -> new Identifier(e.getAsString()));
 
     public static final Provider<Action> CHANGE_DAMAGE_TYPE = Mapper.registerActionProvider("changeDamageType", (args) -> {

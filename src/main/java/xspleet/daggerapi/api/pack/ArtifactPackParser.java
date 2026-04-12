@@ -1,6 +1,5 @@
 package xspleet.daggerapi.api.pack;
 
-import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -9,6 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import xspleet.daggerapi.DaggerAPI;
+import xspleet.daggerapi.api.logging.LogLevel;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.artifact.builder.ArtifactItemBuilder;
 import xspleet.daggerapi.artifact.generation.ArtifactPoolEntry;

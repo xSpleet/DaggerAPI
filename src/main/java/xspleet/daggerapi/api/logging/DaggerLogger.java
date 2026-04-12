@@ -1,6 +1,5 @@
 package xspleet.daggerapi.api.logging;
 
-import io.netty.handler.logging.LogLevel;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

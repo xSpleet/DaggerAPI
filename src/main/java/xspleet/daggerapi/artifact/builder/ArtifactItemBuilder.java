@@ -2,12 +2,12 @@ package xspleet.daggerapi.artifact.builder;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import io.netty.handler.logging.LogLevel;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import xspleet.daggerapi.api.logging.DaggerLogger;
+import xspleet.daggerapi.api.logging.LogLevel;
 import xspleet.daggerapi.api.logging.LoggingContext;
 import xspleet.daggerapi.artifact.ArtifactItem;
 import xspleet.daggerapi.artifact.ArtifactRarity;
@@ -87,7 +87,7 @@ public class ArtifactItemBuilder
                 var conditionModel = conditionsModels.get(j);
                 DaggerKey<?> onKey = null;
                 try {
-                    onKey = translateOn(conditionModel.getOn(), availableData);
+                    onKey = translateOn(conditionModel.getOn(), availableData, DaggerKeys.PLAYER);
                 } catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("AttributeModifier", i, "Condition", j), e.getMessage());
                 }
@@ -160,10 +160,10 @@ public class ArtifactItemBuilder
             }
 
             if(triggeredBy == null && trigger.hasTriggerSource()) {
-                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'source' is not set on event " + eventModel.getTrigger() + ", but the trigger has a source");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.WARN, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'source' is not set on event " + eventModel.getTrigger() + ", but the trigger has a source");
             }
             if(triggeredIn == null && trigger.isWorldful()) {
-                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'inWorld' is not set on event " + eventModel.getTrigger() + ", but the trigger has a world");
+                DaggerLogger.report(LoggingContext.PARSING, LogLevel.WARN, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i), "'inWorld' is not set on event " + eventModel.getTrigger() + ", but the trigger has a world");
             }
 
             conditionalAction
@@ -176,7 +176,7 @@ public class ArtifactItemBuilder
                 var conditionModel = conditionsModels.get(j);
                 DaggerKey<?> onKey = null;
                 try {
-                    onKey = translateOn(conditionModel.getOn(), trigger.getProvidedData());
+                    onKey = translateOn(conditionModel.getOn(), trigger.getProvidedData(), DaggerKeys.TRIGGERED);
                 } catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Condition", j), e.getMessage());
                 }
@@ -195,7 +195,7 @@ public class ArtifactItemBuilder
                 var actionModel = actionsModels.get(j);
                 DaggerKey<?> onKey = null;
                 try {
-                    onKey = translateOn(actionModel.getOn(), trigger.getProvidedData());
+                    onKey = translateOn(actionModel.getOn(), trigger.getProvidedData(), DaggerKeys.TRIGGERED);
                 } catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());
                 }
@@ -351,7 +351,14 @@ public class ArtifactItemBuilder
         );
     }
 
-    private static DaggerKey<?> translateOn(String on, Set<DaggerKey<?>> availableKeys) throws MissingRequiredDataException, BadArgumentException {
+    private static DaggerKey<?> translateOn(String on, Set<DaggerKey<?>> availableKeys, DaggerKey<?> defaultKey) throws MissingRequiredDataException, BadArgumentException {
+        if(on == null || on.isBlank()) {
+            if(defaultKey == null)
+                throw new BadArgumentException("The 'on' argument is missing!");
+            else
+                return defaultKey;
+        }
+
         var optionalKey = availableKeys.stream().filter((key) -> key.key().equals(on)).findFirst();
         var candidateKey = optionalKey.orElseThrow(() -> new MissingRequiredDataException(List.of(on)));
         if(Entity.class.isAssignableFrom(candidateKey.type()) || World.class.isAssignableFrom(candidateKey.type())) {
