@@ -97,8 +97,40 @@ public class DaggerLogger
         return false;
     }
 
+    public static void printAll(LogLevel minLevel) {
+        logger.error("=== DaggerAPI Log Dump ===");
+        for (String packName : packMessages.keySet()) {
+            logger.error("--- Pack: {} ---", packName);
+            for (LoggerMessage message : packMessages.get(packName)) {
+                if (message.level().compareTo(minLevel) >= 0) {
+                    logToConsole(message);
+                }
+            }
+        }
+        if (!messages.isEmpty()) {
+            logger.error("--- General ---");
+            for (LoggerMessage message : messages) {
+                if (message.level().compareTo(minLevel) >= 0) {
+                    logToConsole(message);
+                }
+            }
+        }
+        logger.error("=========================");
+    }
+
+    private static void logToConsole(LoggerMessage message) {
+        String line = String.format("[%s] <%s>: %s", message.level(), message.context().getPrefix(), message.message());
+        switch (message.level()) {
+            case ERROR -> logger.error(line);
+            case WARN -> logger.warn(line);
+            case DEBUG -> logger.info(line);
+            default -> logger.info(line);
+        }
+    }
+
     public static void dump(String packName, LogLevel level){
         if (packMessages.containsKey(packName)) {
+            printAll(level);
             var now = LocalDateTime.now();
             Path path = FabricLoader.getInstance().getGameDir().resolve("daggerapi/logs");
             if (!path.toFile().exists()) {
@@ -134,6 +166,7 @@ public class DaggerLogger
     }
 
     public static void dumpAll(LogLevel level) {
+        printAll(level);
         var now = LocalDateTime.now();
         Path path = FabricLoader.getInstance().getGameDir().resolve("daggerapi/logs");
         if (!path.toFile().exists()) {
