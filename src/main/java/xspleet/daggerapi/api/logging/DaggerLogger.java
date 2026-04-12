@@ -53,11 +53,10 @@ public class DaggerLogger
         saveMessage(context, level, message);
         switch (level)
         {
-            case DEBUG -> { if (DaggerAPI.DEBUG_MODE) logger.info("[DEBUG] " + message); }
+            case TRACE, DEBUG -> logger.info("[" + level + "] " + message);
             case INFO -> logger.info("[INFO] " + message);
             case WARN -> logger.warn("[WARN] " + message);
             case ERROR -> logger.error("[ERROR] " + message);
-            default -> logger.info(message); // Fallback for any other log level
         }
     }
 
@@ -97,9 +96,9 @@ public class DaggerLogger
     }
 
     public static void printAll(LogLevel minLevel) {
-        logger.error("=== DaggerAPI Log Dump ===");
+        logger.info("=== DaggerAPI Log Dump ===");
         for (String packName : packMessages.keySet()) {
-            logger.error("--- Pack: {} ---", packName);
+            logger.info("--- Pack: {} ---", packName);
             for (LoggerMessage message : packMessages.get(packName)) {
                 if (message.level().compareTo(minLevel) >= 0) {
                     logToConsole(message);
@@ -107,14 +106,14 @@ public class DaggerLogger
             }
         }
         if (!messages.isEmpty()) {
-            logger.error("--- General ---");
+            logger.info("--- General ---");
             for (LoggerMessage message : messages) {
                 if (message.level().compareTo(minLevel) >= 0) {
                     logToConsole(message);
                 }
             }
         }
-        logger.error("=========================");
+        logger.info("=========================");
     }
 
     private static void logToConsole(LoggerMessage message) {
@@ -122,14 +121,12 @@ public class DaggerLogger
         switch (message.level()) {
             case ERROR -> logger.error(line);
             case WARN -> logger.warn(line);
-            case DEBUG -> { if (DaggerAPI.DEBUG_MODE) logger.info(line); }
             default -> logger.info(line);
         }
     }
 
     public static void dump(String packName, LogLevel level){
         if (packMessages.containsKey(packName)) {
-            printAll(level);
             var now = LocalDateTime.now();
             Path path = FabricLoader.getInstance().getGameDir().resolve("daggerapi/logs");
             if (!path.toFile().exists()) {
