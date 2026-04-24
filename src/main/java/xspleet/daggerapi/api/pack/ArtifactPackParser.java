@@ -83,7 +83,7 @@ public class ArtifactPackParser
                             var id = Identifier.of(DaggerAPI.MOD_ID, packName + "/" + itemModel.getName());
                             var item = ArtifactItemBuilder.build(itemModel, id);
                             if(item == null) {
-                                DaggerLogger.error(LoggingContext.PARSING, "Failed to build artifact item from model: {}", itemModel.getName());
+                                DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Failed to build artifact item from model: {}", itemModel.getName());
                                 continue;
                             }
                             item = Registry.register(Registries.ITEM, id, item);
@@ -92,7 +92,7 @@ public class ArtifactPackParser
                             registeredItems.put(itemModel.getName(), item);
                         }
                         catch (IOException e) {
-                            DaggerLogger.error(LoggingContext.PARSING, "Failed to read behavior file {}: {}", behaviorFile.getName(), e.getMessage());
+                            DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Failed to read behavior file {}: {}", behaviorFile.getName(), e.getMessage());
                         }
 
                     }
@@ -102,7 +102,7 @@ public class ArtifactPackParser
                 }
 
                 if(DaggerLogger.hasErrors(packName)){
-                    DaggerLogger.error(LoggingContext.PARSING, "Errors found in artifact pack. Skipping item registration.", packName);
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Errors found in artifact pack {}. Skipping item registration.", packName);
                     continue;
                 }
 
@@ -134,7 +134,7 @@ public class ArtifactPackParser
                         }
                     }
                 } catch (IOException e) {
-                    DaggerLogger.error(LoggingContext.PARSING, "Failed to read gen.json in artifact pack {}: {}", packName, e.getMessage());
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Failed to read gen.json in artifact pack {}: {}", packName, e.getMessage());
                 }
 
             }
