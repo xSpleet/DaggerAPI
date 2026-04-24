@@ -15,4 +15,11 @@ public interface Action extends Consumer<ActionData>
             after.accept(data);
         };
     }
+
+    default Action repeat(int repeats) {
+        return data -> {
+            for (int i = 0; i < repeats; i++)
+                accept(data);
+        };
+    }
 }

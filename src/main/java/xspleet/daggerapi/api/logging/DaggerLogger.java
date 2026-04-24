@@ -122,6 +122,14 @@ public class DaggerLogger
     }
 
     public static void dumpAll(LogLevel level) {
+        boolean hasPackMessages = packMessages.values().stream()
+                .anyMatch(msgs -> msgs.stream().anyMatch(msg -> msg.level().compareTo(level) >= 0));
+        boolean hasGeneralMessages = messages.stream().anyMatch(msg -> msg.level().compareTo(level) >= 0);
+
+        if (!hasPackMessages && !hasGeneralMessages) {
+            return;
+        }
+
         printAll(level);
         Path logFile = createLogFile(
                 FabricLoader.getInstance().getGameDir().resolve("daggerapi/logs"),

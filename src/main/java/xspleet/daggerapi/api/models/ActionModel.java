@@ -10,6 +10,7 @@ public class ActionModel extends JSONModel
     private String action;
     private Map<String, JsonElement> arguments = new HashMap<>();
     private String on;
+    private String repeat = "1";
 
     public String getAction() {
         return action;
@@ -23,4 +24,7 @@ public class ActionModel extends JSONModel
         return on;
     }
 
+    public String getRepeat() {
+        return repeat;
+    }
 }

@@ -23,6 +23,7 @@ import xspleet.daggerapi.api.registration.Mapper;
 import xspleet.daggerapi.data.collection.ProviderData;
 import xspleet.daggerapi.data.key.DaggerKey;
 import xspleet.daggerapi.api.collections.DaggerKeys;
+import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.exceptions.*;
 import xspleet.daggerapi.api.models.*;
 import xspleet.daggerapi.trigger.Condition;
@@ -199,6 +200,25 @@ public class ArtifactItemBuilder
                 } catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());
                 }
+                DoubleExpression repeats = DoubleExpression.create(1.0);
+                try {
+                    var repeat = actionModel.getRepeat();
+                    if(repeat == null){
+                        DaggerLogger.report(LoggingContext.PARSING, LogLevel.WARN, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "The 'repeat' argument is missing. Default value '1' has been set.");
+                        repeat = "1";
+                    }
+                    repeats = DoubleExpression.create(actionModel.getRepeat());
+                    if(!trigger.getProvidedData().containsAll(repeats.getRequiredData())) {
+                        throw new MissingRequiredDataException(
+                                repeats.getRequiredData().stream()
+                                        .filter(k -> !trigger.getProvidedData().contains(k))
+                                        .map(DaggerKey::key)
+                                        .toList()
+                        );
+                    }
+                } catch (DaggerAPIException e) {
+                    DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), "The 'repeat' argument contains an error: ", e.getMessage());
+                }
                 try {
                     var actionProvider = Mapper.getActionProvider(actionModel.getAction());
                     if(!actionProvider.canBeOnTrigger(trigger)) {
@@ -217,7 +237,7 @@ public class ArtifactItemBuilder
                         );
                     }
                     var actionUnit = actionProvider.provide(data);
-                    conditionalAction.addAction(actionUnit);
+                    conditionalAction.addAction(actionUnit, repeats);
                 }
                 catch (DaggerAPIException e) {
                     DaggerLogger.report(LoggingContext.PARSING, LogLevel.ERROR, "Item {} at {} : {}", itemModel.getName(), DaggerLogger.placeOf("Event", i, "Action", j), e.getMessage());

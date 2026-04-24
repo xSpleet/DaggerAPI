@@ -2,6 +2,7 @@ package xspleet.daggerapi.trigger.actions;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import xspleet.daggerapi.evaluation.DoubleExpression;
 import xspleet.daggerapi.trigger.Condition;
 import xspleet.daggerapi.data.collection.ActionData;
 import xspleet.daggerapi.data.collection.ConditionData;
@@ -10,17 +11,22 @@ import xspleet.daggerapi.api.models.TriggeredBy;
 import xspleet.daggerapi.api.models.TriggeredIn;
 import xspleet.daggerapi.data.collection.TriggerData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConditionalAction
 {
+    private record RepeatedAction(Action action, DoubleExpression repeats) {}
+
     protected Condition condition;
-    protected Action action;
+    protected List<RepeatedAction> actions;
     protected TriggeredBy triggeredBy;
     protected TriggeredIn triggeredIn;
 
     public ConditionalAction()
     {
         condition = conditionData -> true;
-        action = actionData -> {};
+        actions = new ArrayList<>();
     }
 
     public Condition getCondition()
@@ -33,9 +39,9 @@ public class ConditionalAction
         this.condition = this.condition.and(condition);
     }
 
-    public void addAction(Action action)
+    public void addAction(Action action, DoubleExpression repeats)
     {
-        this.action = action.andThen(action);
+        this.actions.add(new RepeatedAction(action, repeats));
     }
 
     public ConditionalAction triggeredBy(TriggeredBy triggeredBy) {
@@ -54,7 +60,10 @@ public class ConditionalAction
         {
             ActionData actionData = new ActionData(data);
             if (condition.test(new ConditionData(actionData)))
-                action.accept(actionData);
+                for(var action: actions) {
+                    var repeats = (int) Math.round(action.repeats.evaluate(actionData));
+                    action.action.repeat(repeats).accept(actionData);
+                }
         }
     }
 
