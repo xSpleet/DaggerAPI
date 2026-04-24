@@ -9,4 +9,8 @@ public interface AttributeOperation<T>
     Function3<T, T, T, T> getOperation();
     T apply(T prevResult, T resultFromPrevType, T value);
     Class<T> getType();
+
+    default boolean requiresValue() {
+        return true;
+    }
 }

@@ -40,4 +40,9 @@ public enum BooleanOperation implements AttributeOperation<Boolean> {
     public Class<Boolean> getType() {
         return Boolean.class;
     }
+
+    @Override
+    public boolean requiresValue() {
+        return false;
+    }
 }

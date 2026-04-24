@@ -105,7 +105,9 @@ public class ArtifactItemBuilder
             {
                 var modifierModel = modifierModels.get(j);
                 try {
-                    String name = id.toString() + "/" + modifierModel.getAttribute() + "/" + modifierModel.getModificationType() + "/" + modifierModel.getModificationValue().getAsString() + "/" + j + "/" + i;
+                    var rawValue = modifierModel.getModificationValue();
+                    String valueStr = (rawValue != null && !rawValue.isJsonNull()) ? rawValue.getAsString() : "";
+                    String name = id.toString() + "/" + modifierModel.getAttribute() + "/" + modifierModel.getModificationType() + "/" + valueStr + "/" + j + "/" + i;
                     artifactAttributeModifier.addAttributeModifier(
                             getModifier(name, itemModel.getName(), modifierModel)
                     );
@@ -332,13 +334,22 @@ public class ArtifactItemBuilder
             AttributeOperation<?> operation,
             String artifactName
     ) throws ParseException {
+        var castOperation = (AttributeOperation<T>) operation;
+
+        if (!castOperation.requiresValue()) {
+            return new DaggerAttributeModifier<>(
+                    name,
+                    null,
+                    castOperation,
+                    artifactName
+            );
+        }
+
         if(value == null || value.isJsonNull())
             throw new IllegalArgumentException("Value for attribute modifier cannot be null or JSON null");
 
         if(!(value instanceof JsonPrimitive primitive))
             throw new IllegalArgumentException("Value for attribute modifier must be a JSON primitive");
-
-        var castOperation = (AttributeOperation<T>) operation;
 
         T castValue;
         if(castOperation.getType().equals(Integer.class))
